@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { FaArrowLeft } from "react-icons/fa";
-import { FiMenu } from "react-icons/fi";
+import { FaArrowLeft, FaDog, FaSchool } from "react-icons/fa";
+import { FiFileText, FiMenu, FiSearch, FiSettings, FiSliders, FiUser } from "react-icons/fi";
 import { useSidebar } from "~/hooks/useSidebar";
 import Icon from '~/assets/icon.svg?react';
 import { NavLink } from "react-router";
@@ -12,7 +12,7 @@ export function Sidebar() {
 
   return (
     <aside className={clsx(
-      'py-6 h-full bg-main transition-all delay-150 flex flex-col items-center gap-8',
+      'py-6 h-full bg-main transition-all duration-500 flex flex-col items-center gap-8',
       sidebar.state === 'collapse' ? 'w-16' : 'w-[22%]'
     )}>
       <header className={clsx(
@@ -35,14 +35,51 @@ export function Sidebar() {
       )}>
         <Icon className='w-full h-full fill-main'/>
       </div>
-      <ul className='w-full pl-10 flex flex-col'>
+      <ul className={clsx(
+        'w-full flex flex-col overflow-hidden',
+          sidebar.state === 'extend' ? 'pl-10' : ''
+      )}>
         <NavbarButton
           to='/dashboard'
           label='Dispositivos'
+          collapse={sidebar.state === 'collapse'}
+          icon={FaDog}
         />
         <NavbarButton
           to='/dashboard/terms'
           label='Termos'
+          collapse={sidebar.state === 'collapse'}
+          icon={FiFileText}
+        />
+        <NavbarButton
+          to='/dashboard/audit'
+          label='Auditoria'
+          collapse={sidebar.state === 'collapse'}
+          icon={FiSearch}
+        />
+        <NavbarButton
+          to='/dashboard/settings'
+          label='Configuração'
+          collapse={sidebar.state === 'collapse'}
+          icon={FiSettings}
+        />
+        <NavbarButton
+          to='/dashboard/school'
+          label='Instituições'
+          collapse={sidebar.state === 'collapse'}
+          icon={FaSchool}
+        />
+        <NavbarButton
+          to='/dashboard/users'
+          label='Usuários'
+          collapse={sidebar.state === 'collapse'}
+          icon={FiUser}
+        />
+        <NavbarButton
+          to='/dashboard/scene'
+          label='Cenários'
+          collapse={sidebar.state === 'collapse'}
+          icon={FiSliders}
         />
       </ul>
     </aside>
