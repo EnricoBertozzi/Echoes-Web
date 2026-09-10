@@ -10,7 +10,7 @@ export interface NavbarProps {
 export function Navbar({ collapsed }: NavbarProps) {
   return (
       <ul className={clsx(
-        'w-full flex flex-col overflow-hidden',
+        'w-full flex flex-col gap-2',
         'transition-[padding] duration-500',
         collapsed ? 'pl-0' : 'pl-10'
       )}>
