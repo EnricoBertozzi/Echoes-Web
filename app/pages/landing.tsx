@@ -1,7 +1,15 @@
 import { Button } from "~/components/atoms/Button";
 import { TextInput } from "~/components/atoms/TextInput";
+import type { Route } from "./+types/landing";
 
-export function Landing() {
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Login - Echoes" },
+    { name: "description", content: "Bem-vindo ao Echoes" },
+  ];
+}
+
+export default function Landing() {
   return (
     <main className='bg-zinc-200 w-full h-full flex justify-center items-center'>
       <form className='bg-white px-8 py-5 rounded shadow flex flex-col gap-10'>
