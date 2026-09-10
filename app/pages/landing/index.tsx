@@ -1,6 +1,7 @@
 import { Button } from "~/components/atoms/Button";
 import { TextInput } from "~/components/atoms/TextInput";
 import type { Route } from "./+types/landing";
+import { useLogin } from "~/hooks/useLogin";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -10,6 +11,8 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Landing() {
+  const login = useLogin();
+
   return (
     <main className='bg-zinc-200 w-full h-full flex justify-center items-center'>
       <form className='bg-white px-8 py-5 rounded shadow flex flex-col gap-10'>
@@ -26,7 +29,7 @@ export default function Landing() {
         />
         <Button
           label='Entrar'
-          onClick={() => alert('Logado')}
+          onClick={login.login}
         />
       </form>
     </main>
