@@ -17,7 +17,7 @@ export function NavbarButton(props: NavbarButtonProps) {
       end={props.end}
       to={props.to}
       className={({ isActive }) => clsx(
-        'relative gap-3 flex flex-row overflow-hidden',
+        'relative gap-3 flex flex-row',
         !props.collapse ?
           'rounded-l-xl px-6 py-4' :
           'p-4 justify-center items-center',
@@ -51,7 +51,7 @@ export function NavbarButton(props: NavbarButtonProps) {
           size={24}
         />
         {!props.collapse &&
-          <span className='font-semibold'>{props.label}</span>}
+          <span className='font-semibold w-full overflow-hidden'>{props.label}</span>}
     </NavLink>
   )
 }
