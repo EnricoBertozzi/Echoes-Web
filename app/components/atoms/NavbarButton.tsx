@@ -15,9 +15,13 @@ export function NavbarButton(props: NavbarButtonProps) {
     <NavLink
       to={props.to}
       className={({ isActive }) => clsx(
-        'px-6 py-4 gap-3 flex flex-row',
-        !props.collapse ? 'rounded-l-xl' : '',
-        isActive ? 'bg-zinc-200 fill-main text-main' : 'bg-main fill-white text-white',
+        'gap-3 flex flex-row',
+        !props.collapse ?
+          'rounded-l-xl px-6 py-4' :
+          'p-4 justify-center items-center',
+        isActive ?
+          'bg-zinc-200 fill-main text-main' :
+          'bg-main fill-white text-white',
       )}
       >
         <Icon
