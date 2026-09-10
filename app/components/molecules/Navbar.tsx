@@ -19,6 +19,7 @@ export function Navbar({ collapsed }: NavbarProps) {
           label='Dispositivos'
           collapse={collapsed}
           icon={FaDog}
+          end
         />
         <NavbarButton
           to='/dashboard/terms'
