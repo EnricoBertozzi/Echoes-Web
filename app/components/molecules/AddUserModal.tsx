@@ -1,18 +1,13 @@
 import { Dialog } from "radix-ui";
-import { FiEdit2 } from "react-icons/fi";
-import type { User } from "~/types/user";
+import { FiPlus } from "react-icons/fi";
 import { TextInput } from "../atoms/TextInput";
 
-export interface EditUserModalProps {
-  user: User;
-}
-
-export function EditUserModal({ user }: EditUserModalProps) {
+export function AddUserModal() {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
         <button className='cursor-pointer'>
-          <FiEdit2
+          <FiPlus
           size={24}
           className='text-main hover:text-main/50 transition-all'
           />
@@ -39,18 +34,58 @@ export function EditUserModal({ user }: EditUserModalProps) {
           "
         >
           <Dialog.Title className="text-lg font-semibold">
-            Editar usuário
+            Cadastrar usuário
           </Dialog.Title>
 
           <Dialog.Description className="mt-1 text-sm text-gray-500">
-            Altere os dados do usuário.
+            Digite os dados do novo usuário
           </Dialog.Description>
 
           <div className="mt-6 flex flex-col gap-2">
             <p>Nome</p>
             <TextInput
-              placeholder={user.name}
+              placeholder='Digite o nome'
             />
+          </div>
+          <div className="mt-6 flex flex-col gap-2">
+            <p>E-mail</p>
+            <TextInput
+              placeholder='Digite o e-email'
+            />
+          </div>
+
+          <div className='mt-6 flex flex-col gap-2'>
+            <p>Cargo</p>
+            <div className='flex flex-row flex-wrap gap-4'>
+            <label>
+            <input
+            type='radio'
+            name='role'
+            />
+            <span>Administrador</span>
+            </label>
+            <label>
+            <input
+            type='radio'
+            name='role'
+            />
+            <span>Gestor</span>
+            </label>
+            <label>
+            <input
+            type='radio'
+            name='role'
+            />
+            <span>Professor</span>
+            </label>
+            <label>
+            <input
+            type='radio'
+            name='role'
+            />
+            <span>Estudante</span>
+            </label>
+            </div>
           </div>
 
           <div className="mt-6 flex justify-end gap-2">

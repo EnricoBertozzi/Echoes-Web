@@ -1,5 +1,5 @@
-import { FiPlus } from "react-icons/fi";
 import { TableHeadColumn } from "~/components/atoms/TableHeadColumn";
+import { AddUserModal } from "~/components/molecules/AddUserModal";
 import { UserTableRow } from "~/components/organisms/UserTableRow";
 
 export default function Devices() {
@@ -7,12 +7,7 @@ export default function Devices() {
   <main className="flex flex-1 flex-col justify-center items-center">
     <div className='w-full max-w-5xl h-10 text-black flex flex-row justify-between items-center'>
       <h2 className='text-lg font-medium'>Usuários</h2>
-      <button className='cursor-pointer'>
-        <FiPlus
-          className='text-main hover:text-main/50 transition-all'
-          size={24}
-        />
-      </button>
+      <AddUserModal/>
     </div>
     <div className="w-full max-w-5xl">
       {/* Header */}
