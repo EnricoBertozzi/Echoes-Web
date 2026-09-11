@@ -22,10 +22,10 @@ export function AnimalHeader({name = "Animal", model="Modelo", onEdit, onDelete}
       </div>
 
       <div className="flex gap-8">
-        <ButtonIcon onClick={() => console.log()}>
+        <ButtonIcon onClick={onEdit}>
           <FiEdit size={32} className="text-slate-900" />
         </ButtonIcon>
-        <ButtonIcon onClick={() => console.log()}>
+        <ButtonIcon onClick={onDelete}>
           <FiTrash2 size={32} className="text-red-900" />
         </ButtonIcon>
       </div>

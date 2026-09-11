@@ -5,7 +5,7 @@ export interface Animal {
   model: string
 }
 
-export interface AnimalRegisterRequest {
+export interface AnimalDataRequest {
   name: string;
   description: string;
   model: string

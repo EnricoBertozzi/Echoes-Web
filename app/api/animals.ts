@@ -1,4 +1,4 @@
-import type { Animal, AnimalRegisterRequest } from "~/types/Animal";
+import type { Animal, AnimalDataRequest } from "~/types/Animal";
 import { api } from "./axios";
 
 export async function findAllAnimals(
@@ -15,11 +15,21 @@ export async function findAllAnimals(
   return response.data;
 }
 
-export async function createAnimal(data: AnimalRegisterRequest) {
+export async function createAnimal(data: AnimalDataRequest) {
   const response = await api.post<void>(
     "http://localhost:8080/animals",
     data,
   );
 
   return response.status;
+}
+
+export async function updateAnimal(
+  id: string,
+  data: AnimalDataRequest
+) {
+  await api.patch(
+    `http://localhost:8080/animals/${id}`,
+    data
+  );
 }
