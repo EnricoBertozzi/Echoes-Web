@@ -1,6 +1,6 @@
 import { FiPlus } from "react-icons/fi";
 import { TableHeadColumn } from "~/components/atoms/TableHeadColumn";
-import { UserTableRow } from "~/components/atoms/UserTableRow";
+import { UserTableRow } from "~/components/organisms/UserTableRow";
 
 export default function Devices() {
   return (

@@ -1,5 +1,6 @@
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiTrash2 } from "react-icons/fi";
 import type { User } from "~/types/user"
+import { EditUserModal } from "../molecules/EditUserModal";
 
 export interface UserTableRowProps {
   user: User;
@@ -28,12 +29,7 @@ export function UserTableRow({ user }: UserTableRowProps) {
 
         <td className="w-1/12 px-4 py-2 border-l border-gray-800/20">
           <div className='w-full h-full flex flex-row justify-center items-center gap-3'>
-            <button className='cursor-pointer'>
-              <FiEdit2
-              size={24}
-              className='text-main hover:text-main/50 transition-all'
-              />
-            </button>
+            <EditUserModal user={user}/>
             <button className='cursor-pointer'>
               <FiTrash2
               size={24}
