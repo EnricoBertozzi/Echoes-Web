@@ -5,37 +5,59 @@ import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
 
 import { AnimalCard } from "~/components/organisms/AnimalCard";
-import { AnimalModal } from "~/components/organisms/AnimalModal";
+import { AnimalAddModal } from "~/components/organisms/AnimalAddModal";
+import { AnimalEditModal } from "~/components/organisms/AnimalEditModal";
 import { AnimalDeleteModal } from "~/components/organisms/AnimalDeleteModal";
 
 import {
   createAnimal,
   deleteAnimal,
   findAllAnimals,
+  findAnimalsByName,
   updateAnimal,
 } from "~/api/animals";
 
-import type { Animal, AnimalDataRequest } from "~/types/Animal";
+import type {
+  Animal,
+  AnimalDataRequest,
+} from "~/types/Animal";
+
+type ModalState =
+  | { type: "create" }
+  | { type: "edit"; animal: Animal }
+  | { type: "delete"; animal: Animal }
+  | null;
 
 export default function Animals() {
   // Lista de animais
   const [animals, setAnimals] = useState<Animal[]>([]);
 
-  // Controle do modal de cadastro/edição
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Estado do modal atual
+  const [modal, setModal] = useState<ModalState>(null);
 
-  // Animal selecionado para edição
-  const [selectedAnimal, setSelectedAnimal] = useState<Animal | undefined>();
-
-  // Controle do modal de exclusão
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  // Animal selecionado para exclusão
-  const [animalToDelete, setAnimalToDelete] = useState<Animal | undefined>();
+  // Estado da barra de busca
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     loadAnimals();
   }, []);
+
+  async function handleSearch(value: string) {
+    setSearch(value);
+
+    if (value.trim() === "") {
+      await loadAnimals();
+      return;
+    }
+
+    const data = await findAnimalsByName(
+      value,
+      0,
+      10
+    );
+
+    setAnimals(data);
+  }
 
   async function loadAnimals() {
     const data = await findAllAnimals(0, 10);
@@ -43,78 +65,61 @@ export default function Animals() {
     setAnimals(data);
   }
 
-  function handleNewAnimal() {
-    setSelectedAnimal(undefined);
-    setIsModalOpen(true);
+  async function handleAnimalAddSubmit(
+    data: AnimalDataRequest
+  ) {
+    await createAnimal(data);
+
+    await loadAnimals();
+
+    setModal(null);
   }
 
-  function handleEditAnimal(animal: Animal) {
-    setSelectedAnimal(animal);
-    setIsModalOpen(true);
-  }
-
-  async function handleAnimalSubmit(data: AnimalDataRequest) {
-    if (selectedAnimal) {
-      await updateAnimal(selectedAnimal.id, data);
-    } else {
-      await createAnimal(data);
-    }
-
-    const updatedAnimals = await findAllAnimals(0, 10);
-
-    setAnimals(updatedAnimals);
-
-    setIsModalOpen(false);
-    setSelectedAnimal(undefined);
-  }
-
-  function handleCloseModal() {
-    setIsModalOpen(false);
-    setSelectedAnimal(undefined);
-  }
-
-  function handleDeleteAnimal(animal: Animal) {
-    setAnimalToDelete(animal);
-    setIsDeleteModalOpen(true);
-  }
-
-  async function handleConfirmDelete() {
-    if (!animalToDelete) {
+  async function handleAnimalEditSubmit(
+    data: AnimalDataRequest
+  ) {
+    if (modal?.type !== "edit") {
       return;
     }
 
-    await deleteAnimal(animalToDelete.id);
+    await updateAnimal(modal.animal.id, data);
 
-    const updatedAnimals = await findAllAnimals(0, 10);
+    await loadAnimals();
 
-    setAnimals(updatedAnimals);
-
-    setIsDeleteModalOpen(false);
-    setAnimalToDelete(undefined);
+    setModal(null);
   }
 
-  function handleCloseDeleteModal() {
-    setIsDeleteModalOpen(false);
-    setAnimalToDelete(undefined);
+  async function handleDelete() {
+    if (modal?.type !== "delete") {
+      return;
+    }
+
+    await deleteAnimal(modal.animal.id);
+
+    await loadAnimals();
+
+    setModal(null);
   }
 
   return (
     <main className="flex flex-1">
       <div className="flex flex-col gap-8 px-12 py-16">
+
         <PageTitle
           title="Animais"
           description="Modelos de animais representados pelos simuladores."
         />
 
         <div className="w-36">
-          <Button label="Novo Animal" onClick={handleNewAnimal} />
+          <Button
+            label="Novo Animal"
+            onClick={() => setModal({ type: "create" })}
+          />
         </div>
 
         <SearchBar
-          value=""
-          onChange={(value: string) => {
-            console.log(value);
-          }}
+          value={search}
+          onChange={handleSearch}
         />
 
         <div className="overflow-y-scroll">
@@ -125,8 +130,16 @@ export default function Animals() {
                   name={animal.name}
                   model={animal.model}
                   description={animal.description}
-                  onEdit={() => handleEditAnimal(animal)}
-                  onDelete={() => handleDeleteAnimal(animal)}
+                  onEdit={() => setModal({
+                      type: "edit",
+                      animal,
+                    })
+                  }
+                  onDelete={() => setModal({
+                      type: "delete",
+                      animal,
+                    })
+                  }
                   onOpen={() => console.log("abrir")}
                 />
               </li>
@@ -135,19 +148,29 @@ export default function Animals() {
         </div>
       </div>
 
-      {isModalOpen && (
-        <AnimalModal
-          animal={selectedAnimal}
-          onClose={handleCloseModal}
-          onSubmit={handleAnimalSubmit}
+      {/* Modal de criação */}
+      {modal?.type === "create" && (
+        <AnimalAddModal
+          onClose={() => setModal(null)}
+          onSubmit={handleAnimalAddSubmit}
         />
       )}
 
-      {isDeleteModalOpen && animalToDelete && (
+      {/* Modal de edição */}
+      {modal?.type === "edit" && (
+        <AnimalEditModal
+          animal={modal.animal}
+          onClose={() => setModal(null)}
+          onSubmit={handleAnimalEditSubmit}
+        />
+      )}
+
+      {/* Modal de exclusão */}
+      {modal?.type === "delete" && (
         <AnimalDeleteModal
-          animal={animalToDelete}
-          onClose={handleCloseDeleteModal}
-          onConfirm={handleConfirmDelete}
+          animal={modal.animal}
+          onClose={() => setModal(null)}
+          onConfirm={handleDelete}
         />
       )}
     </main>

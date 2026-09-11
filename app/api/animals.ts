@@ -15,11 +15,25 @@ export async function findAllAnimals(
   return response.data;
 }
 
-export async function createAnimal(data: AnimalDataRequest) {
-  const response = await api.post<void>(
-    "http://localhost:8080/animals",
-    data,
+export async function findAnimalsByName(
+  name: string,
+  page: number,
+  size: number
+) {
+  const response = await api.get<Animal[]>("/animals/search", {
+      params: {
+        name,
+        page,
+        size,
+      },
+    }
   );
+
+  return response.data;
+}
+
+export async function createAnimal(data: AnimalDataRequest) {
+  const response = await api.post<void>("/animals", data);
 
   return response.status;
 }
@@ -28,14 +42,9 @@ export async function updateAnimal(
   id: string,
   data: AnimalDataRequest
 ) {
-  await api.patch(
-    `http://localhost:8080/animals/${id}`,
-    data
-  );
+  await api.patch(`/animals/${id}`, data);
 }
 
 export async function deleteAnimal(id: string) {
-  await api.delete(
-    `http://localhost:8080/animals/${id}`
-  );
+  await api.delete(`/animals/${id}`);
 }

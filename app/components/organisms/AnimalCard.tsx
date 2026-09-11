@@ -1,3 +1,4 @@
+import { Text } from "../atoms/Text";
 import { AnimalHeader } from "../molecules/AnimalHeader";
 
 export interface AnimalCardProps {
@@ -18,11 +19,7 @@ export function AnimalCard({name, model, description, onEdit, onDelete, onOpen}:
         name={name} 
         model={model} />
       
-      <div>
-        <p className="h-22 text-slate-900 text-xl line-clamp-3 wrap-break-word">
-          {description}
-        </p>
-      </div>
+      <Text text={description} />
 
       <button
         onClick={onOpen}
