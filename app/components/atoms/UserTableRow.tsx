@@ -31,11 +31,13 @@ export function UserTableRow({ user }: UserTableRowProps) {
             <button className='cursor-pointer'>
               <FiEdit2
               size={24}
+              className='text-main hover:text-main/50 transition-all'
               />
             </button>
             <button className='cursor-pointer'>
               <FiTrash2
               size={24}
+              className='text-main hover:text-main/50 transition-all'
               />
             </button>
           </div>
