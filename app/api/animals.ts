@@ -33,3 +33,9 @@ export async function updateAnimal(
     data
   );
 }
+
+export async function deleteAnimal(id: string) {
+  await api.delete(
+    `http://localhost:8080/animals/${id}`
+  );
+}

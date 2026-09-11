@@ -3,35 +3,55 @@ import { useEffect, useState } from "react";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
+
 import { AnimalCard } from "~/components/organisms/AnimalCard";
 import { AnimalModal } from "~/components/organisms/AnimalModal";
+import { AnimalDeleteModal } from "~/components/organisms/AnimalDeleteModal";
 
-import { createAnimal, findAllAnimals, updateAnimal } from "~/api/animals";
+import {
+  createAnimal,
+  deleteAnimal,
+  findAllAnimals,
+  updateAnimal,
+} from "~/api/animals";
 
 import type { Animal, AnimalDataRequest } from "~/types/Animal";
 
 export default function Animals() {
-  // Define a lista de animais da página
+  // Lista de animais
   const [animals, setAnimals] = useState<Animal[]>([]);
-  
-  // Abre o model de cadastro / edição
+
+  // Controle do modal de cadastro/edição
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Mostra o animal selecionado para edição
+  // Animal selecionado para edição
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | undefined>();
 
-  // Carrega os animais uma vez
+  // Controle do modal de exclusão
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // Animal selecionado para exclusão
+  const [animalToDelete, setAnimalToDelete] = useState<Animal | undefined>();
+
   useEffect(() => {
     loadAnimals();
   }, []);
 
-  // Método de listagem de animais
   async function loadAnimals() {
     const data = await findAllAnimals(0, 10);
 
     setAnimals(data);
   }
 
+  function handleNewAnimal() {
+    setSelectedAnimal(undefined);
+    setIsModalOpen(true);
+  }
+
+  function handleEditAnimal(animal: Animal) {
+    setSelectedAnimal(animal);
+    setIsModalOpen(true);
+  }
 
   async function handleAnimalSubmit(data: AnimalDataRequest) {
     if (selectedAnimal) {
@@ -40,7 +60,6 @@ export default function Animals() {
       await createAnimal(data);
     }
 
-    // Atualiza a lista de animais após edição, cadastro
     const updatedAnimals = await findAllAnimals(0, 10);
 
     setAnimals(updatedAnimals);
@@ -49,9 +68,34 @@ export default function Animals() {
     setSelectedAnimal(undefined);
   }
 
-  function handleEditAnimal(animal: Animal) {
-    setSelectedAnimal(animal);
-    setIsModalOpen(true);
+  function handleCloseModal() {
+    setIsModalOpen(false);
+    setSelectedAnimal(undefined);
+  }
+
+  function handleDeleteAnimal(animal: Animal) {
+    setAnimalToDelete(animal);
+    setIsDeleteModalOpen(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!animalToDelete) {
+      return;
+    }
+
+    await deleteAnimal(animalToDelete.id);
+
+    const updatedAnimals = await findAllAnimals(0, 10);
+
+    setAnimals(updatedAnimals);
+
+    setIsDeleteModalOpen(false);
+    setAnimalToDelete(undefined);
+  }
+
+  function handleCloseDeleteModal() {
+    setIsDeleteModalOpen(false);
+    setAnimalToDelete(undefined);
   }
 
   return (
@@ -63,7 +107,7 @@ export default function Animals() {
         />
 
         <div className="w-36">
-          <Button label="Novo Animal" onClick={() => setIsModalOpen(true)} />
+          <Button label="Novo Animal" onClick={handleNewAnimal} />
         </div>
 
         <SearchBar
@@ -73,7 +117,6 @@ export default function Animals() {
           }}
         />
 
-        
         <div className="overflow-y-scroll">
           <ul className="flex flex-wrap gap-8">
             {animals.map((animal) => (
@@ -83,7 +126,7 @@ export default function Animals() {
                   model={animal.model}
                   description={animal.description}
                   onEdit={() => handleEditAnimal(animal)}
-                  onDelete={() => console.log("deletar")}
+                  onDelete={() => handleDeleteAnimal(animal)}
                   onOpen={() => console.log("abrir")}
                 />
               </li>
@@ -95,8 +138,16 @@ export default function Animals() {
       {isModalOpen && (
         <AnimalModal
           animal={selectedAnimal}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleCloseModal}
           onSubmit={handleAnimalSubmit}
+        />
+      )}
+
+      {isDeleteModalOpen && animalToDelete && (
+        <AnimalDeleteModal
+          animal={animalToDelete}
+          onClose={handleCloseDeleteModal}
+          onConfirm={handleConfirmDelete}
         />
       )}
     </main>
