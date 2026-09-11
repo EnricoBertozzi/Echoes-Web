@@ -1,15 +1,32 @@
+import { useState } from "react";
 import { Dialog } from "radix-ui";
 import { FiPlus } from "react-icons/fi";
+import { userRoleLabels, userRoles } from "~/types/user";
+import { useCreateUser } from "~/hooks/useCreateUser";
 import { TextInput } from "../atoms/TextInput";
 
-export function AddUserModal() {
+export interface AddUserModalProps {
+  onCreated?: () => void;
+}
+
+export function AddUserModal({ onCreated }: AddUserModalProps) {
+  const [open, setOpen] = useState(false);
+  const form = useCreateUser(onCreated);
+
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      form.reset();
+    }
+  }
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
-        <button className='cursor-pointer'>
+        <button className='cursor-pointer' aria-label='Cadastrar usuário'>
           <FiPlus
-          size={24}
-          className='text-main hover:text-main/50 transition-all'
+            size={24}
+            className='text-main hover:text-main/50 transition-all'
           />
         </button>
       </Dialog.Trigger>
@@ -41,64 +58,101 @@ export function AddUserModal() {
             Digite os dados do novo usuário
           </Dialog.Description>
 
-          <div className="mt-6 flex flex-col gap-2">
-            <p>Nome</p>
-            <TextInput
-              placeholder='Digite o nome'
-            />
-          </div>
-          <div className="mt-6 flex flex-col gap-2">
-            <p>E-mail</p>
-            <TextInput
-              placeholder='Digite o e-email'
-            />
-          </div>
-
-          <div className='mt-6 flex flex-col gap-2'>
-            <p>Cargo</p>
-            <div className='flex flex-row flex-wrap gap-4'>
-            <label>
-            <input
-            type='radio'
-            name='role'
-            />
-            <span>Administrador</span>
-            </label>
-            <label>
-            <input
-            type='radio'
-            name='role'
-            />
-            <span>Gestor</span>
-            </label>
-            <label>
-            <input
-            type='radio'
-            name='role'
-            />
-            <span>Professor</span>
-            </label>
-            <label>
-            <input
-            type='radio'
-            name='role'
-            />
-            <span>Estudante</span>
-            </label>
+          {form.success ? (
+            <div className="mt-6 flex flex-col gap-4">
+              <p className="text-sm">
+                Convite enviado para <span className="font-medium">{form.email}</span>.
+                O usuário receberá um link por e-mail para cadastrar sua senha.
+              </p>
+              <div className="flex justify-end">
+                <Dialog.Close asChild>
+                  <button
+                    type='button'
+                    className="rounded bg-main px-4 py-2 text-white cursor-pointer"
+                  >
+                    Concluir
+                  </button>
+                </Dialog.Close>
+              </div>
             </div>
-          </div>
+          ) : (
+            <form className='flex flex-col' onSubmit={form.handleSubmit}>
+              <div className="mt-6 flex flex-col gap-2">
+                <p>Nome</p>
+                <TextInput
+                  placeholder='Digite o nome'
+                  aria-label='Nome'
+                  value={form.name}
+                  onChange={(event) => form.setName(event.target.value)}
+                />
+                {form.fieldErrors.name && (
+                  <span className="text-sm text-red-500">
+                    {form.fieldErrors.name}
+                  </span>
+                )}
+              </div>
 
-          <div className="mt-6 flex justify-end gap-2">
-            <Dialog.Close asChild>
-              <button className="text-red-500 rounded px-4 py-2 cursor-pointer">
-                Cancelar
-              </button>
-            </Dialog.Close>
+              <div className="mt-6 flex flex-col gap-2">
+                <p>E-mail</p>
+                <TextInput
+                  placeholder='Digite o e-mail'
+                  type='email'
+                  aria-label='E-mail'
+                  value={form.email}
+                  onChange={(event) => form.setEmail(event.target.value)}
+                />
+                {form.fieldErrors.email && (
+                  <span className="text-sm text-red-500">
+                    {form.fieldErrors.email}
+                  </span>
+                )}
+              </div>
 
-            <button className="rounded bg-main px-4 py-2 text-white cursor-pointer">
-              Salvar
-            </button>
-          </div>
+              <div className='mt-6 flex flex-col gap-2'>
+                <p>Cargo</p>
+                <div className='flex flex-row flex-wrap gap-4'>
+                  {userRoles.map((roleOption) => (
+                    <label
+                      key={roleOption}
+                      className='flex items-center gap-1 cursor-pointer'
+                    >
+                      <input
+                        type='radio'
+                        name='role'
+                        value={roleOption}
+                        checked={form.role === roleOption}
+                        onChange={() => form.setRole(roleOption)}
+                      />
+                      <span>{userRoleLabels[roleOption]}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {form.generalError && (
+                <p className="mt-4 text-sm text-red-500">{form.generalError}</p>
+              )}
+
+              <div className="mt-6 flex justify-end gap-2">
+                <Dialog.Close asChild>
+                  <button
+                    type='button'
+                    className="text-red-500 rounded px-4 py-2 cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                </Dialog.Close>
+
+                <button
+                  type='submit'
+                  className="rounded bg-main px-4 py-2 text-white cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={form.submitting}
+                >
+                  {form.submitting ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
+            </form>
+          )}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

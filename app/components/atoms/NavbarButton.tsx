@@ -17,7 +17,7 @@ export function NavbarButton(props: NavbarButtonProps) {
       end={props.end}
       to={props.to}
       className={({ isActive }) => clsx(
-        'relative gap-3 flex flex-row',
+        'relative gap-3 flex flex-row transition-[border-radius]',
         !props.collapse ?
           'rounded-l-xl px-6 py-4' :
           'p-4 justify-center items-center',

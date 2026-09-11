@@ -1,6 +1,6 @@
 import { Button } from "~/components/atoms/Button";
 import { TextInput } from "~/components/atoms/TextInput";
-import type { Route } from "./+types/landing";
+import type { Route } from "./+types/index";
 import { useLogin } from "~/hooks/useLogin";
 
 export function meta({}: Route.MetaArgs) {
@@ -15,7 +15,10 @@ export default function Landing() {
 
   return (
     <main className='bg-zinc-200 w-full h-full flex justify-center items-center'>
-      <form className='bg-white px-8 py-5 rounded shadow flex flex-col gap-10'>
+      <form
+        className='bg-white px-8 py-5 rounded shadow flex flex-col gap-10'
+        onSubmit={login.handleSubmit}
+      >
         <h1 className='text-lg text-black'>Echoes - Simulador Ausculta</h1>
         <TextInput
           placeholder='E-mail'
@@ -27,10 +30,7 @@ export default function Landing() {
           type='password'
           name='password'
         />
-        <Button
-          label='Entrar'
-          onClick={login.login}
-        />
+        <Button label='Entrar' />
       </form>
     </main>
   )
