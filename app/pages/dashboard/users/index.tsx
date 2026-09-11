@@ -1,9 +1,19 @@
+import { FiPlus } from "react-icons/fi";
 import { TableHeadColumn } from "~/components/atoms/TableHeadColumn";
 import { UserTableRow } from "~/components/atoms/UserTableRow";
 
 export default function Devices() {
   return (
-  <main className="flex flex-1 justify-center items-center">
+  <main className="flex flex-1 flex-col justify-center items-center">
+    <div className='w-9/12 h-10 px-10 text-black flex flex-row justify-between items-center'>
+      <h2 className='text-lg font-medium'>Usuários</h2>
+      <button className='cursor-pointer'>
+        <FiPlus
+          className='text-main hover:text-main/50 transition-all'
+          size={24}
+        />
+      </button>
+    </div>
     <div className="w-full max-w-5xl">
       {/* Header */}
       <table className="w-full table-fixed">
