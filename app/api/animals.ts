@@ -1,10 +1,7 @@
 import type { Animal, AnimalDataRequest } from "~/types/Animal";
 import { api } from "./axios";
 
-export async function findAllAnimals(
-  page: number,
-  size: number,
-): Promise<Animal[]> {
+export async function findAllAnimals(page: number, size: number): Promise<Animal[]> {
   const response = await api.get<Animal[]>("/animals", {
     params: {
       page,
@@ -15,11 +12,7 @@ export async function findAllAnimals(
   return response.data;
 }
 
-export async function findAnimalsByName(
-  name: string,
-  page: number,
-  size: number
-) {
+export async function findAnimalsByName(name: string, page: number, size: number) {
   const response = await api.get<Animal[]>("/animals/search", {
       params: {
         name,
@@ -29,6 +22,12 @@ export async function findAnimalsByName(
     }
   );
 
+  return response.data;
+}
+
+export async function findAnimalById(id?: string) {
+  const response = await api.get(`/animals/${id}`)
+  
   return response.data;
 }
 

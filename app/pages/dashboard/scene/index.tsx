@@ -9,20 +9,12 @@ import { AnimalAddModal } from "~/components/organisms/AnimalAddModal";
 import { AnimalEditModal } from "~/components/organisms/AnimalEditModal";
 import { AnimalDeleteModal } from "~/components/organisms/AnimalDeleteModal";
 
-import {
-  createAnimal,
-  deleteAnimal,
-  findAllAnimals,
-  findAnimalsByName,
-  updateAnimal,
-} from "~/api/animals";
+import {createAnimal, deleteAnimal, findAllAnimals, findAnimalsByName, updateAnimal} from "~/api/animals";
 
-import type {
-  Animal,
-  AnimalDataRequest,
-} from "~/types/Animal";
+import type {Animal, AnimalDataRequest} from "~/types/Animal";
+import { useNavigate } from "react-router";
 
-type ModalState =
+type ModalState = 
   | { type: "create" }
   | { type: "edit"; animal: Animal }
   | { type: "delete"; animal: Animal }
@@ -37,6 +29,9 @@ export default function Animals() {
 
   // Estado da barra de busca
   const [search, setSearch] = useState("");
+
+  // Navegação entre pages
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadAnimals();
@@ -65,9 +60,7 @@ export default function Animals() {
     setAnimals(data);
   }
 
-  async function handleAnimalAddSubmit(
-    data: AnimalDataRequest
-  ) {
+  async function handleAnimalAddSubmit(data: AnimalDataRequest) {
     await createAnimal(data);
 
     await loadAnimals();
@@ -75,9 +68,7 @@ export default function Animals() {
     setModal(null);
   }
 
-  async function handleAnimalEditSubmit(
-    data: AnimalDataRequest
-  ) {
+  async function handleAnimalEditSubmit(data: AnimalDataRequest) {
     if (modal?.type !== "edit") {
       return;
     }
@@ -140,7 +131,7 @@ export default function Animals() {
                       animal,
                     })
                   }
-                  onOpen={() => console.log("abrir")}
+                  onOpen={() => navigate(`/dashboard/scene/${animal.id}`)}
                 />
               </li>
             ))}
@@ -148,7 +139,6 @@ export default function Animals() {
         </div>
       </div>
 
-      {/* Modal de criação */}
       {modal?.type === "create" && (
         <AnimalAddModal
           onClose={() => setModal(null)}
@@ -156,7 +146,6 @@ export default function Animals() {
         />
       )}
 
-      {/* Modal de edição */}
       {modal?.type === "edit" && (
         <AnimalEditModal
           animal={modal.animal}
@@ -165,7 +154,6 @@ export default function Animals() {
         />
       )}
 
-      {/* Modal de exclusão */}
       {modal?.type === "delete" && (
         <AnimalDeleteModal
           animal={modal.animal}

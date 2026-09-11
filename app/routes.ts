@@ -11,6 +11,7 @@ export default [
       route("school", "pages/dashboard/school/index.tsx"),
       route("users", "pages/dashboard/users/index.tsx"),
       route("scene", "pages/dashboard/scene/index.tsx"),
+      route("scene/:animalId", "pages/dashboard/scene/animal/index.tsx"),
     ])
   ])
 ] satisfies RouteConfig;
