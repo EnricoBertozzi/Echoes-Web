@@ -1,87 +1,47 @@
-# Welcome to React Router!
+# Introdução
 
-A modern, production-ready template for building full-stack React applications using React Router.
+O uso de animais reais na medicina veterinária é um tema debatido entre os profissionais da área. Como forma preservar o bem-estar animal, normas e alternativas foram desenvolvidas com o objetivo de reduzir e substituir o uso de animais durante atividades pedagógicas e científicas, além de aprimorar os métodos já utilizados.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+Nesse contexto, o uso de simuladores didáticos são eficazes no treinamento de habilidades clínicas, contribuindo para a redução da ansiedade e permitindo a repetição ilimitada das técnicas.
 
-## Features
+O projeto de um conjunto consiste no desenvolvimento de um simulador canino de baixo custo para o estudo de ausculta pulmonar e cardíaca, utilizando de componentes relacionados a Desenvolvimento Mobile, Web e Sistemas Embarcados com Internet das Coisas (IoT).  
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+# Tecnologias
+* Typescript
+* React
+* Tailwind
+* CSS
+* HTML
 
-## Getting Started
+# Como executar
 
-### Installation
+1. Clone o repositório online do github em sua máquina.
+```bash
+git clone https://github.com/EnricoBertozzi/Echoes-Web.git
 
-Install the dependencies:
+cd Echoes-Web
+```
 
+2. Baixe as dependências do projeto.
 ```bash
 npm install
 ```
 
-### Development
+3. Execute o projeto em ambiente de desenvolvimento, build para produção ou via Docker.
 
-Start the development server with HMR:
-
+**AMBIENTE de DESENVOLVIMENTO**
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
+**BUILD PARA PRODUÇÃO**
 ```bash
 npm run build
 ```
 
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
+**DOCKER**
 ```bash
-docker build -t my-app .
+docker build -t echoes-web .
 
-# Run the container
-docker run -p 3000:3000 my-app
+docker run -p 3000:3000 --name echoes-web echoes-web
 ```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
