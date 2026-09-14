@@ -10,9 +10,12 @@ export default [
       route("audit", "pages/dashboard/audit/index.tsx"),
       route("settings", "pages/dashboard/settings/index.tsx"),
       route("school", "pages/dashboard/school/index.tsx"),
+      route("school/new", "pages/dashboard/school/new/index.tsx"),
+      route("school/:institutionId", "pages/dashboard/school/institution/index.tsx"),
+      route("school/:institutionId/edit", "pages/dashboard/school/institution/edit/index.tsx"),
       route("users", "pages/dashboard/users/index.tsx"),
       route("scene", "pages/dashboard/scene/index.tsx"),
       route("scene/:animalId", "pages/dashboard/scene/animal/index.tsx"),
     ])
   ])
-] satisfies RouteConfig;
+] satisfies RouteConfig; 
