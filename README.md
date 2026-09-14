@@ -27,9 +27,14 @@ cd Echoes-Web
 npm install
 ```
 
-3. Execute o projeto em ambiente de desenvolvimento, build para produção ou via Docker.
+3. Prepare as variáveis de ambiente do projeto, editando o .env
+```bash
+cp .env.example .env
+```
 
-**AMBIENTE de DESENVOLVIMENTO**
+4. Execute o projeto em ambiente de desenvolvimento, build para produção ou via Docker.
+
+**AMBIENTE DE DESENVOLVIMENTO**
 ```bash
 npm run dev
 ```
