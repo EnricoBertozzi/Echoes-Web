@@ -33,7 +33,7 @@ export function Sidebar() {
         <div className={clsx(
           'w-1/2 aspect-square rounded-full bg-zinc-200',
           'transition-[padding] duration-500',
-          collapsed ? 'p-1' : 'p-10'
+          collapsed ? 'p-1' : 'p-10 max-xl:p-8 max-lg:p-6 max-md:p-4'
         )}>
         <Icon className='w-full h-full fill-main'/>
         </div>
