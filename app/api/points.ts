@@ -26,5 +26,5 @@ export async function updatePoint(id: string, point: AuscultationPointUpdateRequ
 }
 
 export async function deletePoint(id: string) {
-  const response = await api.delete<void>(`/points/${id}`)
+  await api.delete<void>(`/points/${id}`)
 }
