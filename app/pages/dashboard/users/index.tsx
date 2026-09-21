@@ -110,7 +110,7 @@ export default function Users() {
               onClick={() => setPage(page - 1)}
               disabled={!hasPrevPage}
               aria-label="Página anterior"
-              className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+              className="cursor-pointer disabled:opacity-40"
             >
               <FiChevronLeft size={24} className="text-main" />
             </button>
@@ -118,7 +118,7 @@ export default function Users() {
               onClick={() => setPage(page + 1)}
               disabled={!hasNextPage}
               aria-label="Próxima página"
-              className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+              className="cursor-pointer disabled:opacity-40"
             >
               <FiChevronRight size={24} className="text-main" />
             </button>
