@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ApiRequestError, createUser } from "~/api/users";
+import { createUser } from "~/api/users";
 import type { UserRole } from "~/types/user";
 
 export function useCreateUser(onCreated?: () => void) {
@@ -38,15 +38,7 @@ export function useCreateUser(onCreated?: () => void) {
       setSuccess(true);
       onCreated?.();
     } catch (error) {
-      if (error instanceof ApiRequestError) {
-        if (error.fieldErrors) {
-          setFieldErrors(error.fieldErrors);
-        } else {
-          setGeneralError(error.message);
-        }
-      } else {
-        setGeneralError("Erro ao cadastrar usuário");
-      }
+      setGeneralError("Erro ao cadastrar usuário");
     } finally {
       setSubmitting(false);
     }

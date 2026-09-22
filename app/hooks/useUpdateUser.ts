@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ApiRequestError, updateUser } from "~/api/users";
+import { updateUser } from "~/api/users";
 import { roleToUserRole } from "~/types/user";
 import type { User } from "~/types/user";
 
@@ -37,15 +37,7 @@ export function useUpdateUser(user: User, onUpdated?: () => void) {
       setSucceeded(true);
       onUpdated?.();
     } catch (error) {
-      if (error instanceof ApiRequestError) {
-        if (error.fieldErrors) {
-          setFieldErrors(error.fieldErrors);
-        } else {
-          setGeneralError(error.message);
-        }
-      } else {
-        setGeneralError("Erro ao editar usuário");
-      }
+      setGeneralError("Erro ao editar usuário");
     } finally {
       setSubmitting(false);
     }

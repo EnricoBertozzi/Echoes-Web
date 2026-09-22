@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ApiRequestError, completeRegistration } from "~/api/users";
+import { completeRegistration } from "~/api/users";
 import type { User } from "~/types/user";
 
 interface PasswordFormErrors {
@@ -51,23 +51,7 @@ export function useRegister(code: string, urlEmail: string) {
       const user = await completeRegistration({ password, code, email: urlEmail });
       setRegisteredUser(user);
     } catch (error) {
-      if (error instanceof ApiRequestError && error.fieldErrors) {
-        const { password: passwordApiError, ...rest } = error.fieldErrors;
-
-        if (passwordApiError) {
-          setFieldErrors((previous) => ({
-            ...previous,
-            password: passwordApiError,
-          }));
-        }
-
-        const unmapped = Object.values(rest);
-        setApiError(unmapped.length > 0 ? unmapped.join(" · ") : null);
-      } else if (error instanceof ApiRequestError) {
-        setApiError(error.message);
-      } else {
-        setApiError("Erro ao finalizar o cadastro");
-      }
+      setApiError("Erro ao finalizar o cadastro");
     } finally {
       setSubmitting(false);
     }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ApiRequestError, deleteUser } from "~/api/users";
+import { deleteUser } from "~/api/users";
 import { roleToUserRole } from "~/types/user";
 import type { User } from "~/types/user";
 
@@ -20,11 +20,7 @@ export function useDeleteUser(user: User, onDeleted?: () => void) {
       await deleteUser(roleToUserRole(user.role), user.id);
       onDeleted?.();
     } catch (error) {
-      if (error instanceof ApiRequestError) {
-        setDeleteError(error.message);
-      } else {
-        setDeleteError("Erro ao excluir usuário");
-      }
+      setDeleteError("Erro ao excluir usuário");
     } finally {
       setDeleting(false);
     }
