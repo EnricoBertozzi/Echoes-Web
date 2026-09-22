@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ApiRequestError, updateInstitution } from "~/api/institutions";
+import { updateInstitution } from "~/api/institutions";
 import { formatCnpj, unmaskCnpj } from "~/utils/cnpj";
 import type { Institution } from "~/types/Institution";
+import { ApiRequestError } from "~/api/axios";
 
 export function useUpdateInstitution(
   institution: Institution,

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ApiRequestError, deleteUser } from "~/api/users";
+import { ApiRequestError } from "~/api/axios";
+import { deleteUser } from "~/api/users";
 import { roleToUserRole } from "~/types/user";
 import type { User } from "~/types/user";
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ApiRequestError, createUser } from "~/api/users";
+import { ApiRequestError } from "~/api/axios";
+import { createUser } from "~/api/users";
 import type { UserRole } from "~/types/user";
 
 export function useCreateUser(onCreated?: () => void) {

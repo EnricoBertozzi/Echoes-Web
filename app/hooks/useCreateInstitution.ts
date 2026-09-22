@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ApiRequestError, createInstitution } from "~/api/institutions";
+import { ApiRequestError } from "~/api/axios";
+import { createInstitution } from "~/api/institutions";
 import type { Institution } from "~/types/Institution";
 import { unmaskCnpj } from "~/utils/cnpj";
 

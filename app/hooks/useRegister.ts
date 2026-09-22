@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ApiRequestError, completeRegistration } from "~/api/users";
+import { ApiRequestError } from "~/api/axios";
+import { completeRegistration } from "~/api/users";
 import type { User } from "~/types/user";
 
 interface PasswordFormErrors {
