@@ -9,8 +9,6 @@ import {
 import { Toaster } from "sonner";
 
 import type { Route } from "./+types/root";
-import "@radix-ui/themes/styles.css";
-import { Theme } from "@radix-ui/themes";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
