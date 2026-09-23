@@ -1,9 +1,5 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-<<<<<<< HEAD
-=======
-import { ApiRequestError } from "~/api/axios";
->>>>>>> 4c269fa21a4eacee1f2652e0f76d688956281b66
 import { updateUser } from "~/api/users";
 import { roleToUserRole } from "~/types/user";
 import type { User } from "~/types/user";
