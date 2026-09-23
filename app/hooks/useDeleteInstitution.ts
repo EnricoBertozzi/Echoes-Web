@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ApiRequestError, deleteInstitution } from "~/api/institutions";
+import { ApiRequestError } from "~/api/axios";
+import { deleteInstitution } from "~/api/institutions";
 import type { Institution } from "~/types/Institution";
 
 export function useDeleteInstitution(institution: Institution, onDeleted?: () => void) {

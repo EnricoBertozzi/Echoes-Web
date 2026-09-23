@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ApiRequestError, toggleInstitutionStatus } from "~/api/institutions";
+import { ApiRequestError } from "~/api/axios";
+import { toggleInstitutionStatus } from "~/api/institutions";
 import type { Institution } from "~/types/Institution";
 
 export function useToggleInstitutionStatus(
