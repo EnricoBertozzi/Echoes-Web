@@ -36,3 +36,31 @@ export function isValidCnpj(value: string): boolean {
 
   return cnpj === base + String(digit1) + String(digit2);
 }
+
+import type { CnpjData } from "~/types/Cnpj";
+
+/** Aplica máscara progressiva em um CNPJ conforme o usuário digita. */
+export function maskCnpjInput(value: string): string {
+  const digits = unmaskCnpj(value).slice(0, 14);
+  return digits
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
+}
+
+/**
+ * Monta uma linha de endereço a partir dos campos retornados pela BrasilAPI.
+ * Usado tanto no envio do cadastro quanto na pré-visualização read-only.
+ */
+export function formatCnpjAddress(data: CnpjData): string {
+  const parts: string[] = [];
+  if (data.logradouro) parts.push(data.logradouro);
+  if (data.numero) parts.push(data.numero);
+  if (data.complemento) parts.push(data.complemento);
+  if (data.bairro) parts.push(data.bairro);
+  if (data.municipio) parts.push(data.municipio);
+  if (data.uf) parts.push(data.uf);
+  if (data.cep) parts.push(`CEP: ${data.cep}`);
+  return parts.join(", ");
+}
