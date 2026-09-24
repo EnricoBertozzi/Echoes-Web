@@ -20,7 +20,7 @@ export function UserAddModal({ onClose, onCreated }: UserAddModalProps) {
         title='Cadastrar usuáŕio'
         description='Digite os dados do novo usuário'
       />
-      <ModalForm>
+      <ModalForm onSubmit={form.handleSubmit}>
         <ModalTextField
           id='name'
           label='Nome'
