@@ -1,8 +1,12 @@
 import { type RouteConfig, index, prefix, layout, route } from "@react-router/dev/routes";
 
 export default [
-  index("pages/landing/index.tsx"),
+  index("pages/landing/Lading.tsx"),
+  route("mfa", "pages/landing/MfaPage.tsx"),
   route("register", "pages/register/index.tsx"),
+  route("password/forgot", "pages/landing/PasswordForgot.tsx"),
+  route("password/validate", "pages/landing/PasswordValidCode.tsx"),
+  route("password/reset", "pages/landing/PasswordReset.tsx"),
   ...prefix("dashboard", [
     layout("pages/dashboard/layout.tsx", [
       index("pages/dashboard/devices/index.tsx"),

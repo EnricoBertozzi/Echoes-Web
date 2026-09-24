@@ -37,6 +37,7 @@ export default function Animals() {
     loadAnimals();
   }, []);
 
+  // TODO o método deve buscar la lista ja da página, do contrário cada letra é uma requisição
   async function handleSearch(value: string) {
     setSearch(value);
 
