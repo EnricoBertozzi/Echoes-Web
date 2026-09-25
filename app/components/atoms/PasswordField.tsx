@@ -23,7 +23,7 @@ export function PasswordField({ label, value, placeholder, id, name, onChange}: 
         className="w-full px-4 py-2 pr-12 rounded border border-slate-500 text-slate-900 placeholder-slate-400 focus:border-gray-900 focus:outline-none  transition-colors"/>
 
         <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 text-slate-500 hover:text-slate-700 focus:outline-none flex items-center justify-center">
-          {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+          {showPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
         </button>
       </div>
     </div>

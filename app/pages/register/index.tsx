@@ -4,6 +4,8 @@ import { Button } from "~/components/atoms/Button";
 import { TextInput } from "~/components/atoms/TextInput";
 import { useRegister } from "~/hooks/useRegister";
 import type { Route } from "./+types/index";
+import { PasswordField } from "~/components/atoms/PasswordField";
+import { PageTitle } from "~/components/atoms/PageTitle";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -62,26 +64,14 @@ export default function Register() {
   return (
     <main className='bg-zinc-200 w-full h-full flex justify-center items-center'>
       <form
-        className='bg-white px-8 py-5 rounded shadow flex flex-col gap-10 w-full max-w-md'
+        className='bg-white p-8 rounded shadow flex flex-col gap-8 w-104'
         onSubmit={register.handleSubmit}
       >
-        <div className='flex flex-col gap-1'>
-          <h1 className='text-lg text-black'>Criar senha</h1>
-          <p className='text-sm text-gray-600'>
-            Finalizando o cadastro de{" "}
-            <span className='text-black font-medium'>{urlEmail}</span>
-          </p>
-        </div>
-
+        <PageTitle title="Finalização de Cadastro" description={`Finalizando cadastro de ${urlEmail}`} />
+        
+        
         <div className='flex flex-col gap-2'>
-          <p>Senha</p>
-          <TextInput
-            type='password'
-            placeholder='Digite a senha'
-            aria-label='Senha'
-            value={register.password}
-            onChange={(event) => register.setPassword(event.target.value)}
-          />
+          <PasswordField label="Senha" placeholder="Digite sua senha" value={register.password} name="password" id="password" onChange={register.setPassword} />
           {register.fieldErrors.password && (
             <span className='text-sm text-red-500'>
               {register.fieldErrors.password}
@@ -90,16 +80,7 @@ export default function Register() {
         </div>
 
         <div className='flex flex-col gap-2'>
-          <p>Confirmar senha</p>
-          <TextInput
-            type='password'
-            placeholder='Digite a senha novamente'
-            aria-label='Confirmar senha'
-            value={register.confirmPassword}
-            onChange={(event) =>
-              register.setConfirmPassword(event.target.value)
-            }
-          />
+          <PasswordField label="Confirmação de Senha" placeholder="Confirme sua senha" value={register.confirmPassword} name="confirmPassword" id="confirmPassword" onChange={register.setConfirmPassword} />
           {register.fieldErrors.confirmPassword && (
             <span className='text-sm text-red-500'>
               {register.fieldErrors.confirmPassword}
