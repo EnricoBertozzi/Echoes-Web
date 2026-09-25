@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams, Navigate } from "react-router";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
+import { PasswordField } from "~/components/atoms/PasswordField";
 import { TextInputWithLabel } from "~/components/atoms/TextInputWithLabel";
 import { useResetPassword } from "~/hooks/auth/password/useResetPassword";
 
@@ -27,8 +28,8 @@ export default function PasswordReset() {
         </div>
 
         <div className="flex flex-col gap-6">
-          <TextInputWithLabel label="Nova Senha" placeholder="Digite sua Nova Senha" value={newPassword} type="password" name="newPassword" onChange={setNewPassword} />
-          <TextInputWithLabel label="Confirme sua Senha" placeholder="Confirme sua Senha" value={confirmPassword} type="password" name="confirmPassword" onChange={setConfirmPassword}/>
+          <PasswordField label="Nova Senha" placeholder="Digite sua Nova Senha" value={newPassword} name="password" onChange={setNewPassword} />
+          <PasswordField label="Confirme sua Senha" placeholder="Confirme sua Senha" value={confirmPassword} name="confirmPassword" onChange={setConfirmPassword} />
         </div>
 
         <div className="w-full pt-4">

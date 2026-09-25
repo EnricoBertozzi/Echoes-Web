@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router";
 import type { Route } from "./+types/Lading";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { TextInputWithLabel } from "~/components/atoms/TextInputWithLabel";
+import { PasswordField } from "~/components/atoms/PasswordField";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -22,11 +23,12 @@ export default function Landing() {
         <PageTitle title="Echoes" description="Seja bem-vindo" />
         <div className="flex flex-col gap-6">
           <TextInputWithLabel label="E-mail" placeholder="Digite seu e-mail" value={email} type="text" name="email" onChange={setEmail} />
-          <TextInputWithLabel label="Senha" placeholder="Digite sua senha" value={password} type="password" name="password" onChange={setPassword} />
-
-          <Link to={"/password/forgot"}>
-            <span className="text-black">Esqueceu a senha?</span>
-          </Link>
+          <div className="flex flex-col gap-1">
+            <PasswordField label={"Senha"} placeholder="Digite sua senha" value={password} name="password" onChange={setPassword} />
+            <Link to={"/password/forgot"}>
+              <span className="text-black">Esqueceu a senha? Clique aqui.</span>
+            </Link>
+          </div>
         </div>
         <div className="w-full pt-4">
           <Button label="Entrar" />
