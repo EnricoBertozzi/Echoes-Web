@@ -1,8 +1,6 @@
 export type TermType =
   | 'TERMS_OF_USE'
   | 'PRIVACY_POLICY'
-  | 'DATA_DELETION_POLICY'
-  | 'MARKETING_CONSENT'
   | 'COOKIES_POLICY';
 
 export type TermStatus = 'ARCHIVED' | 'PUBLISHED' | 'DRAFT' | 'IN_REVIEW' | 'APPROVED';
@@ -24,16 +22,12 @@ export interface AcceptTermRequest {
 export const termTypes: TermType[] = [
   'TERMS_OF_USE',
   'PRIVACY_POLICY',
-  'DATA_DELETION_POLICY',
-  'MARKETING_CONSENT',
   'COOKIES_POLICY',
 ];
 
 export const termTypeLabels: Record<TermType, string> = {
   TERMS_OF_USE: 'Termos de Uso',
   PRIVACY_POLICY: 'Política de Privacidade',
-  DATA_DELETION_POLICY: 'Política de Exclusão de Dados',
-  MARKETING_CONSENT: 'Consentimento de Marketing',
   COOKIES_POLICY: 'Política de Cookies',
 };
 
