@@ -1,3 +1,5 @@
+import type { TermType } from "./terms";
+
 export type UserRole = 'admin' | 'manager' | 'teacher' | 'student'; // lowercase = URL path segments
 export type ApiRole = 'ADMIN' | 'MANAGER' | 'TEACHER' | 'STUDENT'; // uppercase = API responses
 
@@ -25,6 +27,7 @@ export interface CompleteRegistrationRequest {
   password: string;
   code: string;
   email: string;
+  acceptedTerms: TermType[];
 }
 
 export interface PendingUser { // 202 response
