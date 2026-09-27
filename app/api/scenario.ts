@@ -11,7 +11,7 @@ export async function findScenariosByPointId(
   page: number,
   size: number,
 ): Promise<Scenario[]> {
-  const response = await api.get<Scenario[]>("/scenarios", {
+  const response = await api.get<Scenario[]>("/api/v1/scenarios", {
     params: {
       id: pointId,
       page,
@@ -23,7 +23,7 @@ export async function findScenariosByPointId(
 }
 
 export async function findScenarioById(id: string): Promise<Scenario> {
-  const response = await api.get<Scenario>(`/scenarios/${id}`);
+  const response = await api.get<Scenario>(`/api/v1/scenarios/${id}`);
 
   return response.data;
 }
@@ -43,15 +43,15 @@ export async function createScenario(
 
   formData.append("file", file);
 
-  const response = await api.post<void>("/scenarios", formData);
+  const response = await api.post<void>("/api/v1/scenarios", formData);
 
   return response.status;
 }
 
 export async function updateScenario(id: string, data: ScenarioUpdateRequest) {
-  await api.patch(`/scenarios/${id}`, data);
+  await api.patch(`/api/v1/scenarios/${id}`, data);
 }
 
 export async function deleteScenario(id: string) {
-  await api.delete(`/scenarios/${id}`);
+  await api.delete(`/api/v1/scenarios/${id}`);
 }
