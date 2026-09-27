@@ -1,15 +1,13 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
-import { validMfa } from "~/api/auth";
+import { validMfa, type MfaRequest } from "~/api/auth";
 
-export function useValidMfa(email: string) {
-  const [code, setCode] = useState("");
+export function useValidMfa() {
   const navigate = useNavigate()
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleMfaSubmit(data: MfaRequest) {
 
-    const response = await validMfa({ email, code });
+    const response = await validMfa(data);
     const status = response.status;
 
     if (status == 200) {
@@ -20,8 +18,6 @@ export function useValidMfa(email: string) {
   }
 
   return {
-    code,
-    setCode,
-    handleSubmit,
+    handleMfaSubmit
   };
 }

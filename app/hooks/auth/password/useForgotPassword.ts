@@ -1,24 +1,20 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { forgotPassword } from "~/api/password";
+import { forgotPassword, type ForgotRequest } from "~/api/password";
 
 export function useForgotPassword() {
-  const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  async function handleForgotPassword(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  async function handleForgotPassword(data: ForgotRequest) {
     
-    const response = await forgotPassword({ email });
+    const response = await forgotPassword(data);
 
     if (response.status == 204) {
-      navigate(`/password/validate?email=${encodeURIComponent(email)}`);
+      navigate(`/password/validate?email=${encodeURIComponent(data.email)}`);
     }
   }
 
   return {
-    email,
-    setEmail,
     handleForgotPassword,
   };
 }

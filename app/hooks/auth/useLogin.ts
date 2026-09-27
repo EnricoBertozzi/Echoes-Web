@@ -1,26 +1,17 @@
 import { useNavigate } from "react-router";
-import { useState, type FormEvent } from "react";
-import { login } from "~/api/auth";
+import { login, type LoginRequest } from "~/api/auth";
 
 export function useLogin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const response = await login({ email, password });
+  async function handleLogin(data: LoginRequest) {
+    const response = await login(data);
     if (response == 204) {
-      navigate(`/mfa?email=${encodeURIComponent(email)}`);
+      navigate(`/mfa?email=${encodeURIComponent(data.email)}`);
     }
   }
 
   return {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    handleSubmit,
+    handleLogin,
   };
 }

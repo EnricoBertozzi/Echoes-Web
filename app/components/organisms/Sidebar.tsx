@@ -7,11 +7,18 @@ import { Navbar } from "../molecules/Navbar";
 import { Button } from "../atoms/Button";
 import { ModalButton } from "../atoms/modal/ModalButton";
 import { useLogout } from "~/hooks/auth/useLogout";
+import { useState } from "react";
+import { Modal } from "../atoms/modal/Modal";
+import { ModalForm } from "../atoms/modal/ModalForm";
+import { ModalTitle } from "../atoms/modal/ModalTitle";
+import { ModalFormButtons } from "../molecules/ModalFormButtons";
 
 export function Sidebar() {
 
   const sidebar = useSidebar();
   const collapsed = sidebar.state === 'collapse';
+
+  const [showModal, setShowModal] = useState(false)
   const logout = useLogout()
 
   return (
@@ -45,8 +52,16 @@ export function Sidebar() {
       <Navbar collapsed={collapsed}/>
       {collapsed == false && (
         <div className="w-full flex justify-start p-10">
-          <ModalButton label="Logout" className="bg-white" onAction={() => logout.onLogout()} />
+          <ModalButton label="Logout" className="bg-white" onAction={() => setShowModal(true)} />
         </div>
+      )}
+      {showModal && (
+        <Modal>
+          <ModalTitle title="Logout" description="Deseja sair da plataforma?" />
+            <ModalForm onSubmit={logout.onLogout}>
+            <ModalFormButtons confirmLabel="Sair" onClose={()=> setShowModal(false)} />
+          </ModalForm>
+        </Modal>
       )}
     </aside>
   )
