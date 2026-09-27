@@ -1,35 +1,35 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
-import { resetPassword } from "~/api/password";
+import { resetPassword, type ResetRequest } from "~/api/password";
 
-export function useResetPassword(email: string) {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+type ResetPasswordStatus =
+  | "idle"
+  | "success"
+  | "error";
 
-  const navigation = useNavigate();
+export function useResetPassword() {
+  const [status, setStatus] = useState<ResetPasswordStatus>("idle");
 
-  async function handleResetPassword(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleResetPassword(data: ResetRequest) {
 
-    const token = sessionStorage.getItem("reset_token");
-    if (newPassword === confirmPassword && token != null) {
-      const response = await resetPassword({ email, token, newPassword });
+    if (data.token != null) {
+      const response = await resetPassword(data);
 
       if (response.status == 204) {
         sessionStorage.removeItem("reset_token");
-        navigation("/");
+        setStatus("success")
+      } else {
+        setStatus("error")
       }
     } else {
-      toast.warning("As senhas são diferentes");
-    }
+      setStatus("error")
+    } 
   }
 
   return {
-    newPassword,
-    setNewPassword,
-    confirmPassword,
-    setConfirmPassword,
     handleResetPassword,
+    isSuccess: status === "success",
+    isError: status === "error"
   };
 }

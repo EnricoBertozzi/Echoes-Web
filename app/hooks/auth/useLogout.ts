@@ -5,7 +5,8 @@ import { logout } from "~/api/auth";
 export function useLogout() {
   const navigation = useNavigate();
 
-  async function onLogout() {
+  async function onLogout(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
 
     const response = await logout();
     if (response.status == 204) {

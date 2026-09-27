@@ -4,6 +4,9 @@ import { Button } from "~/components/atoms/Button";
 import { TextInput } from "~/components/atoms/TextInput";
 import { useRegister } from "~/hooks/useRegister";
 import type { Route } from "./+types/index";
+import { PasswordField } from "~/components/atoms/PasswordField";
+import { PageTitle } from "~/components/atoms/PageTitle";
+import { useForm } from "react-hook-form";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -12,14 +15,32 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+interface FormData {
+  email: string
+  code: string
+  password: string
+  confirmPassword: string
+}
+
 export default function Register() {
   const [searchParams] = useSearchParams();
   const code = searchParams.get("code") ?? "";
   const urlEmail = searchParams.get("email") ?? "";
 
-  const register = useRegister(code, urlEmail);
+  const {handleRegisterSubmit, registeredUser, apiError, submitting} = useRegister(code, urlEmail);
 
   const hasValidParams = code.trim() !== "" && urlEmail.trim() !== "";
+
+  const {handleSubmit, control, watch, register } = useForm<FormData>({
+    defaultValues: {
+      email: urlEmail,
+      code: code,
+      password: "",
+      confirmPassword: ""
+    }
+  });
+
+  const password = watch("password")
 
   if (!hasValidParams) {
     return (
@@ -39,7 +60,7 @@ export default function Register() {
     );
   }
 
-  if (register.registeredUser) {
+  if (registeredUser) {
     return (
       <main className='bg-zinc-200 w-full h-full flex justify-center items-center'>
         <div className='bg-white px-8 py-5 rounded shadow flex flex-col gap-6 w-full max-w-md items-center text-center'>
@@ -48,7 +69,7 @@ export default function Register() {
             Conta ativada com sucesso!
           </h1>
           <p className='text-sm text-gray-600'>
-            Bem-vindo(a), {register.registeredUser.name}! Sua senha foi criada.
+            Bem-vindo(a), {registeredUser.name}! Sua senha foi criada.
             Você já pode entrar no Echoes.
           </p>
           <Link to='/' className='text-main underline'>
@@ -62,62 +83,60 @@ export default function Register() {
   return (
     <main className='bg-zinc-200 w-full h-full flex justify-center items-center'>
       <form
-        className='bg-white px-8 py-5 rounded shadow flex flex-col gap-10 w-full max-w-md'
-        onSubmit={register.handleSubmit}
+        className='bg-white p-8 rounded shadow flex flex-col gap-8 w-104'
+        onSubmit={handleSubmit(handleRegisterSubmit)}
       >
-        <div className='flex flex-col gap-1'>
-          <h1 className='text-lg text-black'>Criar senha</h1>
-          <p className='text-sm text-gray-600'>
-            Finalizando o cadastro de{" "}
-            <span className='text-black font-medium'>{urlEmail}</span>
-          </p>
+        <PageTitle title="Finalização de Cadastro" description={`Finalizando cadastro de ${urlEmail}`} />
+
+        <input type="hidden" {...register("email")}/>
+        <input type="hidden" {...register("code")}/>  
+    
+        <div className='flex flex-col gap-2'>
+          <PasswordField 
+            id="password" 
+            name="password" 
+            label="Senha" 
+            placeholder="Digite sua senha" 
+            control={control} 
+            rules={{
+              minLength: {
+                value: 8,
+                message: "A senha deve ter no mínimo 8 caracteres"
+              },
+              pattern: {
+                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
+                message:
+                  "A senha deve conter maiúscula, minúscula, número e caractere especial"
+              }
+            }}
+          />
         </div>
 
         <div className='flex flex-col gap-2'>
-          <p>Senha</p>
-          <TextInput
-            type='password'
-            placeholder='Digite a senha'
-            aria-label='Senha'
-            value={register.password}
-            onChange={(event) => register.setPassword(event.target.value)}
+          <PasswordField 
+            id="confirmPassword" 
+            name="confirmPassword" 
+            label="Confirmação de Senha"
+            placeholder="Confirme sua senha" 
+            control={control}
+            rules={{
+              validate: (value) => value === password || "As senhas não são iguais"
+            }}
           />
-          {register.fieldErrors.password && (
-            <span className='text-sm text-red-500'>
-              {register.fieldErrors.password}
-            </span>
-          )}
         </div>
 
-        <div className='flex flex-col gap-2'>
-          <p>Confirmar senha</p>
-          <TextInput
-            type='password'
-            placeholder='Digite a senha novamente'
-            aria-label='Confirmar senha'
-            value={register.confirmPassword}
-            onChange={(event) =>
-              register.setConfirmPassword(event.target.value)
-            }
-          />
-          {register.fieldErrors.confirmPassword && (
-            <span className='text-sm text-red-500'>
-              {register.fieldErrors.confirmPassword}
-            </span>
-          )}
-        </div>
-
-        {register.apiError && (
-          <p className='text-sm text-red-500'>{register.apiError}</p>
+        {apiError && (
+          <p className='text-sm text-red-500'>{apiError}</p>
         )}
 
         <div
           className={
-            register.submitting ? 'pointer-events-none opacity-60' : undefined
+            submitting ? 'pointer-events-none opacity-60' : undefined
           }
         >
           <Button
-            label={register.submitting ? 'Cadastrando...' : 'Cadastrar'}
+            type="submit"
+            label={submitting ? 'Cadastrando...' : 'Cadastrar'}
           />
         </div>
       </form>
