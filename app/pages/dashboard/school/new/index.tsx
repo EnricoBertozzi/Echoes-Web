@@ -136,7 +136,15 @@ function AutoFilledFields(p: AutoFilledFieldsProps) {
         value={formatCnpjAddress(p.data)}
         hint="Preenchido automaticamente a partir do CNPJ."
       />
-      <EditableCommon p={p} />
+      <EditableCommon 
+        email={p.email}
+        acronym={p.acronym}
+        phone={p.phone}
+        fieldErrors={p.fieldErrors} 
+        onAcronymChange={p.onAcronymChange} 
+        onEmailChange={p.onEmailChange} 
+        onPhoneChange={p.onPhoneChange}     
+       />
     </>
   );
 }
@@ -177,7 +185,15 @@ function ManualFields(p: ManualFieldsProps) {
           className="text-gray-900"
         />
       </Field>
-      <EditableCommon p={p} />
+      <EditableCommon 
+        email={p.email}
+        acronym={p.acronym}
+        phone={p.phone}
+        fieldErrors={p.fieldErrors} 
+        onAcronymChange={p.onAcronymChange} 
+        onEmailChange={p.onEmailChange} 
+        onPhoneChange={p.onPhoneChange}     
+       />
     </>
   );
 }
