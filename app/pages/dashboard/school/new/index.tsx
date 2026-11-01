@@ -1,7 +1,7 @@
 import { FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router";
 import { PageTitle } from "~/components/atoms/PageTitle";
-import { TextInput } from "~/components/atoms/TextInput";
+import { TextInput } from "~/components/atoms/input/TextInput";
 import { useCreateInstitution } from "~/hooks/useCreateInstitution";
 import type { CnpjData } from "~/types/Cnpj";
 import { formatCnpjAddress } from "~/utils/cnpj";

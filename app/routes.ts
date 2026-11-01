@@ -1,12 +1,12 @@
 import { type RouteConfig, index, prefix, layout, route } from "@react-router/dev/routes";
 
 export default [
-  index("pages/landing/Lading.tsx"),
-  route("mfa", "pages/landing/MfaPage.tsx"),
+  index("pages/login/LoginPage.tsx"),
+  route("mfa", "pages/login/MfaPage.tsx"),
   route("register", "pages/register/index.tsx"),
-  route("password/forgot", "pages/landing/PasswordForgot.tsx"),
-  route("password/validate", "pages/landing/PasswordValidCode.tsx"),
-  route("password/reset", "pages/landing/PasswordReset.tsx"),
+  route("password/forgot", "pages/login/PasswordForgotPage.tsx"),
+  route("password/validate", "pages/login/PasswordValidCodePage.tsx"),
+  route("password/reset", "pages/login/PasswordResetPage.tsx"),
   ...prefix("dashboard", [
     layout("pages/dashboard/layout.tsx", [
       index("pages/dashboard/devices/index.tsx"),
@@ -17,7 +17,7 @@ export default [
       route("school/new", "pages/dashboard/school/new/index.tsx"),
       route("school/:institutionId", "pages/dashboard/school/institution/index.tsx"),
       route("school/:institutionId/edit", "pages/dashboard/school/institution/edit/index.tsx"),
-      route("users", "pages/dashboard/users/index.tsx"),
+      route("users", "pages/dashboard/users/UsersPage.tsx"),
       route("scene", "pages/dashboard/scene/index.tsx"),
       route("scene/:animalId", "pages/dashboard/scene/animal/index.tsx"),
     ])

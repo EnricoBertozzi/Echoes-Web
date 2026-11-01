@@ -1,10 +1,10 @@
 import { Link, useSearchParams } from "react-router";
 import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import { Button } from "~/components/atoms/Button";
-import { TextInput } from "~/components/atoms/TextInput";
+import { TextInput } from "~/components/atoms/input/TextInput";
 import { useRegister } from "~/hooks/useRegister";
 import type { Route } from "./+types/index";
-import { PasswordField } from "~/components/atoms/PasswordField";
+import { PasswordField } from "~/components/molecules/input/PasswordField";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { useForm } from "react-hook-form";
 import { useTerms } from "~/hooks/useTerms";
