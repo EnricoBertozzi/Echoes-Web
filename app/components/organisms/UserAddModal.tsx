@@ -1,4 +1,4 @@
-import { useCreateUser } from "~/hooks/useCreateUser";
+import { useCreateUser } from "~/hooks/users/useCreateUser";
 import { Modal } from "../atoms/modal/Modal";
 import { ModalTitle } from "../atoms/modal/ModalTitle";
 import { ModalForm } from "../atoms/modal/ModalForm";

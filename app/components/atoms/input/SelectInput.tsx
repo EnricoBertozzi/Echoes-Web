@@ -4,11 +4,11 @@ export interface SelectInputProps {
   id: string;
   name: string;
   placeholder: string;
-  options: Map<string, string>; 
+  options: Map<string, string | number>;
   error?: string;
-  value: string
+  value: string | number;
   ref?: Ref<HTMLSelectElement>;
-  onChange?: (e: ChangeEvent<HTMLSelectElement, HTMLSelectElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
   onBlur?: () => void;
 }
 
@@ -33,20 +33,27 @@ export function SelectInput({
         value={value}
         onChange={onChange}
         className={`
-                  w-full px-4 py-3 pr-12 rounded-lg border
-                  text-slate-900 placeholder-slate-400 bg-transparent appearance-none
-                  focus:outline-none transition-colors cursor-pointer
-                  ${error ? "border-red-500 focus:border-red-600" : "border-slate-300 focus:border-slate-500"}
-                  `}
+          w-full px-4 py-3 rounded-lg border
+          text-slate-900 bg-transparent appearance-none
+          focus:outline-none transition-colors cursor-pointer
+          ${
+            error
+              ? "border-red-500 focus:border-red-600"
+              : "border-slate-300 focus:border-slate-500"
+          }
+        `}
       >
-        <option disabled selected value="">
-          <span className="text-slate-400">{placeholder}</span>
+        <option disabled value="">
+          {placeholder}
         </option>
-        {Array.from(options.entries()).map((value, label) => (
-          <option value={value}>{label}</option>  
+
+        {Array.from(options.entries()).map(([label, optionValue]) => (
+          <option key={label} value={optionValue}>
+            {label}
+          </option>
         ))}
-        
       </select>
+
       {error && <span className="text-red-500 text-sm">{error}</span>}
     </div>
   );

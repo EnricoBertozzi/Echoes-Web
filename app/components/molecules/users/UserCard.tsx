@@ -25,8 +25,8 @@ export function UserCard({ name, email, role }: UserCardProps) {
         </p>
 
         <p className="px-4 py-0.5 flex gap-2 items-center w-fit text-white bg-main rounded-full">
-          <FaUser size={20} />
-          <span className="text-xl truncate">{role}</span>
+          <FaUser size={16} />
+          <span className="text-base truncate">{role}</span>
         </p>
       </div>
     </div>

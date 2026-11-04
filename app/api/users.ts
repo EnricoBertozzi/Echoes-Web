@@ -13,14 +13,14 @@ export async function createUser(
   role: UserRole,
   data: CreateUserRequest,
 ): Promise<PendingUser> {
-  const response = await api.post<PendingUser>(`/users/${role}`, data);
+  const response = await api.post<PendingUser>(`/api/v1/users/${role}`, data);
   return response.data;
 }
 
 export async function completeRegistration(
   data: CompleteRegistrationRequest,
 ): Promise<User> {
-  const response = await api.post<User>("/users/2fa", data);
+  const response = await api.post<User>("/api/v1/users/2fa", data);
   return response.data;
 }
 
@@ -28,7 +28,7 @@ export async function findAllUsers(
   role: UserRole,
   params: { page: number; size: number; institutionId?: string },
 ) {
-  const response = await api.get<User[]>(`/users/${role}`, {
+  const response = await api.get<Page<User>>(`/api/v1/users/${role}`, {
     params: {
       page: params.page,
       size: params.size,
@@ -41,8 +41,22 @@ export async function findAllUsers(
 }
 
 export async function findUser(role: UserRole, id: string): Promise<User> {
-  const response = await api.get<User>(`/users/${role}/${id}`);
+  const response = await api.get<User>(`/api/v1/users/${role}/${id}`);
   return response.data;
+}
+
+export async function findUsersByName(
+  role: UserRole, 
+  name: string,
+  params: { page: number; size: number },
+) {
+  const response = await api.get<Page<User>>(`/api/v1/users/${role}/search/${name}`, {
+    params: {
+      page: params.page,
+      size: params.size
+    }
+  });
+  return response;
 }
 
 export async function updateUser(
@@ -50,10 +64,10 @@ export async function updateUser(
   id: string,
   data: UpdateUserRequest,
 ): Promise<User> {
-  const response = await api.patch<User>(`/users/${role}/${id}`, data);
+  const response = await api.patch<User>(`/api/v1/users/${role}/${id}`, data);
   return response.data;
 }
 
 export async function deleteUser(role: UserRole, id: string): Promise<void> {
-  await api.delete<void>(`/users/${role}/${id}`);
+  await api.delete<void>(`/api/v1/users/${role}/${id}`);
 }
