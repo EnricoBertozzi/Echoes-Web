@@ -12,10 +12,7 @@ export function SearchBar({
   placeholder = "Buscar...",
 }: SearchInputProps) {
   return (
-    <div
-      className="flex w-full max-w-xl items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3 shadow-sm">
-      <FaSearch size={24} className="text-slate-500" />
-
+    <div className="flex w-full max-w-xl items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3 shadow-sm">
       <input
         type="text"
         value={value}
@@ -23,6 +20,9 @@ export function SearchBar({
         placeholder={placeholder}
         className="w-full bg-transparent text-lg text-slate-700 outline-none placeholder:text-slate-500"
       />
+      <button type="submit">
+        <FaSearch size={24} className="text-slate-500" />
+      </button>
     </div>
   );
 }

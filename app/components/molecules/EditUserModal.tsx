@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import type { User } from "~/types/user";
-import { useUpdateUser } from "~/hooks/useUpdateUser";
+import { useUpdateUser } from "~/hooks/users/useUpdateUser";
 import { TextInput } from "../atoms/input/TextInput";
 import { Modal } from "../atoms/modal/Modal";
 import { ModalTitle } from "../atoms/modal/ModalTitle";

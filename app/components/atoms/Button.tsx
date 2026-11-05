@@ -1,12 +1,12 @@
-export interface ButtonProps {
+import type { ComponentProps } from "react";
+
+export interface ButtonProps extends ComponentProps<"button"> {
   label: string;
-  type?: string
-  onClick?: () => any;
 }
 
-export function Button({label, type, onClick}: ButtonProps) {
+export function Button({label, ...props }: ButtonProps) {
   return (
-    <button onClick={onClick} className='bg-main w-full py-3 rounded cursor-pointer flex justify-center items-center'>
+    <button {...props} className='bg-main w-full py-3 rounded cursor-pointer flex justify-center items-center'>
       <span className='text-white'>{label}</span>
     </button>
   )

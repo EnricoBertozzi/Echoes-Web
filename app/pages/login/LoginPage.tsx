@@ -23,7 +23,7 @@ interface FormData {
 }
 
 export default function LoginPage() {
-  const { handleLogin } = useLogin();
+  const { handleLogin, loading, error } = useLogin();
 
   const { handleSubmit, control } = useForm<FormData>({
     defaultValues: {
@@ -78,7 +78,11 @@ export default function LoginPage() {
           </div>
         </div>
         <div className="w-full pt-4">
-          <Button label="Enviar" type="submit" />
+          <Button 
+            label={loading ? "Enviado" : "Enviar"} 
+            disabled={loading}
+            type="submit" 
+          />
         </div>
       </form>
     </main>

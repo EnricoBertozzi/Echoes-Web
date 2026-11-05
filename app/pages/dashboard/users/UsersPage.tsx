@@ -1,54 +1,113 @@
-import { useState } from "react";
+import { useEffect, useState, type FormHTMLAttributes } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
-import { TableHeadColumn } from "~/components/atoms/TableHeadColumn";
 import { AddAdminModal } from "~/components/molecules/users/AddAdminModal";
 import { UserTableRow } from "~/components/organisms/UserTableRow";
-import { useUsers } from "~/hooks/useUsers";
+import { useUsers } from "~/hooks/users/useFetchUsers";
 import { userRoleLabels, userRoles } from "~/types/user";
 import { FaUserGroup } from "react-icons/fa6";
 import { MdOutlineEmail } from "react-icons/md";
 import { UserCard } from "~/components/molecules/users/UserCard";
-
-type ModalState =
-  | { type: "create" }
-  | { type: "edit" }
-  | { type: "delete" }
-  | null;
+import { Main } from "~/components/atoms/page/Main";
+import { AiOutlineLoading } from "react-icons/ai";
+import { Alert } from "~/components/atoms/page/Alert";
+import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
+import { useForm } from "react-hook-form";
+import { SelectInput } from "~/components/atoms/input/SelectInput";
 
 export default function Users() {
-  const [modal, setModal] = useState<ModalState>(null);
+  const [modal, setModal] = useState(false);
+  const [search, setSearch] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
 
-  // const { refetch } = useUsers();
+  const { users, loading, error, totalPages, fetchUsers, fetchUserByName } =
+    useUsers();
+
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(0);
+
+  useEffect(() => {
+    const query = appliedSearch.trim();
+
+    if (query) {
+      fetchUserByName("admin", query, page, size);
+    } else {
+      fetchUsers("admin", page, size);
+    }
+  }, [page, appliedSearch, fetchUsers, fetchUserByName]);
+
+  function handleSearch(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setPage(0);
+    setAppliedSearch(search.trim());
+  }
 
   return (
-    <main className="min-w-0 flex-1">
-      <div className="flex flex-col gap-8 px-12 py-16">
-        <PageTitle title="Usuários" description="Consulte o cadastro dos admistradores do sistema" />
+    <Main>
+      <PageTitle
+        title="Usuários"
+        description="Consulte o cadastro dos admistradores do sistema"
+      />
 
-        <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-          <SearchBar value={""} onChange={() => console.log()} />
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
+        <form className="w-96" onSubmit={handleSearch}>
+          <SearchBar value={search} onChange={setSearch} />
+        </form>
 
-          <div className="w-36">
-            <Button
-              label="Novo Usuário"
-              onClick={() => setModal({ type: "create" })}
-            />
-          </div>
-        </div>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <UserCard name="Manoella" email="enrico@123.com" role="Admin" />
+        <div className="w-36">
+          <Button label="Novo Usuário" onClick={() => setModal(true)} />
         </div>
       </div>
 
-      <AddAdminModal
-        isOpen={modal?.type === "create"}
-        onClose={() => setModal(null)}
-        // onCreated={refetch}
-      />
-    </main>
+      {error && <Alert message={error} type="error" />}
+
+      <div className="min-w-0 w-full h-full">
+        {loading && (
+          <p
+            className="w-full h-full rounded-xl 
+              flex justify-center items-center text-xl 
+            bg-stone-300 text-stone-500"
+          >
+            Carregando Usuários...
+          </p>
+        )}
+
+        {users.length != 0 ? (
+          <div className="w-full h-full overflow-scroll">
+            <div className="flex justify-center">
+              <PaginationSelector
+                label={""}
+                size={0}
+                page={page}
+                totalPages={totalPages}
+                nextPage={() => setPage(page + 1)}
+                prevPage={() => setPage(page - 1)}
+                sizeOptions={[6, 12, 24]}
+                onChange={(value) => {
+                  setSize(Number(value));
+                  setPage(0);
+                }}
+              />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {users?.map((user) => (
+                <UserCard
+                  key={user.id}
+                  name={user.name}
+                  email={user.email}
+                  role={user.role}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <Alert message="Nenhum usuário encontrado." type="muted" />
+        )}
+      </div>
+
+      <AddAdminModal isOpen={modal} onClose={() => setModal(false)} />
+    </Main>
   );
 }
