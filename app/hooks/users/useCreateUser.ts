@@ -1,28 +1,32 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
 import { createUser } from "~/api/users";
 import type { CreateUserRequest, UserRole } from "~/types/user";
 
 export function useCreateUser() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  async function handleCreateUserSubmit({name, email}: CreateUserRequest) {
+  async function handleCreateUserSubmit({ name, email }: CreateUserRequest) {
+    setLoading(true);
+    setSuccess(false);
+    setError(null);
 
-    setLoading(true)
-    setError("")
     try {
-      const res = await createUser("admin", {name, email});
+      const res = await createUser("admin", { name, email });
+      setSuccess(true);
     } catch (e) {
       setError("Erro ao cadastrar usuário, tente mais tarde.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   return {
     handleCreateUserSubmit,
     loading,
-    error
+    error,
+    success,
+    setSuccess
   };
 }

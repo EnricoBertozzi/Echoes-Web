@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import { userRoleLabels, userRoles } from "~/types/user";
-import { useCreateUser } from "~/hooks/useCreateUser";
+import { useCreateUser } from "~/hooks/users/useCreateUser";
 import { TextInput } from "../../atoms/input/TextInput";
 import { Modal } from "../../atoms/modal/Modal";
 import { ModalTitle } from "../../atoms/modal/ModalTitle";
@@ -16,7 +16,6 @@ import { ControlledSelectField } from "../controlled/ControlledSelectField";
 export interface AddAdminModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreated?: () => void;
 }
 
 interface FormData {
@@ -27,27 +26,26 @@ interface FormData {
 export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
   const { control, handleSubmit } = useForm<FormData>();
 
-  const {error, loading, handleCreateUserSubmit} = useCreateUser();
+  const { error, loading, success, setSuccess, handleCreateUserSubmit } =
+    useCreateUser();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      {false ? (
+      {success ? (
         <>
           <ModalTitle
-            title="Cadastrar usuário"
-            description="Um convite foi enviado para o e-mail cadastrado para finalização do cadastro"
+            title="Convite Enviado"
+            description="Um convite foi enviado ao e-mail do usuário para finalização do cadastro"
           />
           <div className="flex flex-col gap-4">
-            <p className="text-sm">
-              Convite enviado para{" "}
-              <span className="font-medium">{}</span>. O usuário
-              receberá um link por e-mail para cadastrar sua senha.
-            </p>
             <div className="flex justify-end">
               <ModalButton
-                label="Concluir"
-                onAction={onClose}
-                className="bg-[#3730A3]"
+                label="Fechar"
+                variant="primary"
+                onAction={() => {
+                  setSuccess(false);
+                  onClose();
+                }}
               />
             </div>
           </div>
@@ -55,7 +53,7 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
       ) : (
         <>
           <ModalTitle
-            title="Cadastrar usuário"
+            title="Cadastrar Usuário"
             description="Digite os dados do novo usuário"
           />
           <ModalForm onSubmit={handleSubmit(handleCreateUserSubmit)}>
@@ -85,18 +83,17 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
 
             <div className="flex justify-end gap-2">
               <ModalButton
-                label="Cancelar"
+                label="Fechar"
+                variant="secondary"
                 onAction={onClose}
-                className="bg-stone-300"
               />
 
-              <button
+              <ModalButton
                 type="submit"
-                className="rounded bg-main px-4 py-2 text-white cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                label={loading ? "Enviando" : "Salvar"}
                 disabled={loading}
-              >
-                {loading ? "Enviando..." : "Salvar"}
-              </button>
+                variant="primary"
+              />
             </div>
           </ModalForm>
         </>
