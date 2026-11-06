@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router";
 import { Button } from "~/components/atoms/Button";
@@ -17,9 +18,11 @@ export default function MfaPage() {
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
 
-  if (email == null) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (!email) {
+      navigate("/", { replace: true });
+    }
+  }, [email, navigate]);
 
   const { handleMfaSubmit } = useValidMfa();
   const { handleSubmit, control, register } = useForm<FormData>({
@@ -54,10 +57,10 @@ export default function MfaPage() {
               required: "Código obrigatório",
               minLength: {
                 value: 6,
-                message: "Código incompleto"
-              }
+                message: "Código incompleto",
+              },
             }}
-            onSubmit={() => handleSubmit(handleMfaSubmit)}
+            onSubmit={() => handleSubmit(handleMfaSubmit)()}
           />
         </div>
 

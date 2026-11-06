@@ -1,21 +1,26 @@
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { logout } from "~/api/auth";
+import { useAuth } from "~/context/AuthContext";
 
 export function useLogout() {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
+  const auth = useAuth();
 
   async function onLogout(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
-    const response = await logout();
-    if (response.status == 204) {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Erro ao revogar sessão:", error);
+    } finally {
       localStorage.removeItem("jwt_token");
-      navigation("/");
+      auth.logout();
+
+      navigate("/", { replace: true });
     }
   }
 
-  return {
-    onLogout,
-  };
+  return { onLogout };
 }
