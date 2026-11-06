@@ -63,6 +63,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   const logout = () => {
+    localStorage.removeItem("jwt_token");
     setUser(null);
   };
 

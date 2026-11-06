@@ -79,7 +79,7 @@ export default function LoginPage() {
         </div>
         <div className="w-full pt-4">
           <Button 
-            label={loading ? "Enviado" : "Enviar"} 
+            label={loading ? "Enviando" : "Enviar"} 
             disabled={loading}
             type="submit" 
           />

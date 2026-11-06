@@ -7,12 +7,16 @@ export default [
   route("password/forgot", "pages/login/PasswordForgotPage.tsx"),
   route("password/validate", "pages/login/PasswordValidCodePage.tsx"),
   route("password/reset", "pages/login/PasswordResetPage.tsx"),
+  route("unathorized", "pages/UnathorizedPage.tsx"),
+  route("forbidden", "pages/ForbiddenPage.tsx"),
   ...prefix("dashboard", [
-    layout("pages/dashboard/layout.tsx", [
+    layout("pages/dashboard/Layout.tsx", [
       index("pages/dashboard/devices/index.tsx"),
-      route("terms", "pages/dashboard/terms/index.tsx"),
       route("audit", "pages/dashboard/audit/index.tsx"),
       route("settings", "pages/dashboard/settings/index.tsx"),
+      layout("components/atoms/auth/AdminLayout.tsx", [
+        route("terms", "pages/dashboard/terms/index.tsx"),
+      ]),
       route("school", "pages/dashboard/school/index.tsx"),
       route("school/new", "pages/dashboard/school/new/index.tsx"),
       route("school/:institutionId", "pages/dashboard/school/institution/index.tsx"),
@@ -22,4 +26,5 @@ export default [
       route("scene/:animalId", "pages/dashboard/scene/animal/index.tsx"),
     ])
   ])
+
 ] satisfies RouteConfig; 

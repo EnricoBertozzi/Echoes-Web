@@ -5,18 +5,17 @@ import { LoadingPage } from "../../../pages/LoadingPage";
 
 export default function ManagerLayout({ children }: PropsWithChildren) {
   const { user, loading } = useAuth();
-  const location = useLocation();
 
   if (loading) {
     return <LoadingPage />;
   }
 
   if (!user) {
-    return <Navigate to="/unathorized" replace state={{ from: location }} />;
+    return <Navigate to="/" replace />;
   }
 
   if (user.role != "MANAGER") {
-    return <Navigate to="/forbidden" replace state={{ from: location }} />;
+    return <Navigate to="/forbidden" replace />;
   }
 
   return <>{children}</>;

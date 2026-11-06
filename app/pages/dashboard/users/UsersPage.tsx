@@ -1,21 +1,13 @@
-import { useEffect, useState, type FormHTMLAttributes } from "react";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
 import { AddAdminModal } from "~/components/molecules/users/AddAdminModal";
-import { UserTableRow } from "~/components/organisms/UserTableRow";
 import { useUsers } from "~/hooks/users/useFetchUsers";
-import { userRoleLabels, userRoles } from "~/types/user";
-import { FaUserGroup } from "react-icons/fa6";
-import { MdOutlineEmail } from "react-icons/md";
 import { UserCard } from "~/components/molecules/users/UserCard";
 import { Main } from "~/components/atoms/page/Main";
-import { AiOutlineLoading } from "react-icons/ai";
 import { Alert } from "~/components/atoms/page/Alert";
 import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
-import { useForm } from "react-hook-form";
-import { SelectInput } from "~/components/atoms/input/SelectInput";
 
 export default function Users() {
   const [modal, setModal] = useState(false);
@@ -109,5 +101,5 @@ export default function Users() {
 
       <AddAdminModal isOpen={modal} onClose={() => setModal(false)} />
     </Main>
-  );
+  )
 }

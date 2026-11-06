@@ -6,7 +6,7 @@ export interface ButtonProps extends ComponentProps<"button"> {
 
 export function Button({label, ...props }: ButtonProps) {
   return (
-    <button {...props} className='bg-main w-full py-3 rounded cursor-pointer flex justify-center items-center'>
+    <button {...props} className='bg-main w-full py-3 rounded cursor-pointer flex justify-center items-center disabled:opacity-50 disabled:cursor-progress'>
       <span className='text-white'>{label}</span>
     </button>
   )
