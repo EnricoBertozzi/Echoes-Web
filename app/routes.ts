@@ -13,6 +13,9 @@ export default [
     layout("pages/dashboard/Layout.tsx", [
       layout("components/atoms/auth/AdminLayout.tsx", [
         route("admins", "pages/dashboard/users/AdminUsersPage.tsx"),
+        route("schools", "pages/dashboard/school/Schools.tsx"),
+        route("devices", "pages/dashboard/devices/Devices.tsx"),
+        route("audit", "pages/dashboard/audit/Audit.tsx"),
       ]),
       layout("components/atoms/auth/ManagerLayout.tsx", [
         route("users/:institutionId", "pages/dashboard/users/InstitutionUsersPage.tsx"),

@@ -18,7 +18,7 @@ export function Navbar({ collapsed }: NavbarProps) {
         collapsed ? 'pl-0' : 'pl-10'
       )}>
         <NavbarButton
-          to='/dashboard'
+          to='/dashboard/devices'
           label='Dispositivos'
           collapse={collapsed}
           icon={FaDog}
@@ -37,13 +37,7 @@ export function Navbar({ collapsed }: NavbarProps) {
           icon={FiSearch}
         />
         <NavbarButton
-          to='/dashboard/settings'
-          label='Configuração'
-          collapse={collapsed}
-          icon={FiSettings}
-        />
-        <NavbarButton
-          to='/dashboard/school'
+          to='/dashboard/schools'
           label='Instituições'
           collapse={collapsed}
           icon={FaSchool}
