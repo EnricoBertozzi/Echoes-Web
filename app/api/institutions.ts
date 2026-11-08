@@ -5,13 +5,16 @@ import type {
   InstitutionUpdateRequest,
 } from "~/types/Institution";
 import { api } from "./axios";
+import type { User, Page } from "~/types/user";
 
 export async function findAllInstitutions(params: {
   name?: string;
   page: number;
   size: number;
 }): Promise<InstitutionPage> {
-  const response = await api.get<InstitutionPage>('/api/v1/institutions', { params });
+  const response = await api.get<InstitutionPage>("/api/v1/institutions", {
+    params,
+  });
   return response.data;
 }
 
@@ -23,7 +26,7 @@ export async function findInstitutionById(id: string): Promise<Institution> {
 export async function createInstitution(
   data: InstitutionRegisterRequest,
 ): Promise<Institution> {
-  const response = await api.post<Institution>('/api/v1/institutions', data);
+  const response = await api.post<Institution>("/api/v1/institutions", data);
   return response.data;
 }
 
@@ -31,7 +34,10 @@ export async function updateInstitution(
   id: string,
   data: InstitutionUpdateRequest,
 ): Promise<Institution> {
-  const response = await api.put<Institution>(`/api/v1/institutions/${id}`, data);
+  const response = await api.put<Institution>(
+    `/api/v1/institutions/${id}`,
+    data,
+  );
   return response.data;
 }
 
@@ -41,4 +47,40 @@ export async function toggleInstitutionStatus(id: string): Promise<void> {
 
 export async function deleteInstitution(id: string): Promise<void> {
   await api.delete<void>(`/api/v1/institutions/${id}`);
+}
+
+export async function findUsersByInstitution(
+  institutionId: string,
+  page: number,
+  size: number,
+) {
+  const response = await api.get<Page<User>>(
+    `/api/v1/institutions/${institutionId}/users`,
+    {
+      params: {
+        page: page,
+        size: size,
+      },
+    },
+  );
+  return response;
+}
+
+export async function findUserByNameInInstituition(
+  institutionId: string,
+  name: string,
+  page: number,
+  size: number,
+) {
+    const response = await api.get<Page<User>>(
+    `/api/v1/institutions/${institutionId}/users/search`,
+    {
+      params: {
+        name: name,
+        page: page,
+        size: size,
+      },
+    },
+  );
+  return response;
 }

@@ -56,6 +56,14 @@ export function Navbar({ collapsed }: NavbarProps) {
             icon={FiUser}
           />
         )}
+        {user?.role == "MANAGER" && (
+          <NavbarButton
+            to={`/dashboard/users/${user.institutionId}`}
+            label='Membros'
+            collapse={collapsed}
+            icon={FiUser}
+          />
+        )}
         <NavbarButton
           to='/dashboard/scene'
           label='Cenários'

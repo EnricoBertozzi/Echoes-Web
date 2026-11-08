@@ -8,6 +8,14 @@ export interface UserCardProps {
 }
 
 export function UserCard({ name, email, role }: UserCardProps) {
+  let labelRole = "";
+  if (role === "STUDENT") 
+    labelRole = "Estudante";
+  else if (role === "MANAGER")
+    labelRole = "Gestor";
+  else if (role === "TEACHER")
+    labelRole = "Professor";
+  
   return (
     <div className="flex flex-row gap-4 items-center rounded-lg p-5 w-full bg-white">
       
@@ -26,7 +34,7 @@ export function UserCard({ name, email, role }: UserCardProps) {
 
         <p className="px-4 py-0.5 flex gap-2 items-center w-fit text-white bg-main rounded-full">
           <FaUser size={16} />
-          <span className="text-base truncate">{role}</span>
+          <span className="text-base truncate">{labelRole}</span>
         </p>
       </div>
     </div>

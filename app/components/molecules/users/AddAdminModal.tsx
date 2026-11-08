@@ -26,7 +26,7 @@ interface FormData {
 export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
   const { control, handleSubmit } = useForm<FormData>();
 
-  const { error, loading, success, setSuccess, handleCreateUserSubmit } =
+  const { error, loading, success, setSuccess, handleCreateAdminUserSubmit } =
     useCreateUser();
 
   return (
@@ -56,7 +56,7 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
             title="Cadastrar Usuário"
             description="Digite os dados do novo usuário"
           />
-          <ModalForm onSubmit={handleSubmit(handleCreateUserSubmit)}>
+          <ModalForm onSubmit={handleSubmit(handleCreateAdminUserSubmit)}>
             <ControlledTextField
               id="name"
               name="name"

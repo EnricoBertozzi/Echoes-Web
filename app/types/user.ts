@@ -1,7 +1,7 @@
 import type { TermType } from "./terms";
 
-export type UserRole = 'admin' | 'manager' | 'teacher' | 'student'; // lowercase = URL path segments
-export type ApiRole = 'ADMIN' | 'MANAGER' | 'TEACHER' | 'STUDENT'; // uppercase = API responses
+export type UserRole = "admin" | "manager" | "teacher" | "student"; // lowercase = URL path segments
+export type ApiRole = "ADMIN" | "MANAGER" | "TEACHER" | "STUDENT"; // uppercase = API responses
 
 export interface User {
   id: string;
@@ -14,6 +14,13 @@ export interface User {
 export interface CreateUserRequest {
   name: string;
   email: string;
+  institutionId?: string;
+}
+
+export interface CreateInstitutionalUserRequest {
+  name: string;
+  email: string;
+  role: "manager" | "teacher" | "student";
   institutionId?: string;
 }
 
@@ -30,7 +37,8 @@ export interface CompleteRegistrationRequest {
   acceptedTerms: TermType[];
 }
 
-export interface PendingUser { // 202 response
+export interface PendingUser {
+  // 202 response
   name: string;
   email: string;
   role: ApiRole;
@@ -51,17 +59,17 @@ export interface Page<T> {
 export const userRoles = ["admin", "manager", "teacher", "student"] as const;
 
 export const userRoleLabels: Record<UserRole, string> = {
-  admin: 'Administrador',
-  manager: 'Gestor',
-  teacher: 'Professor',
-  student: 'Estudante',
+  admin: "Administrador",
+  manager: "Gestor",
+  teacher: "Professor",
+  student: "Estudante",
 };
 
 const apiRoleToUserRole: Record<ApiRole, UserRole> = {
-  ADMIN: 'admin',
-  MANAGER: 'manager',
-  TEACHER: 'teacher',
-  STUDENT: 'student',
+  ADMIN: "admin",
+  MANAGER: "manager",
+  TEACHER: "teacher",
+  STUDENT: "student",
 };
 
 export function roleToUserRole(apiRole: ApiRole): UserRole {
