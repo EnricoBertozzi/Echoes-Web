@@ -9,7 +9,7 @@ export interface NavbarProps {
 }
 
 export function Navbar({ collapsed }: NavbarProps) {
-  const auth = useAuth();
+  const { user } = useAuth();
 
   return (
       <ul className={clsx(
@@ -48,12 +48,14 @@ export function Navbar({ collapsed }: NavbarProps) {
           collapse={collapsed}
           icon={FaSchool}
         />
-        <NavbarButton
-          to='/dashboard/users'
-          label='Usuários'
-          collapse={collapsed}
-          icon={FiUser}
-        />
+        {user?.role == "ADMIN" && (
+          <NavbarButton
+            to='/dashboard/admins'
+            label='Administradores'
+            collapse={collapsed}
+            icon={FiUser}
+          />
+        )}
         <NavbarButton
           to='/dashboard/scene'
           label='Cenários'
