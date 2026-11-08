@@ -8,27 +8,49 @@ import { UserCard } from "~/components/molecules/users/UserCard";
 import { Main } from "~/components/atoms/page/Main";
 import { Alert } from "~/components/atoms/page/Alert";
 import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
+import { useNavigate, useParams } from "react-router";
+import { useAuth } from "~/context/AuthContext";
+import { AddInstitutionalUserModal } from "~/components/molecules/users/AddInstitutionalUserModal";
 
-export default function InstitutuionUsersPage() {
+export default function InstitutionUsersPage() {
   const [modal, setModal] = useState(false);
   const [search, setSearch] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
+  const { institutionId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const { users, loading, error, totalPages, fetchAdminUsers, fetchAdminUsersByName } =
-    useFetchUsers();
+  const {
+    users,
+    loading,
+    error,
+    totalPages,
+    fetchUsersByInstitution,
+    fetchUsersByNameInInstitution,
+  } = useFetchUsers();
 
   const [page, setPage] = useState(0);
-  const [size, setSize] = useState(0);
+  const [size, setSize] = useState(10);
 
   useEffect(() => {
+    if (institutionId == null || institutionId != user?.institutionId) {
+      navigate(-1);
+    }
+
     const query = appliedSearch.trim();
 
     if (query) {
-      fetchAdminUsersByName("admin", query, page, size);
+      fetchUsersByNameInInstitution(institutionId!, query, page, size);
     } else {
-      fetchAdminUsers("admin", page, size);
+      fetchUsersByInstitution(institutionId!, page, size);
     }
-  }, [page, appliedSearch, fetchAdminUsers, fetchAdminUsersByName]);
+  }, [
+    page,
+    size,
+    appliedSearch,
+    fetchUsersByInstitution,
+    fetchUsersByNameInInstitution,
+  ]);
 
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,8 +61,8 @@ export default function InstitutuionUsersPage() {
   return (
     <Main>
       <PageTitle
-        title="Usuários"
-        description="Consulte o cadastro dos admistradores do sistema"
+        title="Membros"
+        description="Consulte o cadastro dos membros da instituição"
       />
 
       <div className="flex flex-row flex-wrap items-center justify-between gap-4">
@@ -70,8 +92,8 @@ export default function InstitutuionUsersPage() {
           <div className="w-full h-full overflow-scroll">
             <div className="flex justify-center">
               <PaginationSelector
-                label={""}
-                size={0}
+                label={"Membros: "}
+                size={size}
                 page={page}
                 totalPages={totalPages}
                 nextPage={() => setPage(page + 1)}
@@ -99,7 +121,11 @@ export default function InstitutuionUsersPage() {
         )}
       </div>
 
-      <AddAdminModal isOpen={modal} onClose={() => setModal(false)} />
+      <AddInstitutionalUserModal
+        isOpen={modal}
+        onClose={() => setModal(false)}
+        institutionId={institutionId!}
+      />
     </Main>
-  )
+  );
 }

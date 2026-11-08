@@ -47,7 +47,7 @@ export function SelectInput({
           {placeholder}
         </option>
 
-        {Array.from(options.entries()).map(([label, optionValue]) => (
+        {Array.from(options.entries()).map(([optionValue, label]) => (
           <option key={label} value={optionValue}>
             {label}
           </option>

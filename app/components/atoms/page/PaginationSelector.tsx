@@ -22,9 +22,9 @@ export function PaginationSelector({
   onChange
 }: PaginationSelectorProps) {
   return (
-    <div>
-      <div className="flex items-center justify-center gap-2">
-        <label htmlFor="pageSize" className="text-sm">
+    <div className="grid grid-cols-3 w-full">
+      <div className="flex items-center justify-start gap-2">
+        <label htmlFor="pageSize" className="text-sm text-slate-900">
           {label}
         </label>
 
@@ -34,14 +34,14 @@ export function PaginationSelector({
           onChange={(e) => {
             onChange(e.target.value);
           }}
-          className="rounded-md border border-gray-300 px-3 py-2"
+          className="rounded-md text-slate-900 border-gray-300 py-2"
         >
           {sizeOptions.map((option) => (
-            <option value={option}></option>
+            <option value={option} className="text-slate-900 text-sm">{option}</option>
           ))}
         </select>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center gap-2">
         <button
           type="button"
           onClick={prevPage}

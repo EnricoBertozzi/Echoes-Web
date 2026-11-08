@@ -11,6 +11,7 @@ import { useTerms } from "~/hooks/useTerms";
 import type { TermResponseDTO } from "~/types/terms";
 import { useState } from "react";
 import { TermViewModal } from "~/components/organisms/TermViewModal";
+import { ControlledPasswordField } from "~/components/molecules/controlled/ControlledPasswordField";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -122,7 +123,7 @@ export default function Register() {
         <input type="hidden" {...register("code")} />
 
         <div className="flex flex-col gap-2">
-          <PasswordField
+          <ControlledPasswordField
             id="password"
             name="password"
             label="Senha"
@@ -143,7 +144,7 @@ export default function Register() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <PasswordField
+          <ControlledPasswordField
             id="confirmPassword"
             name="confirmPassword"
             label="Confirmação de Senha"

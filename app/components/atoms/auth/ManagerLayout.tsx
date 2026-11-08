@@ -19,5 +19,5 @@ export default function ManagerLayout({ children }: PropsWithChildren) {
     return <Navigate to="/forbidden" replace />;
   }
 
-  return <>{children}</>
+  return <Outlet />
 }

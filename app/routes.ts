@@ -12,11 +12,12 @@ export default [
   ...prefix("dashboard", [
     layout("pages/dashboard/Layout.tsx", [
       layout("components/atoms/auth/AdminLayout.tsx", [
-        route("terms", "pages/dashboard/terms/index.tsx"),
         route("admins", "pages/dashboard/users/AdminUsersPage.tsx"),
       ]),
       layout("components/atoms/auth/ManagerLayout.tsx", [
+        route("users/:institutionId", "pages/dashboard/users/InstitutionUsersPage.tsx"),
       ]),
+      route("terms", "pages/dashboard/terms/index.tsx"),
       route("school/new", "pages/dashboard/school/new/index.tsx"),
       route("school/:institutionId", "pages/dashboard/school/institution/index.tsx"),
       route("school/:institutionId/edit", "pages/dashboard/school/institution/edit/index.tsx"),
