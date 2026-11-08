@@ -2,12 +2,15 @@ import clsx from "clsx";
 import { FaDog, FaSchool } from "react-icons/fa";
 import { FiFileText, FiSearch, FiSettings, FiSliders, FiUser } from "react-icons/fi";
 import { NavbarButton } from "../atoms/NavbarButton";
+import { useAuth } from "~/context/AuthContext";
 
 export interface NavbarProps {
   collapsed: boolean;
 }
 
 export function Navbar({ collapsed }: NavbarProps) {
+  const { user } = useAuth();
+
   return (
       <ul className={clsx(
         'w-full flex flex-col gap-2',
@@ -45,12 +48,14 @@ export function Navbar({ collapsed }: NavbarProps) {
           collapse={collapsed}
           icon={FaSchool}
         />
-        <NavbarButton
-          to='/dashboard/users'
-          label='Usuários'
-          collapse={collapsed}
-          icon={FiUser}
-        />
+        {user?.role == "ADMIN" && (
+          <NavbarButton
+            to='/dashboard/admins'
+            label='Administradores'
+            collapse={collapsed}
+            icon={FiUser}
+          />
+        )}
         <NavbarButton
           to='/dashboard/scene'
           label='Cenários'

@@ -1,29 +1,21 @@
-import { useEffect, useState, type FormHTMLAttributes } from "react";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
 import { AddAdminModal } from "~/components/molecules/users/AddAdminModal";
-import { UserTableRow } from "~/components/organisms/UserTableRow";
-import { useUsers } from "~/hooks/users/useFetchUsers";
-import { userRoleLabels, userRoles } from "~/types/user";
-import { FaUserGroup } from "react-icons/fa6";
-import { MdOutlineEmail } from "react-icons/md";
+import { useFetchUsers } from "~/hooks/users/useFetchUsers";
 import { UserCard } from "~/components/molecules/users/UserCard";
 import { Main } from "~/components/atoms/page/Main";
-import { AiOutlineLoading } from "react-icons/ai";
 import { Alert } from "~/components/atoms/page/Alert";
 import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
-import { useForm } from "react-hook-form";
-import { SelectInput } from "~/components/atoms/input/SelectInput";
 
-export default function Users() {
+export default function InstitutuionUsersPage() {
   const [modal, setModal] = useState(false);
   const [search, setSearch] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
 
-  const { users, loading, error, totalPages, fetchUsers, fetchUserByName } =
-    useUsers();
+  const { users, loading, error, totalPages, fetchAdminUsers, fetchAdminUsersByName } =
+    useFetchUsers();
 
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(0);
@@ -32,11 +24,11 @@ export default function Users() {
     const query = appliedSearch.trim();
 
     if (query) {
-      fetchUserByName("admin", query, page, size);
+      fetchAdminUsersByName("admin", query, page, size);
     } else {
-      fetchUsers("admin", page, size);
+      fetchAdminUsers("admin", page, size);
     }
-  }, [page, appliedSearch, fetchUsers, fetchUserByName]);
+  }, [page, appliedSearch, fetchAdminUsers, fetchAdminUsersByName]);
 
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -109,5 +101,5 @@ export default function Users() {
 
       <AddAdminModal isOpen={modal} onClose={() => setModal(false)} />
     </Main>
-  );
+  )
 }

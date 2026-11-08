@@ -71,3 +71,8 @@ export async function updateUser(
 export async function deleteUser(role: UserRole, id: string): Promise<void> {
   await api.delete<void>(`/api/v1/users/${role}/${id}`);
 }
+
+export async function fetchCurrentUser() {
+  const response = await api.get<User>("/api/v1/users/me");
+  return response;
+}
