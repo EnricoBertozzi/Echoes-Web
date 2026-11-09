@@ -6,7 +6,7 @@ export interface MainProps {
 
 export function Main({children}: MainProps) {
     return(
-        <main className="min-w-0 flex-1 flex flex-col gap-8 px-12 py-16">
+        <main className="min-w-0 flex-1 flex flex-col gap-8 px-12 py-16 overflow-y-auto">
             {children}
         </main>
     );
