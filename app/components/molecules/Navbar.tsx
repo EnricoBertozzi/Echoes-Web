@@ -1,56 +1,71 @@
 import clsx from "clsx";
 import { FaDog, FaSchool } from "react-icons/fa";
-import { FiFileText, FiSearch, FiSettings, FiSliders, FiUser } from "react-icons/fi";
+import { FiBarChart2, FiFileText, FiSearch, FiSliders, FiUser } from "react-icons/fi";
 import { NavbarButton } from "../atoms/NavbarButton";
+import { useAuth } from "~/context/AuthContext";
 
 export interface NavbarProps {
   collapsed: boolean;
 }
 
 export function Navbar({ collapsed }: NavbarProps) {
+  const { user } = useAuth();
+
   return (
       <ul className={clsx(
         'w-full flex flex-col gap-2',
         'transition-[padding] duration-500',
         collapsed ? 'pl-0' : 'pl-10'
       )}>
-        <NavbarButton
-          to='/dashboard'
+        {(user?.role == "ADMIN" || user?.role == "MANAGER") && (
+          <NavbarButton
+            to='/dashboard/overview'
+            label='Painel'
+            collapse={collapsed}
+            icon={FiBarChart2}
+          />
+        )}
+        {/* <NavbarButton
+          to='/dashboard/devices'
           label='Dispositivos'
           collapse={collapsed}
           icon={FaDog}
           end
-        />
+        /> */}
         <NavbarButton
           to='/dashboard/terms'
           label='Termos'
           collapse={collapsed}
           icon={FiFileText}
         />
-        <NavbarButton
+        {/* <NavbarButton
           to='/dashboard/audit'
           label='Auditoria'
           collapse={collapsed}
           icon={FiSearch}
-        />
+        /> */}
         <NavbarButton
-          to='/dashboard/settings'
-          label='Configuração'
-          collapse={collapsed}
-          icon={FiSettings}
-        />
-        <NavbarButton
-          to='/dashboard/school'
+          to='/dashboard/schools'
           label='Instituições'
           collapse={collapsed}
           icon={FaSchool}
         />
-        <NavbarButton
-          to='/dashboard/users'
-          label='Usuários'
-          collapse={collapsed}
-          icon={FiUser}
-        />
+        {user?.role == "ADMIN" && (
+          <NavbarButton
+            to='/dashboard/admins'
+            label='Administradores'
+            collapse={collapsed}
+            icon={FiUser}
+          />
+        )}
+        {user?.role == "MANAGER" && (
+          <NavbarButton
+            to={`/dashboard/users/${user.institutionId}`}
+            label='Membros'
+            collapse={collapsed}
+            icon={FiUser}
+          />
+        )}
         <NavbarButton
           to='/dashboard/scene'
           label='Cenários'

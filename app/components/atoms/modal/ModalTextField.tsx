@@ -24,3 +24,4 @@ export function ModalTextField({id, label, value, onChange, required = false}: M
     </div>
   );
 }
+

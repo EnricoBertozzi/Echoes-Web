@@ -10,6 +10,7 @@ import { Toaster } from "sonner";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { AuthProvider } from "./context/AuthContext";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,7 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className='w-screen h-screen'>
+      <body className="w-screen h-screen">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -43,10 +44,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <>
-    <Outlet />;
-    <Toaster/>
-  </>
+  return (
+    <>
+      <AuthProvider>
+        <Outlet />
+        <Toaster />
+      </AuthProvider>
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

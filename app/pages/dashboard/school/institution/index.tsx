@@ -36,9 +36,9 @@ export default function InstitutionDetail() {
     <InstitutionDetailContent
       institution={institution}
       onRefetch={refetch}
-      onBack={() => navigate("/dashboard/school")}
+      onBack={() => navigate("/dashboard/schools")}
       onEdit={() => navigate(`/dashboard/school/${institution.id}/edit`)}
-      onDeleted={() => navigate("/dashboard/school")}
+      onDeleted={() => navigate("/dashboard/schools")}
     />
   );
 }
@@ -123,7 +123,7 @@ function InstitutionDetailContent({
           </div>
         </dl>
 
-        <div className="flex flex-wrap gap-4">
+        {/* <div className="flex flex-wrap gap-4">
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
@@ -146,7 +146,7 @@ function InstitutionDetailContent({
           >
             Cenários
           </button>
-        </div>
+        </div> */}
 
         <div className="mt-auto flex flex-col items-end gap-2">
           {toggleError && <span className="text-sm text-red-500">{toggleError}</span>}

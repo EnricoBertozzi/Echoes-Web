@@ -1,23 +1,28 @@
-import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { validMfa, type MfaRequest } from "~/api/auth";
+import { fetchCurrentUser } from "~/api/users";
+import { useAuth } from "~/context/AuthContext";
 
 export function useValidMfa() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const auth = useAuth();
 
   async function handleMfaSubmit(data: MfaRequest) {
+    try {
+      const mfaResponse = await validMfa(data);
+      const token = mfaResponse.data.token;
 
-    const response = await validMfa(data);
-    const status = response.status;
+      localStorage.setItem("jwt_token", token);
+      const currentUserResponse = await fetchCurrentUser();
 
-    if (status == 200) {
-      // TODO alterar para cookie
-      localStorage.setItem("jwt_token", response.data.token)
-      navigate("/dashboard/scene")
+      auth.login(currentUserResponse.data);
+
+      navigate("/dashboard/scene", { replace: true });
+    } catch (error) {
+      localStorage.removeItem("jwt_token");
+      throw error;
     }
   }
 
-  return {
-    handleMfaSubmit
-  };
+  return { handleMfaSubmit };
 }

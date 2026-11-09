@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router";
 import { PageTitle } from "~/components/atoms/PageTitle";
-import { TextInput } from "~/components/atoms/TextInput";
+import { TextInput } from "~/components/atoms/input/TextInput";
 import { useInstitution } from "~/hooks/useInstitution";
 import { useUpdateInstitution } from "~/hooks/useUpdateInstitution";
 import type { Institution } from "~/types/Institution";

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import type { User } from "~/types/user";
-import { useUpdateUser } from "~/hooks/useUpdateUser";
-import { TextInput } from "../atoms/TextInput";
+import { useUpdateUser } from "~/hooks/users/useUpdateUser";
+import { TextInput } from "../atoms/input/TextInput";
 import { Modal } from "../atoms/modal/Modal";
 import { ModalTitle } from "../atoms/modal/ModalTitle";
 import { ModalForm } from "../atoms/modal/ModalForm";
@@ -53,10 +53,8 @@ export function EditUserModal({ user, onUpdated }: EditUserModalProps) {
               <p>Nome</p>
               <TextInput
                 placeholder='Digite o nome'
-                aria-label='Nome'
                 value={form.name}
-                onChange={(event) => form.setName(event.target.value)}
-              />
+                onChange={(event) => form.setName(event)} id={""} name={""} type={""}              />
               {form.fieldErrors.name && (
                 <span className="text-sm text-red-500">
                   {form.fieldErrors.name}
