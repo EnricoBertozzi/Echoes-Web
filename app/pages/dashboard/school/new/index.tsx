@@ -27,12 +27,10 @@ export default function NewInstitution() {
               placeholder="00.000.000/0000-00"
               aria-label="CNPJ"
               value={form.cnpj}
-              onChange={(event) => form.setCnpj(event.target.value)}
-              inputMode="numeric"
-              autoComplete="off"
-              maxLength={18}
-              required
-              className="text-gray-900"
+              onChange={(value) => form.setCnpj(value)}
+              id={""}
+              name={""}
+              type={""}
             />
             {form.lookingUp && (
               <span className="text-sm text-slate-500">Consultando CNPJ…</span>
@@ -41,13 +39,18 @@ export default function NewInstitution() {
               <span className="text-sm text-red-500">{form.lookupError}</span>
             )}
             {form.fieldErrors.cnpj && (
-              <span className="text-sm text-red-500">{form.fieldErrors.cnpj}</span>
+              <span className="text-sm text-red-500">
+                {form.fieldErrors.cnpj}
+              </span>
             )}
           </div>
 
           {form.isFallbackMode && (
             <div className="mt-6 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
-              <FiAlertTriangle size={22} className="mt-0.5 shrink-0 text-amber-600" />
+              <FiAlertTriangle
+                size={22}
+                className="mt-0.5 shrink-0 text-amber-600"
+              />
               <div className="text-sm text-amber-900">
                 <p className="font-semibold">
                   Não foi possível consultar a Receita Federal.
@@ -93,7 +96,7 @@ export default function NewInstitution() {
           <div className="mt-8 flex justify-end gap-2">
             <button
               type="button"
-              onClick={() => navigate("/dashboard/school")}
+              onClick={() => navigate("/dashboard/schools")}
               className="cursor-pointer rounded px-4 py-2 font-medium text-red-500 hover:bg-red-50"
             >
               Cancelar
@@ -116,7 +119,9 @@ export default function NewInstitution() {
 
 interface AutoFilledFieldsProps {
   data: CnpjData;
-  acronym: string; email: string; phone: string;
+  acronym: string;
+  email: string;
+  phone: string;
   fieldErrors: Record<string, string>;
   onAcronymChange: (v: string) => void;
   onEmailChange: (v: string) => void;
@@ -136,15 +141,15 @@ function AutoFilledFields(p: AutoFilledFieldsProps) {
         value={formatCnpjAddress(p.data)}
         hint="Preenchido automaticamente a partir do CNPJ."
       />
-      <EditableCommon 
+      <EditableCommon
         email={p.email}
         acronym={p.acronym}
         phone={p.phone}
-        fieldErrors={p.fieldErrors} 
-        onAcronymChange={p.onAcronymChange} 
-        onEmailChange={p.onEmailChange} 
-        onPhoneChange={p.onPhoneChange}     
-       />
+        fieldErrors={p.fieldErrors}
+        onAcronymChange={p.onAcronymChange}
+        onEmailChange={p.onEmailChange}
+        onPhoneChange={p.onPhoneChange}
+      />
     </>
   );
 }
@@ -152,8 +157,11 @@ function AutoFilledFields(p: AutoFilledFieldsProps) {
 /* ---------- Estado 3D: manual (edição livre) ---------- */
 
 interface ManualFieldsProps {
-  name: string; address: string;
-  acronym: string; email: string; phone: string;
+  name: string;
+  address: string;
+  acronym: string;
+  email: string;
+  phone: string;
   fieldErrors: Record<string, string>;
   onNameChange: (v: string) => void;
   onAddressChange: (v: string) => void;
@@ -185,15 +193,15 @@ function ManualFields(p: ManualFieldsProps) {
           className="text-gray-900"
         />
       </Field>
-      <EditableCommon 
+      <EditableCommon
         email={p.email}
         acronym={p.acronym}
         phone={p.phone}
-        fieldErrors={p.fieldErrors} 
-        onAcronymChange={p.onAcronymChange} 
-        onEmailChange={p.onEmailChange} 
-        onPhoneChange={p.onPhoneChange}     
-       />
+        fieldErrors={p.fieldErrors}
+        onAcronymChange={p.onAcronymChange}
+        onEmailChange={p.onEmailChange}
+        onPhoneChange={p.onPhoneChange}
+      />
     </>
   );
 }
@@ -212,18 +220,26 @@ function ReadOnlyField(props: { label: string; value: string; hint: string }) {
   );
 }
 
-function Field(props: { label: string; error?: string; children: React.ReactNode }) {
+function Field(props: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="mt-6 flex flex-col gap-2">
       <p className="text-gray-700 font-medium">{props.label}</p>
       {props.children}
-      {props.error && <span className="text-sm text-red-500">{props.error}</span>}
+      {props.error && (
+        <span className="text-sm text-red-500">{props.error}</span>
+      )}
     </div>
   );
 }
 
 function EditableCommon(p: {
-  acronym: string; email: string; phone: string;
+  acronym: string;
+  email: string;
+  phone: string;
   fieldErrors: Record<string, string>;
   onAcronymChange: (v: string) => void;
   onEmailChange: (v: string) => void;

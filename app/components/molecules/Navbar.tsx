@@ -25,25 +25,25 @@ export function Navbar({ collapsed }: NavbarProps) {
             icon={FiBarChart2}
           />
         )}
-        <NavbarButton
+        {/* <NavbarButton
           to='/dashboard/devices'
           label='Dispositivos'
           collapse={collapsed}
           icon={FaDog}
           end
-        />
+        /> */}
         <NavbarButton
           to='/dashboard/terms'
           label='Termos'
           collapse={collapsed}
           icon={FiFileText}
         />
-        <NavbarButton
+        {/* <NavbarButton
           to='/dashboard/audit'
           label='Auditoria'
           collapse={collapsed}
           icon={FiSearch}
-        />
+        /> */}
         <NavbarButton
           to='/dashboard/schools'
           label='Instituições'
