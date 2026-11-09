@@ -15,6 +15,8 @@ export function UserCard({ name, email, role }: UserCardProps) {
     labelRole = "Gestor";
   else if (role === "TEACHER")
     labelRole = "Professor";
+  else if (role === "ADMIN")
+    labelRole = "Admin";
   
   return (
     <div className="flex flex-row gap-4 items-center rounded-lg p-5 w-full bg-white">
