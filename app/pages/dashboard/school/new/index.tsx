@@ -1,3 +1,4 @@
+import { useForm } from "react-hook-form";
 import { FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router";
 import { PageTitle } from "~/components/atoms/PageTitle";
@@ -11,6 +12,8 @@ export default function NewInstitution() {
   const form = useCreateInstitution((institution) =>
     navigate(`/dashboard/school/${institution.id}`),
   );
+
+  const {control, handleSubmit, register} = useForm();
 
   return (
     <main className="flex flex-1">
