@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { FaDog, FaSchool } from "react-icons/fa";
-import { FiFileText, FiSearch, FiSettings, FiSliders, FiUser } from "react-icons/fi";
+import { FiBarChart2, FiFileText, FiSearch, FiSliders, FiUser } from "react-icons/fi";
 import { NavbarButton } from "../atoms/NavbarButton";
 import { useAuth } from "~/context/AuthContext";
 
@@ -17,6 +17,14 @@ export function Navbar({ collapsed }: NavbarProps) {
         'transition-[padding] duration-500',
         collapsed ? 'pl-0' : 'pl-10'
       )}>
+        {(user?.role == "ADMIN" || user?.role == "MANAGER") && (
+          <NavbarButton
+            to='/dashboard/overview'
+            label='Painel'
+            collapse={collapsed}
+            icon={FiBarChart2}
+          />
+        )}
         <NavbarButton
           to='/dashboard/devices'
           label='Dispositivos'
