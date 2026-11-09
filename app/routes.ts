@@ -1,4 +1,10 @@
-import { type RouteConfig, index, prefix, layout, route } from "@react-router/dev/routes";
+import {
+  type RouteConfig,
+  index,
+  prefix,
+  layout,
+  route,
+} from "@react-router/dev/routes";
 
 export default [
   index("pages/login/LoginPage.tsx"),
@@ -18,15 +24,26 @@ export default [
         route("audit", "pages/dashboard/audit/Audit.tsx"),
       ]),
       layout("components/atoms/auth/ManagerLayout.tsx", [
-        route("users/:institutionId", "pages/dashboard/users/InstitutionUsersPage.tsx"),
+        route(
+          "users/:institutionId",
+          "pages/dashboard/users/InstitutionUsersPage.tsx",
+        ),
+      ]),
+      layout("components/atoms/auth/StaffLayout.tsx", [
+        route("overview", "pages/dashboard/overview/Overview.tsx"),
       ]),
       route("terms", "pages/dashboard/terms/index.tsx"),
       route("school/new", "pages/dashboard/school/new/index.tsx"),
-      route("school/:institutionId", "pages/dashboard/school/institution/index.tsx"),
-      route("school/:institutionId/edit", "pages/dashboard/school/institution/edit/index.tsx"),
+      route(
+        "school/:institutionId",
+        "pages/dashboard/school/institution/index.tsx",
+      ),
+      route(
+        "school/:institutionId/edit",
+        "pages/dashboard/school/institution/edit/index.tsx",
+      ),
       route("scene", "pages/dashboard/scene/index.tsx"),
       route("scene/:animalId", "pages/dashboard/scene/animal/index.tsx"),
-    ])
-  ])
-
-] satisfies RouteConfig; 
+    ]),
+  ]),
+] satisfies RouteConfig;
