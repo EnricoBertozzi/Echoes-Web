@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router";
 import { useAuth } from "~/context/AuthContext";
-import { LoadingPage } from "../../../pages/LoadingPage";
+import { LoadingPage } from "../pages/LoadingPage";
 
 /** Rotas de ADMIN e MANAGER (a dashboard não existe para professor e estudante). */
 export default function StaffLayout() {

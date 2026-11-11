@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { useLocation, Navigate, useNavigate } from "react-router";
 import { useAuth } from "~/context/AuthContext";
-import { LoadingPage } from "../../../pages/LoadingPage";
+import { LoadingPage } from "../pages/LoadingPage";
 import type React from "react";
 
 export interface ProtectedLayoutProps {

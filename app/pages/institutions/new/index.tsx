@@ -3,6 +3,8 @@ import { FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { TextInput } from "~/components/atoms/input/TextInput";
+import { Main } from "~/components/atoms/page/Main";
+import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 import { useCreateInstitution } from "~/hooks/useCreateInstitution";
 import type { CnpjData } from "~/types/Cnpj";
 import { formatCnpjAddress } from "~/utils/cnpj";
@@ -16,16 +18,24 @@ export default function NewInstitution() {
   const {control, handleSubmit, register} = useForm();
 
   return (
-    <main className="flex flex-1">
-      <div className="flex w-full max-w-2xl flex-col gap-8 px-12 py-16">
+    <Main>
         <PageTitle
           title="Nova instituição"
           description="Informe o CNPJ para buscar os dados automaticamente na Receita Federal."
+          backPath="/institutions"
         />
 
         <form className="flex flex-col" onSubmit={form.handleSubmit}>
           <div className="flex flex-col gap-2">
             <p className="text-gray-700 font-medium">CNPJ</p>
+            <ControlledTextField 
+              id="cnpj" 
+              name="cnpj" 
+              label="" 
+              placeholder="" 
+              control={control} 
+              />
+
             <TextInput
               placeholder="00.000.000/0000-00"
               aria-label="CNPJ"
@@ -113,8 +123,7 @@ export default function NewInstitution() {
             </button>
           </div>
         </form>
-      </div>
-    </main>
+    </Main>
   );
 }
 

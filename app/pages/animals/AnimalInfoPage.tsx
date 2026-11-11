@@ -66,7 +66,7 @@ type ScenarioModalState =
     }
   | null;
 
-export default function AnimalScene() {
+export default function AnimalInfoPage() {
   const navigate = useNavigate();
   const { animalId } = useParams();
 
