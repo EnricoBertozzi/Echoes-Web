@@ -18,14 +18,14 @@ export default [
 
   layout("layouts/Layout.tsx", [
     layout("layouts/StaffLayout.tsx", [
-      route("institutions/:institutionId", "pages/institutions/institution/index.tsx"),
+      route("institutions/:institutionId", "pages/institutions/institution/InstitutionInfoPage.tsx"),
       route("dashboard", "pages/dashboard/Overview.tsx"),
       route("institutions/:institutionId/users", "pages/users/InstitutionUsersPage.tsx"),
       route("institutions/:institutionId/edit", "pages/institutions/institution/edit/index.tsx"),
     ]),
     layout("layouts/AdminLayout.tsx", [
       route("institutions", "pages/institutions/InstitutionsPage.tsx"),
-      route("institutions/new", "pages/institutions/new/index.tsx"),
+      route("institutions/new", "pages/institutions/InstitutionNewPage.tsx"),
       route("users/admins", "pages/users/AdminUsersPage.tsx"),
       route("devices", "pages/devices/Devices.tsx"),
       route("audit", "pages/audit/Audit.tsx"),

@@ -1,4 +1,5 @@
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router";
 import { PageTitle } from "~/components/atoms/PageTitle";
@@ -7,6 +8,7 @@ import { Main } from "~/components/atoms/page/Main";
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 import { useCreateInstitution } from "~/hooks/useCreateInstitution";
 import type { CnpjData } from "~/types/Cnpj";
+import type { InstitutionRegisterRequest } from "~/types/Institution";
 import { formatCnpjAddress } from "~/utils/cnpj";
 
 export default function NewInstitution() {
@@ -15,114 +17,150 @@ export default function NewInstitution() {
     navigate(`/dashboard/school/${institution.id}`),
   );
 
-  const {control, handleSubmit, register} = useForm();
+  const { control, setValue, getValues } = useForm<InstitutionRegisterRequest>({
+    defaultValues: {
+      cnpj: "",
+      name: "",
+      address: "",
+      acronym: "",
+      email: "",
+      phone: "",
+    },
+  });
+
+  // Monitora as alterações
+  const cnpj = useWatch({
+    control,
+    name: "cnpj",
+  });
+
+  // Altera a cnpj do useCreateInstitution
+  useEffect(() => {
+    if (cnpj !== form.cnpj) {
+      form.setCnpj(cnpj);
+    }
+  }, [cnpj, form.cnpj, form.setCnpj]);
+
+  // Recebe os valores da consulta
+  useEffect(() => {
+    if (getValues("cnpj") !== form.cnpj) {
+      setValue("cnpj", form.cnpj);
+    }
+  }, [form.cnpj, getValues, setValue]);
+
+
+  // Atualiza os valores da página
+  useEffect(() => {
+    if (!form.cnpjData) return;
+
+    setValue("name", form.cnpjData.razaoSocial, {
+      shouldValidate: true,
+    });
+
+    setValue("address", formatCnpjAddress(form.cnpjData), {
+      shouldValidate: true,
+    });
+  }, [form.cnpjData, setValue]);
 
   return (
     <Main>
-        <PageTitle
-          title="Nova instituição"
-          description="Informe o CNPJ para buscar os dados automaticamente na Receita Federal."
-          backPath="/institutions"
-        />
+      <PageTitle
+        title="Nova instituição"
+        description="Informe o CNPJ para buscar os dados automaticamente na Receita Federal."
+        backPath="/institutions"
+      />
 
-        <form className="flex flex-col" onSubmit={form.handleSubmit}>
-          <div className="flex flex-col gap-2">
-            <p className="text-gray-700 font-medium">CNPJ</p>
-            <ControlledTextField 
-              id="cnpj" 
-              name="cnpj" 
-              label="" 
-              placeholder="" 
-              control={control} 
-              />
+      <form className="flex flex-col" onSubmit={form.handleSubmit}>
+        <div className="flex flex-col gap-2">
+          <ControlledTextField
+            id="cnpj"
+            name="cnpj"
+            label="CNPJ"
+            placeholder="00.000.000/0000-00"
+            control={control}
+            rules={{
+              required: "CNPJ é obrigatório",
+            }}
+          />
 
-            <TextInput
-              placeholder="00.000.000/0000-00"
-              aria-label="CNPJ"
-              value={form.cnpj}
-              onChange={(value) => form.setCnpj(value)}
-              id={""}
-              name={""}
-              type={""}
+          {form.lookingUp && (
+            <span className="text-sm text-slate-500">Consultando CNPJ…</span>
+          )}
+          {form.lookupError && !form.isFallbackMode && (
+            <span className="text-sm text-red-500">{form.lookupError}</span>
+          )}
+          {form.fieldErrors.cnpj && (
+            <span className="text-sm text-red-500">
+              {form.fieldErrors.cnpj}
+            </span>
+          )}
+        </div>
+
+        {form.isFallbackMode && (
+          <div className="mt-6 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
+            <FiAlertTriangle
+              size={22}
+              className="mt-0.5 shrink-0 text-amber-600"
             />
-            {form.lookingUp && (
-              <span className="text-sm text-slate-500">Consultando CNPJ…</span>
-            )}
-            {form.lookupError && !form.isFallbackMode && (
-              <span className="text-sm text-red-500">{form.lookupError}</span>
-            )}
-            {form.fieldErrors.cnpj && (
-              <span className="text-sm text-red-500">
-                {form.fieldErrors.cnpj}
-              </span>
-            )}
-          </div>
-
-          {form.isFallbackMode && (
-            <div className="mt-6 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
-              <FiAlertTriangle
-                size={22}
-                className="mt-0.5 shrink-0 text-amber-600"
-              />
-              <div className="text-sm text-amber-900">
-                <p className="font-semibold">
-                  Não foi possível consultar a Receita Federal.
-                </p>
-                <p>Preencha os dados manualmente abaixo.</p>
-              </div>
+            <div className="text-sm text-amber-900">
+              <p className="font-semibold">
+                Não foi possível consultar a Receita Federal.
+              </p>
+              <p>Preencha os dados manualmente abaixo.</p>
             </div>
-          )}
-
-          {form.isReady && form.cnpjData && (
-            <AutoFilledFields
-              data={form.cnpjData}
-              acronym={form.acronym}
-              email={form.email}
-              phone={form.phone}
-              fieldErrors={form.fieldErrors}
-              onAcronymChange={form.setAcronym}
-              onEmailChange={form.setEmail}
-              onPhoneChange={form.setPhone}
-            />
-          )}
-
-          {form.isReady && form.isFallbackMode && (
-            <ManualFields
-              name={form.name}
-              address={form.address}
-              acronym={form.acronym}
-              email={form.email}
-              phone={form.phone}
-              fieldErrors={form.fieldErrors}
-              onNameChange={form.setName}
-              onAddressChange={form.setAddress}
-              onAcronymChange={form.setAcronym}
-              onEmailChange={form.setEmail}
-              onPhoneChange={form.setPhone}
-            />
-          )}
-
-          {form.generalError && (
-            <p className="mt-4 text-sm text-red-500">{form.generalError}</p>
-          )}
-
-          <div className="mt-8 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => navigate("/dashboard/schools")}
-              className="cursor-pointer rounded px-4 py-2 font-medium text-red-500 hover:bg-red-50"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={!form.isReady || form.submitting}
-              className="cursor-pointer rounded bg-main px-4 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {form.submitting ? "Salvando..." : "Cadastrar"}
-            </button>
           </div>
-        </form>
+        )}
+
+        {form.isReady && form.cnpjData && (
+          <AutoFilledFields
+            data={form.cnpjData}
+            acronym={form.acronym}
+            email={form.email}
+            phone={form.phone}
+            fieldErrors={form.fieldErrors}
+            onAcronymChange={form.setAcronym}
+            onEmailChange={form.setEmail}
+            onPhoneChange={form.setPhone}
+          />
+        )}
+
+        {form.isReady && form.isFallbackMode && (
+          <ManualFields
+            name={form.name}
+            address={form.address}
+            acronym={form.acronym}
+            email={form.email}
+            phone={form.phone}
+            fieldErrors={form.fieldErrors}
+            onNameChange={form.setName}
+            onAddressChange={form.setAddress}
+            onAcronymChange={form.setAcronym}
+            onEmailChange={form.setEmail}
+            onPhoneChange={form.setPhone}
+          />
+        )}
+
+        {form.generalError && (
+          <p className="mt-4 text-sm text-red-500">{form.generalError}</p>
+        )}
+
+        <div className="mt-8 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard/schools")}
+            className="cursor-pointer rounded px-4 py-2 font-medium text-red-500 hover:bg-red-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            disabled={!form.isReady || form.submitting}
+            className="cursor-pointer rounded bg-main px-4 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {form.submitting ? "Salvando..." : "Cadastrar"}
+          </button>
+        </div>
+      </form>
     </Main>
   );
 }

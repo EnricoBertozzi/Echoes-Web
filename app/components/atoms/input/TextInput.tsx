@@ -8,6 +8,7 @@ export interface TextInputProps {
   value: string;
   error?: string;
   ref?: Ref<HTMLInputElement>;
+  readOnly?: boolean;
   onChange: (value: string) => void;
   onBlur?: () => void;
 }
@@ -21,13 +22,17 @@ export function TextInput({
   ref,
   onChange,
   onBlur,
+  value,
+  readOnly
 }: TextInputProps) {
   return (
     <div className="flex flex-col gap-2">
       <input
         id={id}
+        value={value}
         name={name}
         type={type}
+        readOnly={readOnly}
         onChange={(event) => onChange(event.target.value)}
         onBlur={onBlur}
         placeholder={placeholder}
