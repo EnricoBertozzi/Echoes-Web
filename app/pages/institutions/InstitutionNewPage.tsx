@@ -2,22 +2,33 @@ import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router";
+
 import { PageTitle } from "~/components/atoms/PageTitle";
-import { TextInput } from "~/components/atoms/input/TextInput";
 import { Main } from "~/components/atoms/page/Main";
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
+
 import { useCreateInstitution } from "~/hooks/useCreateInstitution";
-import type { CnpjData } from "~/types/Cnpj";
+
 import type { InstitutionRegisterRequest } from "~/types/Institution";
-import { formatCnpjAddress } from "~/utils/cnpj";
+
+import { formatCnpjAddress, maskCnpjInput, unmaskCnpj } from "~/utils/cnpj";
+
+const LOOKUP_DEBOUNCE_MS = 500;
 
 export default function NewInstitution() {
   const navigate = useNavigate();
-  const form = useCreateInstitution((institution) =>
-    navigate(`/dashboard/school/${institution.id}`),
-  );
 
-  const { control, setValue, getValues } = useForm<InstitutionRegisterRequest>({
+  const form = useCreateInstitution((institution) => {
+    navigate(`/institutions/${institution.id}`);
+  });
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { isSubmitting },
+  } = useForm<InstitutionRegisterRequest>({
+    mode: "onChange",
     defaultValues: {
       cnpj: "",
       name: "",
@@ -28,28 +39,48 @@ export default function NewInstitution() {
     },
   });
 
-  // Monitora as alterações
+  // Monitora o CNPJ do formulário.
   const cnpj = useWatch({
     control,
     name: "cnpj",
   });
 
-  // Altera a cnpj do useCreateInstitution
+  // Aplica a máscara no campo CNPJ.
   useEffect(() => {
-    if (cnpj !== form.cnpj) {
-      form.setCnpj(cnpj);
-    }
-  }, [cnpj, form.cnpj, form.setCnpj]);
+    const masked = maskCnpjInput(cnpj ?? "");
 
-  // Recebe os valores da consulta
+    if (cnpj !== masked) {
+      setValue("cnpj", masked, {
+        shouldValidate: false,
+      });
+    }
+  }, [cnpj, setValue]);
+
+  // Consulta automaticamente o CNPJ com debounce.
   useEffect(() => {
-    if (getValues("cnpj") !== form.cnpj) {
-      setValue("cnpj", form.cnpj);
+    const digits = unmaskCnpj(cnpj ?? "");
+
+    // Invalida consultas anteriores.
+    form.resetLookup();
+
+    // Limpa os campos vindos da consulta anterior.
+    setValue("name", "");
+    setValue("address", "");
+
+    if (digits.length !== 14) {
+      return;
     }
-  }, [form.cnpj, getValues, setValue]);
 
+    const timeout = setTimeout(() => {
+      void form.lookupCnpj(digits);
+    }, LOOKUP_DEBOUNCE_MS);
 
-  // Atualiza os valores da página
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [cnpj, form.lookupCnpj, form.resetLookup, setValue]);
+
+  // Preenche automaticamente os dados retornados.
   useEffect(() => {
     if (!form.cnpjData) return;
 
@@ -62,6 +93,8 @@ export default function NewInstitution() {
     });
   }, [form.cnpjData, setValue]);
 
+  const isReadOnly = form.cnpjData !== null && !form.isFallbackMode;
+
   return (
     <Main>
       <PageTitle
@@ -70,7 +103,12 @@ export default function NewInstitution() {
         backPath="/institutions"
       />
 
-      <form className="flex flex-col" onSubmit={form.handleSubmit}>
+      <form
+        className="flex flex-col"
+        onSubmit={handleSubmit(form.submitInstitution)}
+        noValidate
+      >
+
         <div className="flex flex-col gap-2">
           <ControlledTextField
             id="cnpj"
@@ -79,16 +117,21 @@ export default function NewInstitution() {
             placeholder="00.000.000/0000-00"
             control={control}
             rules={{
-              required: "CNPJ é obrigatório",
+              required: "O CNPJ é obrigatório.",
+              validate: (value) =>
+                unmaskCnpj(value).length === 14 ||
+                "O CNPJ deve conter 14 dígitos.",
             }}
           />
 
           {form.lookingUp && (
             <span className="text-sm text-slate-500">Consultando CNPJ…</span>
           )}
+
           {form.lookupError && !form.isFallbackMode && (
             <span className="text-sm text-red-500">{form.lookupError}</span>
           )}
+
           {form.fieldErrors.cnpj && (
             <span className="text-sm text-red-500">
               {form.fieldErrors.cnpj}
@@ -102,62 +145,140 @@ export default function NewInstitution() {
               size={22}
               className="mt-0.5 shrink-0 text-amber-600"
             />
+
             <div className="text-sm text-amber-900">
               <p className="font-semibold">
                 Não foi possível consultar a Receita Federal.
               </p>
+
               <p>Preencha os dados manualmente abaixo.</p>
             </div>
           </div>
         )}
 
-        {form.isReady && form.cnpjData && (
-          <AutoFilledFields
-            data={form.cnpjData}
-            acronym={form.acronym}
-            email={form.email}
-            phone={form.phone}
-            fieldErrors={form.fieldErrors}
-            onAcronymChange={form.setAcronym}
-            onEmailChange={form.setEmail}
-            onPhoneChange={form.setPhone}
-          />
+        {form.isReady && (
+          <div className="mt-6 flex flex-col gap-6">
+            <div>
+              <ControlledTextField
+                id="name"
+                name="name"
+                label="Razão social"
+                placeholder="Digite a razão social"
+                control={control}
+                readOnly={isReadOnly}
+                rules={{
+                  required: "A razão social é obrigatória.",
+                }}
+              />
+
+              {form.fieldErrors.name && (
+                <FieldError message={form.fieldErrors.name} />
+              )}
+            </div>
+
+            <div>
+              <ControlledTextField
+                id="address"
+                name="address"
+                label="Endereço"
+                placeholder="Digite o endereço"
+                control={control}
+                readOnly={isReadOnly}
+                rules={{
+                  required: "O endereço é obrigatório.",
+                }}
+              />
+
+              {form.fieldErrors.address && (
+                <FieldError message={form.fieldErrors.address} />
+              )}
+            </div>
+
+            {isReadOnly && (
+              <span className="text-xs text-slate-500">
+                Razão social e endereço preenchidos automaticamente a partir do
+                CNPJ.
+              </span>
+            )}
+
+            <div>
+              <ControlledTextField
+                id="acronym"
+                name="acronym"
+                label="Sigla"
+                placeholder="Digite a sigla"
+                control={control}
+                rules={{
+                  required: "A sigla é obrigatória.",
+                }}
+              />
+
+              {form.fieldErrors.acronym && (
+                <FieldError message={form.fieldErrors.acronym} />
+              )}
+            </div>
+
+            <div>
+              <ControlledTextField
+                id="email"
+                name="email"
+                label="E-mail"
+                placeholder="Digite o e-mail"
+                control={control}
+                rules={{
+                  required: "O e-mail é obrigatório.",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Informe um e-mail válido.",
+                  },
+                }}
+              />
+
+              {form.fieldErrors.email && (
+                <FieldError message={form.fieldErrors.email} />
+              )}
+            </div>
+
+            <div>
+              <ControlledTextField
+                id="phone"
+                name="phone"
+                label="Telefone"
+                placeholder="Digite o telefone"
+                control={control}
+                rules={{}}
+              />
+
+              {form.fieldErrors.phone && (
+                <FieldError message={form.fieldErrors.phone} />
+              )}
+            </div>
+          </div>
         )}
 
-        {form.isReady && form.isFallbackMode && (
-          <ManualFields
-            name={form.name}
-            address={form.address}
-            acronym={form.acronym}
-            email={form.email}
-            phone={form.phone}
-            fieldErrors={form.fieldErrors}
-            onNameChange={form.setName}
-            onAddressChange={form.setAddress}
-            onAcronymChange={form.setAcronym}
-            onEmailChange={form.setEmail}
-            onPhoneChange={form.setPhone}
-          />
-        )}
-
+        {/* Erro geral */}
         {form.generalError && (
           <p className="mt-4 text-sm text-red-500">{form.generalError}</p>
         )}
 
+        {/* Ações */}
         <div className="mt-8 flex justify-end gap-2">
           <button
             type="button"
-            onClick={() => navigate("/dashboard/schools")}
+            onClick={() => navigate("/institutions")}
             className="cursor-pointer rounded px-4 py-2 font-medium text-red-500 hover:bg-red-50"
           >
             Cancelar
           </button>
+
           <button
             type="submit"
-            disabled={!form.isReady || form.submitting}
+            disabled={
+              !form.isReady || form.lookingUp || form.submitting || isSubmitting
+            }
             className="cursor-pointer rounded bg-main px-4 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {form.submitting ? "Salvando..." : "Cadastrar"}
+            {form.submitting || isSubmitting ? "Salvando..." : "Cadastrar"}
           </button>
         </div>
       </form>
@@ -165,168 +286,8 @@ export default function NewInstitution() {
   );
 }
 
-/* ---------- Estado 3A: dados da Receita (read-only cinza) ---------- */
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
 
-interface AutoFilledFieldsProps {
-  data: CnpjData;
-  acronym: string;
-  email: string;
-  phone: string;
-  fieldErrors: Record<string, string>;
-  onAcronymChange: (v: string) => void;
-  onEmailChange: (v: string) => void;
-  onPhoneChange: (v: string) => void;
-}
-
-function AutoFilledFields(p: AutoFilledFieldsProps) {
-  return (
-    <>
-      <ReadOnlyField
-        label="Razão social"
-        value={p.data.razaoSocial}
-        hint="Preenchido automaticamente a partir do CNPJ."
-      />
-      <ReadOnlyField
-        label="Endereço"
-        value={formatCnpjAddress(p.data)}
-        hint="Preenchido automaticamente a partir do CNPJ."
-      />
-      <EditableCommon
-        email={p.email}
-        acronym={p.acronym}
-        phone={p.phone}
-        fieldErrors={p.fieldErrors}
-        onAcronymChange={p.onAcronymChange}
-        onEmailChange={p.onEmailChange}
-        onPhoneChange={p.onPhoneChange}
-      />
-    </>
-  );
-}
-
-/* ---------- Estado 3D: manual (edição livre) ---------- */
-
-interface ManualFieldsProps {
-  name: string;
-  address: string;
-  acronym: string;
-  email: string;
-  phone: string;
-  fieldErrors: Record<string, string>;
-  onNameChange: (v: string) => void;
-  onAddressChange: (v: string) => void;
-  onAcronymChange: (v: string) => void;
-  onEmailChange: (v: string) => void;
-  onPhoneChange: (v: string) => void;
-}
-
-function ManualFields(p: ManualFieldsProps) {
-  return (
-    <>
-      <Field label="Razão social" error={p.fieldErrors.name}>
-        <TextInput
-          placeholder="Digite a razão social"
-          aria-label="Razão social"
-          value={p.name}
-          onChange={(e) => p.onNameChange(e.target.value)}
-          required
-          className="text-gray-900"
-        />
-      </Field>
-      <Field label="Endereço" error={p.fieldErrors.address}>
-        <TextInput
-          placeholder="Digite o endereço"
-          aria-label="Endereço"
-          value={p.address}
-          onChange={(e) => p.onAddressChange(e.target.value)}
-          required
-          className="text-gray-900"
-        />
-      </Field>
-      <EditableCommon
-        email={p.email}
-        acronym={p.acronym}
-        phone={p.phone}
-        fieldErrors={p.fieldErrors}
-        onAcronymChange={p.onAcronymChange}
-        onEmailChange={p.onEmailChange}
-        onPhoneChange={p.onPhoneChange}
-      />
-    </>
-  );
-}
-
-/* ---------- Blocos reutilizáveis ---------- */
-
-function ReadOnlyField(props: { label: string; value: string; hint: string }) {
-  return (
-    <div className="mt-6 flex flex-col gap-2">
-      <p className="text-gray-700 font-medium">{props.label}</p>
-      <div className="rounded border border-slate-200 bg-slate-50 px-4 py-2 text-gray-900">
-        {props.value || "—"}
-      </div>
-      <span className="text-xs text-slate-500">{props.hint}</span>
-    </div>
-  );
-}
-
-function Field(props: {
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="mt-6 flex flex-col gap-2">
-      <p className="text-gray-700 font-medium">{props.label}</p>
-      {props.children}
-      {props.error && (
-        <span className="text-sm text-red-500">{props.error}</span>
-      )}
-    </div>
-  );
-}
-
-function EditableCommon(p: {
-  acronym: string;
-  email: string;
-  phone: string;
-  fieldErrors: Record<string, string>;
-  onAcronymChange: (v: string) => void;
-  onEmailChange: (v: string) => void;
-  onPhoneChange: (v: string) => void;
-}) {
-  return (
-    <>
-      <Field label="Sigla" error={p.fieldErrors.acronym}>
-        <TextInput
-          placeholder="Digite a sigla"
-          aria-label="Sigla"
-          value={p.acronym}
-          onChange={(e) => p.onAcronymChange(e.target.value)}
-          required
-          className="text-gray-900"
-        />
-      </Field>
-      <Field label="E-mail" error={p.fieldErrors.email}>
-        <TextInput
-          type="email"
-          placeholder="Digite o e-mail"
-          aria-label="E-mail"
-          value={p.email}
-          onChange={(e) => p.onEmailChange(e.target.value)}
-          required
-          className="text-gray-900"
-        />
-      </Field>
-      <Field label="Telefone" error={p.fieldErrors.phone}>
-        <TextInput
-          placeholder="Digite o telefone"
-          aria-label="Telefone"
-          value={p.phone}
-          onChange={(e) => p.onPhoneChange(e.target.value)}
-          className="text-gray-900"
-        />
-      </Field>
-    </>
-  );
+  return <span className="text-sm text-red-500">{message}</span>;
 }

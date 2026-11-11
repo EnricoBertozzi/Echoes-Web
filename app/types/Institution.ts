@@ -15,7 +15,7 @@ export interface InstitutionRegisterRequest {
   address: string;
   acronym: string;
   email: string;
-  phone: string | null;
+  phone: string;
 }
 
 export interface InstitutionUpdateRequest {
