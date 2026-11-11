@@ -10,8 +10,7 @@ interface FormData {
 }
 
 export default function PasswordForgotPage() {
-  const { handleForgotPassword } = useForgotPassword();
-  const navigate = useNavigate();
+  const { handleForgotPassword, loading, error } = useForgotPassword();
 
   const { handleSubmit, control } = useForm<FormData>();
 
@@ -39,7 +38,7 @@ export default function PasswordForgotPage() {
         />
 
         <div className="w-full mt-2">
-          <Button label="Enviar" />
+          <Button disabled={loading} label={loading ? "Enviando" : "Enviar"} />
         </div>
       </form>
     </main>
