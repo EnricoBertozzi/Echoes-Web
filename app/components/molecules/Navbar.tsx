@@ -25,13 +25,15 @@ export function Navbar({ collapsed }: NavbarProps) {
             icon={FiBarChart2}
           />
         )}
-        <NavbarButton
-          to='/dashboard/devices'
-          label='Dispositivos'
-          collapse={collapsed}
-          icon={FaDog}
-          end
-        />
+        {user?.role == "ADMIN" && (
+          <NavbarButton
+            to='/dashboard/devices'
+            label='Dispositivos'
+            collapse={collapsed}
+            icon={FaDog}
+            end
+          />
+        )}
         <NavbarButton
           to='/dashboard/terms'
           label='Termos'
