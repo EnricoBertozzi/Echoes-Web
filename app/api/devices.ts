@@ -18,7 +18,7 @@ export async function findDevicesByName(params: {
   size: number;
   name: string;
 }): Promise<DeviceInfo[]> {
-  const response = await api.get<DeviceInfo[]>(BASE, { params });
+  const response = await api.get<DeviceInfo[]>(`${BASE}/search`, { params });
   return response.data;
 }
 
