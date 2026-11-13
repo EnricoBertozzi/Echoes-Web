@@ -12,3 +12,9 @@ export interface DeviceInfo {
   createdAt: string | null;
   lastSeenAt: string | null;
 }
+
+export interface DeviceUpdateRequest {
+  name?: string;
+  institutionId?: string;
+  animalId?: string;
+}
