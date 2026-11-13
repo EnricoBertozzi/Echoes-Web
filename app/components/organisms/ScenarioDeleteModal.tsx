@@ -3,8 +3,10 @@ import type { Scenario } from "~/types/Scenario";
 import { ModalButton } from "../atoms/modal/ModalButton";
 import { ModalText } from "../atoms/modal/ModalText";
 import { ModalTitle } from "../atoms/modal/ModalTitle";
+import { Modal } from "../atoms/modal/Modal";
 
 interface ScenarioDeleteModalProps {
+  isOpen: boolean;
   scenario: Scenario;
   onClose: () => void;
   onConfirm: () => void;
@@ -12,36 +14,35 @@ interface ScenarioDeleteModalProps {
 
 export function ScenarioDeleteModal({
   scenario,
+  isOpen,
   onClose,
   onConfirm,
 }: ScenarioDeleteModalProps) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-      <div className="w-125 rounded-2xl bg-white p-8">
-        <ModalTitle
-          title="Remover Cenário"
-          description={`Deseja remover o cenário ${scenario.name}?`}
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalTitle
+        title="Remover Cenário"
+        description={`Deseja remover o cenário ${scenario.name}?`}
+      />
+
+      <ModalText text="Essa ação não poderá ser desfeita" className="mt-8" />
+
+      <div className="mt-12 flex justify-end gap-3">
+        <ModalButton
+          variant="danger"
+          label="Remover"
+          onAction={onConfirm}
+          className="bg-red-700"
         />
 
-        <ModalText
-          text="Essa ação não poderá ser desfeita"
-          className="mt-8"
+        <ModalButton
+          variant="secondary"
+          label="Cancelar"
+          onAction={onClose}
+          className="bg-slate-200"
         />
-
-        <div className="mt-12 flex justify-end gap-3">
-          <ModalButton
-            label="Remover"
-            onAction={onConfirm}
-            className="bg-red-700"
-          />
-
-          <ModalButton
-            label="Cancelar"
-            onAction={onClose}
-            className="bg-slate-200"
-          />
-        </div>
       </div>
-    </div>
+      
+    </Modal>
   );
 }

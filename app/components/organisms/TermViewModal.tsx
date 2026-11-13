@@ -5,13 +5,14 @@ import type { TermResponseDTO } from "~/types/terms";
 import { formatTermTimestamp, termStatusLabels, termTypeLabels } from "~/types/terms";
 
 export interface TermViewModalProps {
+  isOpen: boolean
   term: TermResponseDTO;
   onClose: () => void;
 }
 
-export function TermViewModal({ term, onClose }: TermViewModalProps) {
+export function TermViewModal({ term, isOpen, onClose }: TermViewModalProps) {
   return (
-    <Modal className='w-[52rem] max-w-[92vw]'>
+    <Modal isOpen={isOpen}  onClose={onClose} className='w-[52rem] max-w-[92vw]'>
       <ModalTitle
         title={termTypeLabels[term.type]}
         description={`Versão ${term.version} · ${termStatusLabels[term.status]} · Atualizado em ${formatTermTimestamp(term.timestamp)}`}

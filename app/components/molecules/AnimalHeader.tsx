@@ -11,7 +11,7 @@ export interface AnimalHeaderProps {
 
 export function AnimalHeader({name = "Animal", model="Modelo", onEdit, onDelete}: AnimalHeaderProps) {
   return (
-    <div className="flex gap-8">
+    <div className="flex gap-8 w-full">
       <AnimalIcon />
       
       <div className="flex flex-col gap-1 w-2xs max-w-56">

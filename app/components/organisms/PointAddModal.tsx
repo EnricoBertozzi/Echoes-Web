@@ -8,40 +8,84 @@ import { ModalFormButtons } from "../molecules/ModalFormButtons";
 import { Modal } from "../atoms/modal/Modal";
 import { ModalForm } from "../atoms/modal/ModalForm";
 import type { AuscultationPointRegisterRequest } from "~/types/AuscultationPoint";
+import { useForm } from "react-hook-form";
+import { useCreatePoint } from "~/hooks/animals/useCreatePoint";
+import { ControlledTextField } from "../molecules/controlled/ControlledTextField";
+import { Button } from "../atoms/Button";
+import { Alert } from "../atoms/page/Alert";
 
 interface PointAddModalProps {
+  isOpen: boolean;
   animal?: Animal;
   onClose: () => void;
-  onSubmit: (data: AuscultationPointRegisterRequest) => void;
 }
 
-export function PointAddModal({ animal, onClose, onSubmit }: PointAddModalProps) {
-  const [position, setPosition] = useState("");
-  const animalId = `${animal?.id}`;
-
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    onSubmit({ position, animalId });
+export function PointAddModal({ animal, isOpen, onClose }: PointAddModalProps) {
+  if (!animal?.id) {
+    onClose();
   }
 
-  return (
-    <Modal>
-      <ModalTitle
-        title={"Novo Ponto de Auscultal"}
-        description="Informe os dados do ponto"
-      />
+  const { control, handleSubmit, register } =
+    useForm<AuscultationPointRegisterRequest>({
+      defaultValues: {
+        animalId: animal?.id,
+        position: "",
+      },
+    });
+  const { handlePointAddSubmit, loading, error, success } = useCreatePoint();
 
-      <ModalForm onSubmit={handleSubmit}>
-        <ModalTextField
-          id="animal-name"
-          label="Nome"
-          onChange={setPosition}
-          value={position}
-          required={true}
-        />
-        <ModalFormButtons confirmLabel={"Novo"} onClose={onClose} />
-      </ModalForm>
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      {success ? (
+        <>
+          <ModalTitle
+            title={"Ponto Cadastrado"}
+            description="O ponto foi cadastrado com sucesso"
+          />
+
+          <div className="flex justify-end">
+            <div className="w-36">
+              <Button label={"Fechar"} variant={"muted"} onClick={onClose} />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <ModalTitle
+            title={"Novo Ponto de Auscultal"}
+            description="Informe os dados do ponto"
+          />
+
+          <ModalForm onSubmit={handleSubmit(handlePointAddSubmit)}>
+            <input
+              type="hidden"
+              {...(register("animalId"), { value: animal?.id })}
+            />
+            <ControlledTextField
+              control={control}
+              id={"ponto"}
+              name={"position"}
+              label={"Posição"}
+              placeholder={"Digite a posição do ponto"}
+              rules={{
+                required: "Posição é obrigatória",
+              }}
+            />
+
+            {error && <Alert message={error} type={"error"} />}
+
+            <div className="mt-3 flex gap-3 justify-end">
+              <Button label={"Cancelar"} variant={"muted"} onClick={onClose} />
+              <Button
+                label={"Cadastrar"}
+                disabled={loading}
+                variant={"primary"}
+                type="submit"
+              />
+            </div>
+          </ModalForm>
+        </>
+      )}
     </Modal>
   );
 }

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Main } from "~/components/atoms/page/Main";
+import { PageTitle } from "~/components/atoms/PageTitle";
 import { TableHeadColumn } from "~/components/atoms/TableHeadColumn";
 import { TermTableRow } from "~/components/organisms/TermTableRow";
 import { TermViewModal } from "~/components/organisms/TermViewModal";
@@ -10,10 +12,8 @@ export default function Terms() {
   const [selectedTerm, setSelectedTerm] = useState<TermResponseDTO | null>(null);
 
   return (
-    <main className='flex flex-1 flex-col justify-center items-center'>
-      <div className='w-full max-w-5xl flex flex-row justify-between items-center'>
-        <h2 className='text-lg text-black font-medium'>Termos</h2>
-      </div>
+    <Main>
+      <PageTitle title={"Termos"} description={"Consulte os termos relacionados a Lei Geral de Proteção de Dados"} />
 
       <div className='w-full max-w-5xl mt-4'>
         {/* Aviso quando alguns termos falharam, mas outros carregaram */}
@@ -101,9 +101,9 @@ export default function Terms() {
       {selectedTerm && (
         <TermViewModal
           term={selectedTerm}
-          onClose={() => setSelectedTerm(null)}
-        />
+          onClose={() => setSelectedTerm(null)} 
+          isOpen={selectedTerm != null} />
       )}
-    </main>
+    </Main>
   );
 }
