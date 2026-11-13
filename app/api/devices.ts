@@ -1,4 +1,8 @@
-import type { DeviceInfo, DeviceStatus } from "~/types/device";
+import type {
+  DeviceInfo,
+  DeviceStatus,
+  DeviceUpdateRequest,
+} from "~/types/device";
 import { api } from "./axios";
 
 // O DeviceController ainda está em "/devices" (sem /api/v1). Se for migrado, troque só aqui.
@@ -13,6 +17,20 @@ export async function findDevices(params: {
   return response.data;
 }
 
+export async function findDevicesByName(params: {
+  page: number;
+  size: number;
+  name: string;
+}): Promise<DeviceInfo[]> {
+  const response = await api.get<DeviceInfo[]>(`${BASE}/search`, { params });
+  return response.data;
+}
+
+export async function findDeviceById(deviceId: string): Promise<DeviceInfo> {
+  const response = await api.get<DeviceInfo>(`${BASE}/${deviceId}`);
+  return response.data;
+}
+
 export async function approveDevice(
   deviceId: string,
   institutionId: string,
@@ -20,5 +38,36 @@ export async function approveDevice(
   const response = await api.post<DeviceInfo>(`${BASE}/${deviceId}/approve`, {
     institutionId,
   });
+  return response.data;
+}
+
+export async function changeDeviceInstitutionid(
+  deviceId: string,
+  institutionId: string
+): Promise<DeviceInfo> {
+  const response = await api.patch(`${BASE}/${deviceId}/institution`, {
+    institutionId,
+  })
+  return response.data;
+}
+
+export async function deactivateDevice(deviceId: string): Promise<DeviceInfo> {
+  const response = await api.patch(`${BASE}/${deviceId}/deactivate`);
+  return response.data;
+}
+
+export async function activateDevice(deviceId: string): Promise<DeviceInfo> {
+  const response = await api.patch(`${BASE}/${deviceId}/activate`);
+  return response.data;
+}
+
+export async function updateDevice(
+  deviceId: string,
+  params: DeviceUpdateRequest,
+): Promise<DeviceInfo> {
+  const response = await api.patch<DeviceInfo>(
+    `${BASE}/${deviceId}`,
+    params,
+  );
   return response.data;
 }
