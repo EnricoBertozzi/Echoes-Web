@@ -40,12 +40,21 @@ export function AddInstitutionalUserModal({
     });
 
   const options = new Map<string, string>();
-  options.set("student", "Aluno")
-  options.set("manager", "Professor")
-  options.set("teacher", "Gestor")
+  const { user } = useAuth();
 
-  const { error, loading, success, setSuccess, handleCreateInstitutionalUserSubmit } =
-    useCreateUser();
+  options.set("manager", "Gestor");
+  if (user?.role == "MANAGER") {
+    options.set("student", "Aluno");
+    options.set("teacher", "Professor");
+  }
+
+  const {
+    error,
+    loading,
+    success,
+    setSuccess,
+    handleCreateInstitutionalUserSubmit,
+  } = useCreateUser();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -74,7 +83,9 @@ export function AddInstitutionalUserModal({
             title="Cadastrar Usuário"
             description="Digite os dados do novo usuário"
           />
-          <ModalForm onSubmit={handleSubmit(handleCreateInstitutionalUserSubmit)}>
+          <ModalForm
+            onSubmit={handleSubmit(handleCreateInstitutionalUserSubmit)}
+          >
             <input
               type="hidden"
               {...register("institutionId", { value: institutionId })}

@@ -18,6 +18,7 @@ import {
 } from "~/api/scenario";
 
 import { Button } from "~/components/atoms/Button";
+import { Main } from "~/components/atoms/page/Main";
 import { PageTitle } from "~/components/atoms/PageTitle";
 
 import { PointAddModal } from "~/components/organisms/PointAddModal";
@@ -119,17 +120,6 @@ export default function AnimalInfoPage() {
     setPointModal(null);
   }
 
-  async function handlePointEditSubmit(data: AuscultationPointUpdateRequest) {
-    if (pointModal?.type !== "edit") {
-      return;
-    }
-
-    await updatePoint(pointModal.point.id, data);
-
-    await loadPoints();
-
-    setPointModal(null);
-  }
 
   async function handlePointDeleteSubmit() {
     if (pointModal?.type !== "delete") {
@@ -150,17 +140,6 @@ export default function AnimalInfoPage() {
       ...current,
       [pointId]: scenarios,
     }));
-  }
-
-  async function handleScenarioAddSubmit(
-    data: ScenarioRegisterRequest,
-    file: File,
-  ) {
-    await createScenario(data, file);
-
-    await loadScenarios(data.pointId);
-
-    setScenarioModal(null);
   }
 
   async function handleScenarioEditSubmit(data: ScenarioUpdateRequest) {
@@ -188,35 +167,22 @@ export default function AnimalInfoPage() {
   }
 
   return (
-    <main className="flex flex-1 bg-zinc-100">
-      <div className="flex h-full w-full flex-col gap-8 px-12 py-16">
-        <div className="w-36">
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard/scene")}
-            className="cursor-pointer text-left text-xl text-slate-500 hover:underline"
-          >
-            Voltar
-          </button>
-        </div>
-
+    <Main>
         <PageTitle
           title={`${animal?.name}`}
           description={`${animal?.description}`}
+          backPath="/animals"
         />
 
         <div className="w-36">
           <Button
+            onClick={() => setPointModal({type: "create"})}
             label="Novo Ponto"
-            onClick={() =>
-              setPointModal({
-                type: "create",
-              })
-            }
+            variant="primary"
           />
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-scroll">
+        <div className="min-h-0 flex-1">
           <ul className="flex w-full flex-col gap-8">
             {points.map((point) => (
               <li key={point.id} className="w-full">
@@ -260,42 +226,43 @@ export default function AnimalInfoPage() {
             ))}
           </ul>
         </div>
-      </div>
 
       {pointModal?.type === "create" && (
         <PointAddModal
+          isOpen={pointModal?.type === "create"}
           animal={animal}
           onClose={() => setPointModal(null)}
-          onSubmit={handlePointAddSubmit}
         />
       )}
 
       {pointModal?.type === "edit" && (
         <PointEditModal
+          isOpen={pointModal?.type === "edit"}
           point={pointModal.point}
           onClose={() => setPointModal(null)}
-          onSubmit={handlePointEditSubmit}
         />
       )}
 
       {pointModal?.type === "delete" && (
         <PointDeleteModal
+          isOpen={pointModal?.type === "delete"}
+          onConfirm={handlePointDeleteSubmit}
           point={pointModal.point}
           onClose={() => setPointModal(null)}
-          onConfirm={handlePointDeleteSubmit}
         />
       )}
 
       {scenarioModal?.type === "create" && (
         <ScenarioAddModal
+          isOpen={scenarioModal?.type === "create"}
           pointId={scenarioModal.pointId}
           onClose={() => setScenarioModal(null)}
-          onSubmit={handleScenarioAddSubmit}
         />
       )}
 
       {scenarioModal?.type === "edit" && (
         <ScenarioEditModal
+          isOpen={scenarioModal?.type === "edit"}
           scenario={scenarioModal.scenario}
           onClose={() => setScenarioModal(null)}
           onSubmit={handleScenarioEditSubmit}
@@ -304,11 +271,12 @@ export default function AnimalInfoPage() {
 
       {scenarioModal?.type === "delete" && (
         <ScenarioDeleteModal
+          isOpen={scenarioModal?.type === "delete"}
           scenario={scenarioModal.scenario}
           onClose={() => setScenarioModal(null)}
           onConfirm={handleScenarioDeleteSubmit}
         />
       )}
-    </main>
+    </Main>
   );
 }

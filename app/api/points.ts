@@ -19,8 +19,8 @@ export async function createPoint(point: AuscultationPointRegisterRequest) {
   return response.status;
 }
 
-export async function updatePoint(id: string, point: AuscultationPointUpdateRequest) {
-  const response = await api.patch<void>(`/points/${id}`, point);
+export async function updatePoint(point: AuscultationPointUpdateRequest) {
+  const response = await api.patch<void>(`/points/${point.pointId}`, point);
 
   return response.status;
 }

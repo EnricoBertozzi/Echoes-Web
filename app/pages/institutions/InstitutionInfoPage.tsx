@@ -5,6 +5,7 @@ import { Button } from "~/components/atoms/Button";
 import { ButtonIcon } from "~/components/atoms/ButtonIcon";
 import { Main } from "~/components/atoms/page/Main";
 import { PageTitle } from "~/components/atoms/PageTitle";
+import { useAuth } from "~/context/AuthContext";
 import { useDeleteInstitution } from "~/hooks/useDeleteInstitution";
 import { useInstitution } from "~/hooks/useInstitution";
 import { useToggleInstitutionStatus } from "~/hooks/useToggleInstitutionStatus";
@@ -63,6 +64,9 @@ function InstitutionInfoPage({
   onDeleted,
 }: InstitutionInfoPageProps) {
   const navigate = useNavigate();
+
+  const { user } = useAuth();
+
   const { deleting, deleteError, handleDelete } = useDeleteInstitution(
     institution,
     onDeleted,
@@ -74,11 +78,15 @@ function InstitutionInfoPage({
 
   return (
     <Main>
-      <PageTitle
-        backPath="/institutions"
-        title={institution.name}
-        description={formatCnpj(institution.cnpj)}
-      />
+      {user?.role === "ADMIN" ? (
+        <PageTitle
+          backPath="/institutions"
+          title={institution.name}
+          description={institution.id}
+        />
+      ) : (
+        <PageTitle title={institution.name} description={institution.id} />
+      )}
 
       <dl className="flex flex-col gap-2 text-xl text-slate-700">
         <span
@@ -98,7 +106,7 @@ function InstitutionInfoPage({
         </div>
         <div className="flex gap-2">
           <dt className="font-bold">Telefone:</dt>
-          <dd>{institution.phone ?? "—"}</dd>
+          <dd>{institution.phone ?? "-"}</dd>
         </div>
         <div className="flex gap-2">
           <dt className="font-bold">Endereço:</dt>
@@ -111,6 +119,7 @@ function InstitutionInfoPage({
           <Button
             label={"Membros"}
             onClick={() => navigate(`/institutions/${institution.id}/users`)}
+            variant={"primary"}
           />
         </div>
         <button
@@ -157,7 +166,7 @@ function InstitutionInfoPage({
                 : "Ativar"}
           </button>
           <div className="w-24">
-            <Button label={"Editar"} onClick={onEdit} />
+            <Button label={"Editar"} onClick={onEdit} variant={"primary"} />
           </div>
         </div>
       </div>

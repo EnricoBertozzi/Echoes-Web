@@ -60,7 +60,7 @@ export function Navbar({ collapsed }: NavbarProps) {
           icon={FaSchool}
         />
       )}
-      
+
       {user?.role == "MANAGER" && (
         <NavbarButton
           to={`/institutions/${user?.institutionId}`}
@@ -88,12 +88,14 @@ export function Navbar({ collapsed }: NavbarProps) {
         />
       )}
 
-      <NavbarButton
-        to="/animals"
-        label="Animais"
-        collapse={collapsed}
-        icon={FaDog}
-      />
+      {user?.role == "ADMIN" && (
+        <NavbarButton
+          to="/animals"
+          label="Animais"
+          collapse={collapsed}
+          icon={FaDog}
+        />
+      )}
     </ul>
   );
 }

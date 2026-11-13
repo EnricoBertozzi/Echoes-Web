@@ -22,8 +22,8 @@ export function AnimalDeleteModal({
 
         <ModalText text="Essa ação não poderá ser desfeita" className="mt-8"/>
         <div className="mt-12 flex gap-3 justify-end">
-          <ModalButton label="Remover" onAction={onConfirm} className="bg-red-700"/>
-          <ModalButton label="Cancelar" onAction={onClose} className="bg-slate-"/>
+          <ModalButton label="Remover" onAction={onConfirm} className="bg-red-700" variant={"primary"}/>
+          <ModalButton label="Cancelar" onAction={onClose} className="bg-slate-" variant={"primary"}/>
         </div>
       </div>
     </div>

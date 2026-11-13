@@ -9,11 +9,12 @@ import { Modal } from "../atoms/modal/Modal";
 import { ModalForm } from "../atoms/modal/ModalForm";
 
 interface AnimalAddModalProps {
+  isOpen: boolean
   onClose: () => void;
   onSubmit: (data: AnimalDataRequest) => void;
 }
 
-export function AnimalAddModal({ onClose, onSubmit }: AnimalAddModalProps) {
+export function AnimalAddModal({ isOpen, onClose, onSubmit }: AnimalAddModalProps) {
   const [name, setName] = useState("");
   const [model, setModel] = useState("");
   const [description, setDescription] = useState("");
@@ -25,7 +26,8 @@ export function AnimalAddModal({ onClose, onSubmit }: AnimalAddModalProps) {
   }
 
   return (
-    <Modal>
+    <Modal 
+    isOpen={isOpen} onClose={onClose}  >
       <ModalTitle title={"Novo Animal"} description="Informe os dados do novo animal" />
 
       <ModalForm onSubmit={handleSubmit} >

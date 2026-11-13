@@ -1,30 +1,27 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
-import { updateInstitution } from "~/api/institutions";
-import { formatCnpj, unmaskCnpj } from "~/utils/cnpj";
-import type { Institution } from "~/types/Institution";
+
 import { ApiRequestError } from "~/api/axios";
+import { updateInstitution } from "~/api/institutions";
+
+import type {
+  Institution,
+  InstitutionRegisterRequest,
+} from "~/types/Institution";
+
+import { unmaskCnpj } from "~/utils/cnpj";
 
 export function useUpdateInstitution(
   institution: Institution,
   onUpdated?: (institution: Institution) => void,
 ) {
-  const [name, setName] = useState(institution.name);
-  const [acronym, setAcronym] = useState(institution.acronym);
-  const [cnpj, setCnpj] = useState(formatCnpj(institution.cnpj));
-  const [email, setEmail] = useState(institution.email);
-  const [phone, setPhone] = useState(institution.phone ?? "");
-  const [address, setAddress] = useState(institution.address);
   const [submitting, setSubmitting] = useState(false);
+
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
   const [generalError, setGeneralError] = useState<string | null>(null);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (submitting) {
-      return;
-    }
+  async function submitInstitution(data: InstitutionRegisterRequest) {
+    if (submitting) return;
 
     setSubmitting(true);
     setFieldErrors({});
@@ -32,13 +29,14 @@ export function useUpdateInstitution(
 
     try {
       const updated = await updateInstitution(institution.id, {
-        name,
-        acronym,
-        cnpj: unmaskCnpj(cnpj),
-        email,
-        phone: phone || null,
-        address,
+        name: data.name.trim(),
+        acronym: data.acronym.trim(),
+        cnpj: unmaskCnpj(institution.cnpj),
+        email: data.email.trim(),
+        phone: data.phone?.trim() || null,
+        address: data.address.trim(),
       });
+
       onUpdated?.(updated);
     } catch (error) {
       if (error instanceof ApiRequestError) {
@@ -48,7 +46,7 @@ export function useUpdateInstitution(
           setGeneralError(error.message);
         }
       } else {
-        setGeneralError("Erro ao editar instituição");
+        setGeneralError("Erro ao atualizar instituição.");
       }
     } finally {
       setSubmitting(false);
@@ -56,21 +54,9 @@ export function useUpdateInstitution(
   }
 
   return {
-    name,
-    setName,
-    acronym,
-    setAcronym,
-    cnpj,
-    setCnpj,
-    email,
-    setEmail,
-    phone,
-    setPhone,
-    address,
-    setAddress,
     submitting,
     fieldErrors,
     generalError,
-    handleSubmit,
+    submitInstitution,
   };
 }

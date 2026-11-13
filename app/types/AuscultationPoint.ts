@@ -10,5 +10,6 @@ export interface AuscultationPointRegisterRequest {
 }
 
 export interface AuscultationPointUpdateRequest {
+  pointId: string;
   position: string;
 }

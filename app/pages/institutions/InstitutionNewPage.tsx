@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router";
+import { Button } from "~/components/atoms/Button";
 
 import { PageTitle } from "~/components/atoms/PageTitle";
+import { Alert } from "~/components/atoms/page/Alert";
 import { Main } from "~/components/atoms/page/Main";
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 
@@ -106,9 +108,7 @@ export default function NewInstitution() {
       <form
         className="flex flex-col"
         onSubmit={handleSubmit(form.submitInstitution)}
-        noValidate
       >
-
         <div className="flex flex-col gap-2">
           <ControlledTextField
             id="cnpj"
@@ -125,17 +125,15 @@ export default function NewInstitution() {
           />
 
           {form.lookingUp && (
-            <span className="text-sm text-slate-500">Consultando CNPJ…</span>
+            <Alert message="Consultando CNPJ…" type={"muted"} />
           )}
 
           {form.lookupError && !form.isFallbackMode && (
-            <span className="text-sm text-red-500">{form.lookupError}</span>
+            <Alert message={form.lookupError} type={"error"} />
           )}
 
           {form.fieldErrors.cnpj && (
-            <span className="text-sm text-red-500">
-              {form.fieldErrors.cnpj}
-            </span>
+            <Alert message={form.fieldErrors.cnpj} type={"error"} />
           )}
         </div>
 
@@ -256,30 +254,25 @@ export default function NewInstitution() {
           </div>
         )}
 
-        {/* Erro geral */}
         {form.generalError && (
           <p className="mt-4 text-sm text-red-500">{form.generalError}</p>
         )}
 
-        {/* Ações */}
-        <div className="mt-8 flex justify-end gap-2">
-          <button
-            type="button"
+        <div className="mt-2 flex justify-end gap-2">
+          <Button
+            variant="muted"
+            label={"Cancelar"}
             onClick={() => navigate("/institutions")}
-            className="cursor-pointer rounded px-4 py-2 font-medium text-red-500 hover:bg-red-50"
-          >
-            Cancelar
-          </button>
+          />
 
-          <button
-            type="submit"
+          <Button
+            variant="primary"
             disabled={
               !form.isReady || form.lookingUp || form.submitting || isSubmitting
             }
-            className="cursor-pointer rounded bg-main px-4 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {form.submitting || isSubmitting ? "Salvando..." : "Cadastrar"}
-          </button>
+            label={"Cadastrar"}
+            onClick={() => navigate("/institutions")}
+          />
         </div>
       </form>
     </Main>

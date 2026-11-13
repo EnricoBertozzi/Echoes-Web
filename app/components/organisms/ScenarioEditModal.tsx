@@ -6,14 +6,18 @@ import { ModalForm } from "../atoms/modal/ModalForm";
 import { ModalLongTextField } from "../atoms/modal/ModalLongTextField";
 import { ModalTextField } from "../atoms/modal/ModalTextField";
 import { ModalFormButtons } from "../molecules/ModalFormButtons";
+import { Modal } from "../atoms/modal/Modal";
+import { ModalTitle } from "../atoms/modal/ModalTitle";
 
 interface ScenarioEditModalProps {
+  isOpen: boolean;
   scenario: Scenario;
   onClose: () => void;
   onSubmit: (data: ScenarioUpdateRequest) => void;
 }
 
 export function ScenarioEditModal({
+  isOpen,
   scenario,
   onClose,
   onSubmit,
@@ -32,32 +36,30 @@ export function ScenarioEditModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-125 rounded-2xl bg-white p-8">
-        <h2 className="mb-8 text-2xl font-bold text-slate-900">
-          Editar Cenário
-        </h2>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalTitle
+        title={"Editar Cenário"}
+        description={"Altere os dados do cenário"}
+      />
+      <ModalForm onSubmit={handleSubmit}>
+        <ModalTextField
+          id="scenario-name"
+          label="Nome"
+          value={name}
+          onChange={setName}
+          required
+        />
 
-        <ModalForm onSubmit={handleSubmit}>
-          <ModalTextField
-            id="scenario-name"
-            label="Nome"
-            value={name}
-            onChange={setName}
-            required
-          />
+        <ModalLongTextField
+          id="scenario-description"
+          label="Descrição"
+          value={description}
+          onChange={setDescription}
+          required
+        />
 
-          <ModalLongTextField
-            id="scenario-description"
-            label="Descrição"
-            value={description}
-            onChange={setDescription}
-            required
-          />
-
-          <ModalFormButtons confirmLabel="Editar" onClose={onClose} />
-        </ModalForm>
-      </div>
-    </div>
+        <ModalFormButtons confirmLabel="Editar" onClose={onClose} />
+      </ModalForm>
+    </Modal>
   );
 }

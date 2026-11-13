@@ -98,56 +98,53 @@ export default function Animals() {
 
   return (
     <Main>
-      
-        <PageTitle
-          title="Animais"
-          description="Modelos de animais representados pelos simuladores."
-        />
+      <PageTitle
+        title="Animais"
+        description="Modelos de animais representados pelos simuladores."
+      />
 
-        <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-          <form className="w-96">
-            <SearchBar value={search} onChange={handleSearch} />
-          </form>
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
+        <form className="w-96">
+          <SearchBar value={search} onChange={handleSearch} />
+        </form>
 
-          <div className="w-36">
-            <div className="w-36">
-              <Button
-                label="Novo Animal"
-                onClick={() => setModal({ type: "create" })}
-              />
-            </div>
-          </div>
+        <div className="w-36">
+          <Button
+            label="Novo Animal"
+            onClick={() => setModal({ type: "create" })}
+            variant={"primary"}
+          />
         </div>
+      </div>
 
-        <div className="overflow-y-scroll">
-          <ul className="flex flex-wrap gap-8">
-            {animals.map((animal) => (
-              <li key={animal.id}>
-                <AnimalCard
-                  name={animal.name}
-                  model={animal.model}
-                  description={animal.description}
-                  onEdit={() =>
-                    setModal({
-                      type: "edit",
-                      animal,
-                    })
-                  }
-                  onDelete={() =>
-                    setModal({
-                      type: "delete",
-                      animal,
-                    })
-                  }
-                  onOpen={() => navigate(`/dashboard/scene/${animal.id}`)}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
+      <ul className="grid grid-cols-2 gap-8">
+        {animals.map((animal) => (
+          <li key={animal.id}>
+            <AnimalCard
+              name={animal.name}
+              model={animal.model}
+              description={animal.description}
+              onEdit={() =>
+                setModal({
+                  type: "edit",
+                  animal,
+                })
+              }
+              onDelete={() =>
+                setModal({
+                  type: "delete",
+                  animal,
+                })
+              }
+              onOpen={() => navigate(`/animals/${animal.id}`)}
+            />
+          </li>
+        ))}
+      </ul>
 
       {modal?.type === "create" && (
         <AnimalAddModal
+          isOpen={modal?.type === "create"}
           onClose={() => setModal(null)}
           onSubmit={handleAnimalAddSubmit}
         />
@@ -155,6 +152,7 @@ export default function Animals() {
 
       {modal?.type === "edit" && (
         <AnimalEditModal
+          isOpen={modal?.type === "edit"}
           animal={modal.animal}
           onClose={() => setModal(null)}
           onSubmit={handleAnimalEditSubmit}
