@@ -6,8 +6,9 @@ import {
   deactivateDevice,
   findDevices,
   findDevicesByName,
+  updateDevice,
 } from "~/api/devices";
-import type { DeviceInfo } from "~/types/device";
+import type { DeviceInfo, DeviceUpdateRequest } from "~/types/device";
 
 const PAGE_SIZE = 12;
 
@@ -67,15 +68,17 @@ export function useDevices() {
       deviceId: string,
       action: () => Promise<unknown>,
       message: string,
-    ) => {
+    ): Promise<boolean> => {
       setActingId(deviceId);
 
       try {
         await action();
         toast.success(message, { position: "bottom-right" });
         setRefetchKey((key) => key + 1);
+        return true;
       } catch {
         // o interceptor do axios já exibiu o erro
+        return false;
       } finally {
         setActingId(null);
       }
@@ -108,6 +111,16 @@ export function useDevices() {
     [runAction],
   );
 
+  const update = useCallback(
+    (deviceId: string, data: DeviceUpdateRequest) =>
+      runAction(
+        deviceId,
+        () => updateDevice(deviceId, data),
+        "Dispositivo atualizado",
+      ),
+    [runAction],
+  );
+
   return {
     devices,
     loading,
@@ -121,5 +134,6 @@ export function useDevices() {
     prevPage,
     approve,
     toggleStatus,
+    update,
   };
 }

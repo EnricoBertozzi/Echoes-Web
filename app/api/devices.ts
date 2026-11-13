@@ -1,4 +1,8 @@
-import type { DeviceInfo, DeviceStatus } from "~/types/device";
+import type {
+  DeviceInfo,
+  DeviceStatus,
+  DeviceUpdateRequest,
+} from "~/types/device";
 import { api } from "./axios";
 
 // O DeviceController ainda está em "/devices" (sem /api/v1). Se for migrado, troque só aqui.
@@ -54,5 +58,16 @@ export async function deactivateDevice(deviceId: string): Promise<DeviceInfo> {
 
 export async function activateDevice(deviceId: string): Promise<DeviceInfo> {
   const response = await api.patch(`${BASE}/${deviceId}/activate`);
+  return response.data;
+}
+
+export async function updateDevice(
+  deviceId: string,
+  params: DeviceUpdateRequest,
+): Promise<DeviceInfo> {
+  const response = await api.patch<DeviceInfo>(
+    `${BASE}/${deviceId}`,
+    params,
+  );
   return response.data;
 }
