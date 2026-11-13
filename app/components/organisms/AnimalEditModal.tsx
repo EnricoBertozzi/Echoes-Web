@@ -10,11 +10,17 @@ import { ModalForm } from "../atoms/modal/ModalForm";
 
 interface AnimalEditModalProps {
   animal?: Animal;
+  isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: AnimalDataRequest) => void;
 }
 
-export function AnimalEditModal({ animal, onClose, onSubmit }: AnimalEditModalProps) {
+export function AnimalEditModal({
+  animal,
+  onClose,
+  onSubmit,
+  isOpen
+}: AnimalEditModalProps) {
   const [name, setName] = useState(animal?.name ?? "");
   const [model, setModel] = useState(animal?.model ?? "");
   const [description, setDescription] = useState(animal?.description ?? "");
@@ -26,16 +32,36 @@ export function AnimalEditModal({ animal, onClose, onSubmit }: AnimalEditModalPr
   }
 
   return (
-    <Modal>
-      <ModalTitle title={"Editar Animal"} description="Informe os dados do novo animal" />
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalTitle
+        title={"Editar Animal"}
+        description="Informe os dados do novo animal"
+      />
 
-      <ModalForm onSubmit={handleSubmit} >
-        <ModalTextField id="animal-name" label="Nome" onChange={setName} value={name} required={true}/>          
-        <ModalTextField id="animal-model" label="Modelo" onChange={setModel} value={model} required={true}/>
-        <ModalLongTextField id="animal-description" label="Descrição" onChange={setDescription} value={description} required={true}/>
+      <ModalForm onSubmit={handleSubmit}>
+        <ModalTextField
+          id="animal-name"
+          label="Nome"
+          onChange={setName}
+          value={name}
+          required={true}
+        />
+        <ModalTextField
+          id="animal-model"
+          label="Modelo"
+          onChange={setModel}
+          value={model}
+          required={true}
+        />
+        <ModalLongTextField
+          id="animal-description"
+          label="Descrição"
+          onChange={setDescription}
+          value={description}
+          required={true}
+        />
         <ModalFormButtons confirmLabel={"Editar"} onClose={onClose} />
       </ModalForm>
-      
     </Modal>
   );
 }

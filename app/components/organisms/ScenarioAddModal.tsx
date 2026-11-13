@@ -1,55 +1,111 @@
-import { useState } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
-import type { ScenarioRegisterRequest } from "~/types/Scenario";
+import type {
+  ScenarioRegisterForm,
+  ScenarioRegisterRequest,
+} from "~/types/Scenario";
+
 import { ModalForm } from "../atoms/modal/ModalForm";
-import { ModalButton } from "../atoms/modal/ModalButton";
-import { ModalLongTextField } from "../atoms/modal/ModalLongTextField";
-import { ModalTextField } from "../atoms/modal/ModalTextField";
 import { ModalFormButtons } from "../molecules/ModalFormButtons";
 import { Modal } from "../atoms/modal/Modal";
 import { ModalTitle } from "../atoms/modal/ModalTitle";
-import { ModalFileField } from "../atoms/modal/ModalFileField";
+
+import { ControlledTextField } from "../molecules/controlled/ControlledTextField";
+import { ControlledFileField } from "../molecules/controlled/ControlledFileFIeld";
+import { useCreateScenario } from "~/hooks/animals/useCreateScenario";
+import { Alert } from "../atoms/page/Alert";
+import { Button } from "../atoms/Button";
 
 interface ScenarioAddModalProps {
+  isOpen: boolean;
   pointId: string;
   onClose: () => void;
-  onSubmit: (data: ScenarioRegisterRequest, file: File) => void;
 }
 
 export function ScenarioAddModal({
+  isOpen,
   pointId,
   onClose,
-  onSubmit,
 }: ScenarioAddModalProps) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const { control, handleSubmit } = useForm<ScenarioRegisterForm>({
+    defaultValues: {
+      name: "",
+      description: "",
+      file: null,
+      pointId,
+    },
+  });
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!file) {
-      return;
-    }
-
-    onSubmit({ name, description, pointId, }, file);
-  }
+  const { handleScenarioAddSubmit, error, loading, success } =
+    useCreateScenario();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <Modal>
-        <ModalTitle
-          title="Novo Cenário"
-          description="Informe os dados do cenário"
-        />
-        <ModalForm onSubmit={handleSubmit}>
-          <ModalTextField id="scenario-name" label="Nome" value={name} onChange={setName} required/>
-          <ModalLongTextField id="scenario-description" label="Descrição" value={description} onChange={setDescription} required/>
-          <ModalFileField id="scenario-file" label="Arquivo de áudio" onChange={setFile} accept="audio/*" required/>
-          
-          <ModalFormButtons confirmLabel="Cadastrar" onClose={onClose} />
-        </ModalForm>
-      </Modal>
-    </div>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      {success ? (
+        <>
+          <ModalTitle
+            title="Novo Cenário"
+            description="Informe os dados do cenário"
+          />
+          <div className="flex flex-row justify-end">
+            <div className="w-32">
+              <Button label={"Fechar"} variant={"muted"} />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <ModalTitle
+            title="Novo Cenário"
+            description="Informe os dados do cenário"
+          />
+
+          <ModalForm onSubmit={handleSubmit(handleScenarioAddSubmit)}>
+            <ControlledTextField
+              placeholder={"Digite o nome"}
+              id="name"
+              name="name"
+              label="Nome"
+              control={control}
+              rules={{
+                required: "O nome é obrigatório.",
+              }}
+            />
+            <ControlledTextField
+              id="description"
+              name="description"
+              label="Descrição"
+              control={control}
+              rules={{
+                required: "A descrição é obrigatória.",
+              }}
+              placeholder={"Digite a descrição"}
+            />
+            <ControlledFileField
+              id="scenario-file"
+              name="file"
+              label="Arquivo de áudio"
+              control={control}
+              accept="audio/*"
+              rules={{
+                required: "O arquivo de áudio é obrigatório.",
+                validate: {
+                  type: (file) =>
+                    !file ||
+                    file.type.startsWith("audio/") ||
+                    "Selecione um arquivo de áudio.",
+                },
+              }}
+            />
+            {error && <Alert message={error} type={"error"} />}
+
+            <div className="mt-3 flex gap-3 justify-end">
+              <Button label={"Cancelar"} onClick={onClose} variant={"muted"} />
+              <Button label={"Cadastrar"} variant="primary" />
+            </div>
+          </ModalForm>
+        </>
+      )}
+    </Modal>
   );
 }

@@ -12,6 +12,9 @@ import { Modal } from "../atoms/modal/Modal";
 import { ModalForm } from "../atoms/modal/ModalForm";
 import { ModalTitle } from "../atoms/modal/ModalTitle";
 import { ModalFormButtons } from "../molecules/ModalFormButtons";
+import { SidebarProfile } from "../atoms/SidebarProfile";
+import { RiLogoutBoxLine } from "react-icons/ri";
+import { LogoutSidebar } from "../atoms/SidebarLogout";
 
 export function Sidebar() {
   const sidebar = useSidebar();
@@ -23,7 +26,8 @@ export function Sidebar() {
   return (
     <aside
       className={clsx(
-        "py-6 h-full bg-main transition-all overflow-hidden duration-500 flex flex-col items-center gap-8",
+        "py-6 h-full bg-main transition-all overflow-hidden duration-500",
+        "flex flex-col items-center gap-8",
         collapsed ? "w-16" : "w-[22%]",
       )}
     >
@@ -41,6 +45,7 @@ export function Sidebar() {
           )}
         </button>
       </header>
+
       <div className="w-full h-1/4 flex justify-center items-center">
         <div
           className={clsx(
@@ -52,16 +57,25 @@ export function Sidebar() {
           <Icon className="w-full h-full fill-main" />
         </div>
       </div>
+
       <Navbar collapsed={collapsed} />
-      {collapsed == false && (
-        <div className="w-full flex justify-start p-10">
-          <ModalButton
-            label="Logout"
-            variant={"primary"}
-            onAction={() => setShowModal(true)}
-          />
+
+      <div className="mt-auto flex w-full flex-col gap-2">
+        <div
+          className={clsx(
+            "w-full transition-[padding] duration-500",
+            collapsed ? "px-2" : "pl-10 pr-4",
+          )}
+        >
+          <SidebarProfile collapsed={collapsed} />
         </div>
-      )}
+
+        <LogoutSidebar
+          collapsed={collapsed}
+          onClick={() => setShowModal(true)}
+        />
+      </div>
+
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <ModalTitle title="Logout" description="Deseja sair da plataforma?" />
         <ModalForm onSubmit={logout.onLogout}>

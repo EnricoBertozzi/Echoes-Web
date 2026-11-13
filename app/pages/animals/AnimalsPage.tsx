@@ -9,12 +9,19 @@ import { AnimalAddModal } from "~/components/organisms/AnimalAddModal";
 import { AnimalEditModal } from "~/components/organisms/AnimalEditModal";
 import { AnimalDeleteModal } from "~/components/organisms/AnimalDeleteModal";
 
-import {createAnimal, deleteAnimal, findAllAnimals, findAnimalsByName, updateAnimal} from "~/api/animals";
+import {
+  createAnimal,
+  deleteAnimal,
+  findAllAnimals,
+  findAnimalsByName,
+  updateAnimal,
+} from "~/api/animals";
 
-import type {Animal, AnimalDataRequest} from "~/types/Animal";
+import type { Animal, AnimalDataRequest } from "~/types/Animal";
 import { useNavigate } from "react-router";
+import { Main } from "~/components/atoms/page/Main";
 
-type ModalState = 
+type ModalState =
   | { type: "create" }
   | { type: "edit"; animal: Animal }
   | { type: "delete"; animal: Animal }
@@ -46,11 +53,7 @@ export default function Animals() {
       return;
     }
 
-    const data = await findAnimalsByName(
-      value,
-      0,
-      10
-    );
+    const data = await findAnimalsByName(value, 0, 10);
 
     setAnimals(data);
   }
@@ -94,54 +97,54 @@ export default function Animals() {
   }
 
   return (
-    <main className="flex flex-1">
-      <div className="flex flex-col gap-8 px-12 py-16">
+    <Main>
+      <PageTitle
+        title="Animais"
+        description="Modelos de animais representados pelos simuladores."
+      />
 
-        <PageTitle
-          title="Animais"
-          description="Modelos de animais representados pelos simuladores."
-        />
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
+        <form className="w-96">
+          <SearchBar value={search} onChange={handleSearch} />
+        </form>
 
         <div className="w-36">
           <Button
             label="Novo Animal"
             onClick={() => setModal({ type: "create" })}
+            variant={"primary"}
           />
-        </div>
-
-        <SearchBar
-          value={search}
-          onChange={handleSearch}
-        />
-
-        <div className="overflow-y-scroll">
-          <ul className="flex flex-wrap gap-8">
-            {animals.map((animal) => (
-              <li key={animal.id}>
-                <AnimalCard
-                  name={animal.name}
-                  model={animal.model}
-                  description={animal.description}
-                  onEdit={() => setModal({
-                      type: "edit",
-                      animal,
-                    })
-                  }
-                  onDelete={() => setModal({
-                      type: "delete",
-                      animal,
-                    })
-                  }
-                  onOpen={() => navigate(`/dashboard/scene/${animal.id}`)}
-                />
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
 
+      <ul className="grid grid-cols-2 gap-8">
+        {animals.map((animal) => (
+          <li key={animal.id}>
+            <AnimalCard
+              name={animal.name}
+              model={animal.model}
+              description={animal.description}
+              onEdit={() =>
+                setModal({
+                  type: "edit",
+                  animal,
+                })
+              }
+              onDelete={() =>
+                setModal({
+                  type: "delete",
+                  animal,
+                })
+              }
+              onOpen={() => navigate(`/animals/${animal.id}`)}
+            />
+          </li>
+        ))}
+      </ul>
+
       {modal?.type === "create" && (
         <AnimalAddModal
+          isOpen={modal?.type === "create"}
           onClose={() => setModal(null)}
           onSubmit={handleAnimalAddSubmit}
         />
@@ -149,6 +152,7 @@ export default function Animals() {
 
       {modal?.type === "edit" && (
         <AnimalEditModal
+          isOpen={modal?.type === "edit"}
           animal={modal.animal}
           onClose={() => setModal(null)}
           onSubmit={handleAnimalEditSubmit}
@@ -162,6 +166,6 @@ export default function Animals() {
           onConfirm={handleDelete}
         />
       )}
-    </main>
+    </Main>
   );
 }

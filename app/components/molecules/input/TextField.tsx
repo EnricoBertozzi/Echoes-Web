@@ -11,6 +11,7 @@ export interface TextFieldProps {
   value: string;
   error?: string;
   ref?: Ref<HTMLInputElement>;
+  readOnly?: boolean;
   onChange: (value: string) => void;
   onBlur: () => void;
 }
@@ -24,6 +25,7 @@ export function TextField({
   label,
   error,
   ref,
+  readOnly,
   onChange,
   onBlur,
 }: TextFieldProps) {
@@ -32,6 +34,7 @@ export function TextField({
       <Label id={id} name={name} label={label} />
       <TextInput
         id={id}
+        readOnly={readOnly}
         name={name}
         type={type}
         placeholder={placeholder}

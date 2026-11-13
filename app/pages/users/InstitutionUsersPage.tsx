@@ -33,10 +33,7 @@ export default function InstitutionUsersPage() {
   const [size, setSize] = useState(10);
 
   useEffect(() => {
-    if (institutionId == null || institutionId != user?.institutionId) {
-      navigate(-1);
-    }
-
+    
     const query = appliedSearch.trim();
 
     if (query) {
@@ -63,6 +60,7 @@ export default function InstitutionUsersPage() {
       <PageTitle
         title="Membros"
         description="Consulte o cadastro dos membros da instituição"
+        backPath={user?.role=="ADMIN" ? "/institutions" : `/institutions/${user?.institutionId}`}
       />
 
       <div className="flex flex-row flex-wrap items-center justify-between gap-4">
@@ -71,7 +69,7 @@ export default function InstitutionUsersPage() {
         </form>
 
         <div className="w-36">
-          <Button label="Novo Usuário" onClick={() => setModal(true)} />
+          <Button label="Novo Usuário" onClick={() => setModal(true)} variant={"primary"} />
         </div>
       </div>
 

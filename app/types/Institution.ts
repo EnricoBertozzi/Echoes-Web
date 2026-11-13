@@ -10,12 +10,12 @@ export interface Institution {
 }
 
 export interface InstitutionRegisterRequest {
-  name: string;
-  acronym: string;
   cnpj: string;
-  email: string;
-  phone: string | null;
+  name: string;
   address: string;
+  acronym: string;
+  email: string;
+  phone: string;
 }
 
 export interface InstitutionUpdateRequest {

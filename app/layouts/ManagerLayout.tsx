@@ -1,9 +1,10 @@
 import type { PropsWithChildren } from "react";
-import { useLocation, Navigate, Outlet } from "react-router";
+import { useLocation, Navigate } from "react-router";
 import { useAuth } from "~/context/AuthContext";
-import { LoadingPage } from "../../../pages/LoadingPage";
+import { LoadingPage } from "../pages/LoadingPage";
+import { Outlet } from "react-router";
 
-export default function AdminLayout() {
+export default function ManagerLayout({ children }: PropsWithChildren) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -14,9 +15,9 @@ export default function AdminLayout() {
     return <Navigate to="/" replace />;
   }
 
-  if (user.role != "ADMIN") {
+  if (user.role != "MANAGER") {
     return <Navigate to="/forbidden" replace />;
   }
 
-  return <Outlet />;
+  return <Outlet />
 }

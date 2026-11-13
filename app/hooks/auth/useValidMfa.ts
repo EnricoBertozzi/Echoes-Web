@@ -17,7 +17,7 @@ export function useValidMfa() {
 
       auth.login(currentUserResponse.data);
 
-      navigate("/dashboard/scene", { replace: true });
+      navigate("/dashboard/", { replace: true });
     } catch (error) {
       localStorage.removeItem("jwt_token");
       throw error;

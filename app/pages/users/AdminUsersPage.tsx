@@ -39,7 +39,7 @@ export default function AdminPageUsers() {
   return (
     <Main>
       <PageTitle
-        title="Usuários"
+        title="Administradores"
         description="Consulte o cadastro dos admistradores do sistema"
       />
 
@@ -70,8 +70,8 @@ export default function AdminPageUsers() {
           <div className="w-full h-full overflow-scroll">
             <div className="flex justify-center">
               <PaginationSelector
-                label={""}
-                size={0}
+                label={"Usuários"}
+                size={size}
                 page={page}
                 totalPages={totalPages}
                 nextPage={() => setPage(page + 1)}

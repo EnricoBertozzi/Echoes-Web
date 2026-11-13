@@ -14,6 +14,7 @@ export interface ControlledTextFieldProps<T extends FieldValues> {
   placeholder: string;
   control: Control<T>;
   rules: RegisterOptions<T, Path<T>>;
+  readOnly?: boolean;
 }
 
 export function ControlledTextField<T extends FieldValues>({
@@ -22,7 +23,8 @@ export function ControlledTextField<T extends FieldValues>({
   label,
   placeholder,
   control,
-  rules
+  rules,
+  readOnly
 }: ControlledTextFieldProps<T>) {
   return (
     <Controller
@@ -34,6 +36,7 @@ export function ControlledTextField<T extends FieldValues>({
           id={id}
           name={field.name}
           label={label}
+          readOnly={readOnly}
           placeholder={placeholder}
           type="text"
           value={field.value}
