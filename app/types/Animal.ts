@@ -10,3 +10,10 @@ export interface AnimalDataRequest {
   description: string;
   model: string
 }
+
+export interface AnimalUpdateRequest {
+  id: string;
+  name: string;
+  description: string;
+  model: string
+}

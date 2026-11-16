@@ -12,7 +12,7 @@ export interface PointHeaderProps {
 export function PointHeader({ position, onEdit, onDelete }: PointHeaderProps) {
   return (
     <div className="flex w-full justify-between gap-8">
-      <div className="flex min-w-0 gap-8">
+      <div className="flex min-w-0 gap-6">
         <PointIcon />
 
         <div className="w-2xs max-w-56 min-w-0">

@@ -6,8 +6,8 @@ import { Main } from "~/components/atoms/page/Main";
 import { Button } from "~/components/atoms/Button";
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 
-import { useInstitution } from "~/hooks/useInstitution";
-import { useUpdateInstitution } from "~/hooks/useUpdateInstitution";
+import { useInstitution } from "~/hooks/institutions/useInstitution";
+import { useUpdateInstitution } from "~/hooks/institutions/useUpdateInstitution";
 
 import type { Institution } from "~/types/Institution";
 import type { InstitutionRegisterRequest } from "~/types/Institution";
