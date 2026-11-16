@@ -42,7 +42,7 @@ export function EditUserModal({ user, onUpdated }: EditUserModalProps) {
       </button>
 
       {open && (
-        <Modal>
+        <Modal isOpen onClose={() => setOpen(false)}>
           <ModalTitle
             title='Editar usuário'
             description='Altere os dados do usuário.'

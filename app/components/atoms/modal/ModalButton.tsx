@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 
 export interface ModalButtonProps extends ComponentProps<"button"> {
   label: string;
-  variant: "primary" | "secondary" | "danger";
+  variant?: "primary" | "secondary" | "danger";
   onAction?: () => void;
 }
 

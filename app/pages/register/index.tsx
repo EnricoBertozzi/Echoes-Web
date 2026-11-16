@@ -222,6 +222,7 @@ export default function Register() {
 
       {selectedTerm && (
         <TermViewModal
+          isOpen
           term={selectedTerm}
           onClose={() => setSelectedTerm(null)}
         />

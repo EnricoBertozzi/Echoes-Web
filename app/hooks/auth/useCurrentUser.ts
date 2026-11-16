@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchCurrentUSer as fetchCurrentUser } from "~/api/users";
+import { fetchCurrentUser } from "~/api/users";
 import type { User } from "~/types/user";
 
 export function useCurrentUser() {
