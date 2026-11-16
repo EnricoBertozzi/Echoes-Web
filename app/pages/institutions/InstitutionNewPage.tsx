@@ -9,9 +9,9 @@ import { Alert } from "~/components/atoms/page/Alert";
 import { Main } from "~/components/atoms/page/Main";
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 
-import { useCreateInstitution } from "~/hooks/institutions/useCreateInstitution";
+import { useCreateInstitution } from "~/hooks/useCreateInstitution";
 
-import type { InstitutionRegisterRequest } from "~/types/Institution";
+import type { InstitutionCreateForm } from "~/types/Institution";
 
 import { formatCnpjAddress, maskCnpjInput, unmaskCnpj } from "~/utils/cnpj";
 
@@ -29,7 +29,7 @@ export default function NewInstitution() {
     handleSubmit,
     setValue,
     formState: { isSubmitting },
-  } = useForm<InstitutionRegisterRequest>({
+  } = useForm<InstitutionCreateForm>({
     mode: "onChange",
     defaultValues: {
       cnpj: "",
@@ -38,6 +38,8 @@ export default function NewInstitution() {
       acronym: "",
       email: "",
       phone: "",
+      managerName: "",
+      managerEmail: "",
     },
   });
 
@@ -251,6 +253,52 @@ export default function NewInstitution() {
                 <FieldError message={form.fieldErrors.phone} />
               )}
             </div>
+
+            <div className="flex flex-col gap-1 border-t border-zinc-200 pt-6">
+              <h2 className="text-lg font-semibold">Gestor responsável</h2>
+              <span className="text-xs text-slate-500">
+                A instituição só é criada junto com o seu primeiro gestor, que
+                recebe o convite de acesso por e-mail.
+              </span>
+            </div>
+
+            <div>
+              <ControlledTextField
+                id="managerName"
+                name="managerName"
+                label="Nome do gestor"
+                placeholder="Digite o nome do gestor"
+                control={control}
+                rules={{
+                  required: "O nome do gestor é obrigatório.",
+                }}
+              />
+
+              {form.fieldErrors.managerName && (
+                <FieldError message={form.fieldErrors.managerName} />
+              )}
+            </div>
+
+            <div>
+              <ControlledTextField
+                id="managerEmail"
+                name="managerEmail"
+                label="E-mail do gestor"
+                placeholder="Digite o e-mail do gestor"
+                control={control}
+                rules={{
+                  required: "O e-mail do gestor é obrigatório.",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Informe um e-mail válido.",
+                  },
+                }}
+              />
+
+              {form.fieldErrors.managerEmail && (
+                <FieldError message={form.fieldErrors.managerEmail} />
+              )}
+            </div>
           </div>
         )}
 
@@ -270,8 +318,8 @@ export default function NewInstitution() {
             disabled={
               !form.isReady || form.lookingUp || form.submitting || isSubmitting
             }
+            type="submit"
             label={"Cadastrar"}
-            onClick={() => navigate("/institutions")}
           />
         </div>
       </form>

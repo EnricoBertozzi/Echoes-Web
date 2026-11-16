@@ -1,7 +1,7 @@
 import type {
   Institution,
+  InstitutionCreateRequest,
   InstitutionPage,
-  InstitutionRegisterRequest,
   InstitutionUpdateRequest,
 } from "~/types/Institution";
 import { api } from "./axios";
@@ -24,7 +24,7 @@ export async function findInstitutionById(id: string): Promise<Institution> {
 }
 
 export async function createInstitution(
-  data: InstitutionRegisterRequest,
+  data: InstitutionCreateRequest,
 ): Promise<Institution> {
   const response = await api.post<Institution>("/api/v1/institutions", data);
   return response.data;
