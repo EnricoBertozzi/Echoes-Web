@@ -11,6 +11,7 @@ import {
 
 import { NavbarButton } from "../atoms/NavbarButton";
 import { useAuth } from "~/context/AuthContext";
+import { HiChip } from "react-icons/hi";
 
 export interface NavbarProps {
   collapsed: boolean;
@@ -122,6 +123,15 @@ export function Navbar({
           label="Animais"
           collapse={collapsed}
           icon={FaDog}
+        />
+      )}
+
+      {user?.role === "ADMIN" && (
+        <NavbarButton
+          to="/devices"
+          label="Dispositivos"
+          collapse={collapsed}
+          icon={HiChip}
         />
       )}
     </ul>
