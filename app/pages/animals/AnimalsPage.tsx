@@ -77,7 +77,7 @@ export default function Animals() {
       return;
     }
 
-    await updateAnimal(modal.animal.id, data);
+    await updateAnimal({ id: modal.animal.id, ...data });
 
     await loadAnimals();
 
