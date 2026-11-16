@@ -10,6 +10,7 @@ export interface SelectInputProps {
   ref?: Ref<HTMLSelectElement>;
   onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
   onBlur?: () => void;
+  disablePlaceholder?: boolean;
 }
 
 export function SelectInput({
@@ -22,6 +23,7 @@ export function SelectInput({
   value,
   onChange,
   onBlur,
+  disablePlaceholder = true,
 }: SelectInputProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -43,12 +45,12 @@ export function SelectInput({
           }
         `}
       >
-        <option disabled value="">
+        <option disabled={disablePlaceholder} value="">
           {placeholder}
         </option>
 
         {Array.from(options.entries()).map(([optionValue, label]) => (
-          <option key={label} value={optionValue}>
+          <option key={optionValue} value={optionValue}>
             {label}
           </option>
         ))}
