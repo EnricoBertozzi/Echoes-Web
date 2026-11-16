@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 
 export interface ButtonProps extends ComponentProps<"button"> {
   label: string;
-  variant: "primary" | "muted" | "danger";
+  variant?: "primary" | "muted" | "danger";
 }
 
 export function Button({ label, variant = "primary", ...props }: ButtonProps) {
