@@ -14,10 +14,17 @@ export function useValidMfa() {
 
       localStorage.setItem("jwt_token", token);
       const currentUserResponse = await fetchCurrentUser();
+      const currentUser = currentUserResponse.data;
 
-      auth.login(currentUserResponse.data);
+      auth.login(currentUser);
 
-      navigate("/dashboard/", { replace: true });
+      // professor e aluno não têm painel: vão direto para as próprias turmas
+      const isClassroomMember =
+        currentUser.role === "TEACHER" || currentUser.role === "STUDENT";
+
+      navigate(isClassroomMember ? "/classrooms" : "/dashboard", {
+        replace: true,
+      });
     } catch (error) {
       localStorage.removeItem("jwt_token");
       throw error;

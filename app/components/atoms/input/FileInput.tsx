@@ -3,7 +3,7 @@ import type { Ref } from "react";
 export interface FileInputProps {
   id: string;
   name: string;
-  value: string;
+  value?: File | null;
   error?: string;
   ref?: Ref<HTMLInputElement>;
   readOnly?: boolean;

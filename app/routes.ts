@@ -1,4 +1,3 @@
-
 import {
   type RouteConfig,
   index,
@@ -72,6 +71,19 @@ export default [
       route(
         "institutions/:institutionId/edit",
         "pages/institutions/InstitutionEditPage.tsx",
+      ),
+    ]),
+
+    // TEACHER e STUDENT: as turmas em que participam
+    layout("layouts/ClassroomMemberLayout.tsx", [
+      route(
+        "classrooms",
+        "pages/classrooms/MyClassroomsPage.tsx",
+      ),
+
+      route(
+        "classrooms/:classroomId",
+        "pages/classrooms/ClassroomWorkspacePage.tsx",
       ),
     ]),
 

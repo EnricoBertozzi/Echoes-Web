@@ -8,6 +8,7 @@ export interface Classroom {
   archived: boolean;
   institutionId: string;
   createdAt: string;
+  // só vem na consulta por id e só para professor da turma
   joinCode: string | null;
 }
 
@@ -23,4 +24,15 @@ export interface ClassroomMember {
   email: string;
   role: ApiRole;
   joinedAt: string;
+}
+
+// POST /api/v1/classrooms/join (somente STUDENT)
+export interface ClassroomJoinRequest {
+  code: string;
+}
+
+// POST /api/v1/classrooms/{id}/code (somente TEACHER da turma)
+export interface ClassroomCodeResponse {
+  code: string;
+  expiresInSeconds: number;
 }
