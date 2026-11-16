@@ -1,4 +1,3 @@
-
 import clsx from "clsx";
 import { FaDog, FaSchool } from "react-icons/fa";
 
@@ -26,6 +25,10 @@ export function Navbar({
     user?.role === "ADMIN" ||
     user?.role === "MANAGER";
 
+  const isClassroomMember =
+    user?.role === "TEACHER" ||
+    user?.role === "STUDENT";
+
   return (
     <ul
       className={clsx(
@@ -40,6 +43,15 @@ export function Navbar({
           label="Painel"
           collapse={collapsed}
           icon={FiBarChart2}
+        />
+      )}
+
+      {isClassroomMember && (
+        <NavbarButton
+          to="/classrooms"
+          label="Turmas"
+          collapse={collapsed}
+          icon={FiBookOpen}
         />
       )}
 

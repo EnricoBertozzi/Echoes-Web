@@ -1,5 +1,7 @@
 import type {
   Classroom,
+  ClassroomCodeResponse,
+  ClassroomJoinRequest,
   ClassroomMember,
   ClassroomRequest,
 } from "~/types/Classroom";
@@ -8,7 +10,8 @@ import { api } from "./axios";
 
 const BASE = "/api/v1/classrooms";
 
-// institutionId só vale para ADMIN; para o gestor o backend usa a própria instituição
+// institutionId só vale para ADMIN; para o gestor o backend usa a própria instituição.
+// Para TEACHER e STUDENT o backend devolve apenas as turmas em que a pessoa é membro.
 export async function findClassrooms(params: {
   name?: string;
   page: number;
@@ -70,6 +73,26 @@ export async function findClassroomMembers(
   return response.data;
 }
 
+// percorre todas as páginas; usado na aba Pessoas e na exportação da lista
+export async function findAllClassroomMembers(
+  id: string,
+): Promise<ClassroomMember[]> {
+  const PAGE_SIZE = 100;
+  const members: ClassroomMember[] = [];
+
+  let page = 0;
+  let totalPages = 1;
+
+  while (page < totalPages) {
+    const result = await findClassroomMembers(id, page, PAGE_SIZE);
+    members.push(...result.content);
+    totalPages = result.totalPages;
+    page += 1;
+  }
+
+  return members;
+}
+
 export async function addClassroomMember(
   id: string,
   userId: string,
@@ -77,6 +100,7 @@ export async function addClassroomMember(
   await api.post<void>(`${BASE}/${id}/members/${userId}`);
 }
 
+// somente MANAGER (o backend não libera para TEACHER)
 export async function removeClassroomMember(
   id: string,
   userId: string,
@@ -87,4 +111,25 @@ export async function removeClassroomMember(
 // remove todos os alunos de uma vez (virada de semestre)
 export async function clearClassroomStudents(id: string): Promise<void> {
   await api.delete<void>(`${BASE}/${id}/students`);
+}
+
+// TEACHER da turma. Só gera depois que o código anterior expirou (15 min).
+export async function generateClassroomCode(
+  id: string,
+): Promise<ClassroomCodeResponse> {
+  const response = await api.post<ClassroomCodeResponse>(`${BASE}/${id}/code`);
+  return response.data;
+}
+
+// STUDENT. Aceita o código em maiúsculo ou minúsculo.
+export async function joinClassroom(
+  data: ClassroomJoinRequest,
+): Promise<Classroom> {
+  const response = await api.post<Classroom>(`${BASE}/join`, data);
+  return response.data;
+}
+
+// STUDENT ou TEACHER sai da própria turma
+export async function leaveClassroom(id: string): Promise<void> {
+  await api.delete<void>(`${BASE}/${id}/leave`);
 }
