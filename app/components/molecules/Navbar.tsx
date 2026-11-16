@@ -4,6 +4,7 @@ import { FaDog, FaSchool } from "react-icons/fa";
 
 import {
   FiBarChart2,
+  FiBookOpen,
   FiFileText,
   FiSearch,
   FiUser,
@@ -85,6 +86,15 @@ export function Navbar({
         />
       )}
 
+      {user?.role === "MANAGER" && (
+        <NavbarButton
+          to={`/institutions/${user.institutionId}/classrooms`}
+          label="Turmas"
+          collapse={collapsed}
+          icon={FiBookOpen}
+        />
+      )}
+
       {user?.role === "ADMIN" && (
         <NavbarButton
           to="/users/admins"
@@ -105,4 +115,3 @@ export function Navbar({
     </ul>
   );
 }
-

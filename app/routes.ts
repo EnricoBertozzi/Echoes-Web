@@ -60,6 +60,16 @@ export default [
       ),
 
       route(
+        "institutions/:institutionId/classrooms",
+        "pages/classrooms/ClassroomsPage.tsx",
+      ),
+
+      route(
+        "institutions/:institutionId/classrooms/:classroomId",
+        "pages/classrooms/ClassroomInfoPage.tsx",
+      ),
+
+      route(
         "institutions/:institutionId/edit",
         "pages/institutions/InstitutionEditPage.tsx",
       ),
@@ -105,4 +115,3 @@ export default [
     ),
   ]),
 ] satisfies RouteConfig;
-
