@@ -1,23 +1,42 @@
 import { useEffect, useState } from "react";
+import clsx from "clsx";
+import type { IconType } from "react-icons";
+import {
+  FaChalkboardTeacher,
+  FaUserGraduate,
+  FaUsers,
+  FaUserTie,
+} from "react-icons/fa";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
-import { AddAdminModal } from "~/components/molecules/users/AddAdminModal";
 import { useFetchUsers } from "~/hooks/users/useFetchUsers";
 import { UserCard } from "~/components/molecules/users/UserCard";
 import { Main } from "~/components/atoms/page/Main";
 import { Alert } from "~/components/atoms/page/Alert";
 import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { useAuth } from "~/context/AuthContext";
 import { AddInstitutionalUserModal } from "~/components/molecules/users/AddInstitutionalUserModal";
+import { deleteUser } from "~/api/users";
+import { roleToUserRole, type User } from "~/types/user";
+
+type RoleFilter = "all" | "manager" | "teacher" | "student";
+
+const roleFilters: { value: RoleFilter; label: string; icon: IconType }[] = [
+  { value: "all", label: "Todos", icon: FaUsers },
+  { value: "manager", label: "Gestores", icon: FaUserTie },
+  { value: "teacher", label: "Professores", icon: FaChalkboardTeacher },
+  { value: "student", label: "Alunos", icon: FaUserGraduate },
+];
 
 export default function InstitutionUsersPage() {
   const [modal, setModal] = useState(false);
   const [search, setSearch] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
+  const [refetchKey, setRefetchKey] = useState(0);
   const { institutionId } = useParams();
-  const navigate = useNavigate();
   const { user } = useAuth();
 
   const {
@@ -25,6 +44,7 @@ export default function InstitutionUsersPage() {
     loading,
     error,
     totalPages,
+    fetchAdminUsers,
     fetchUsersByInstitution,
     fetchUsersByNameInInstitution,
   } = useFetchUsers();
@@ -33,10 +53,12 @@ export default function InstitutionUsersPage() {
   const [size, setSize] = useState(10);
 
   useEffect(() => {
-    
     const query = appliedSearch.trim();
 
-    if (query) {
+    if (roleFilter !== "all") {
+      // Lista só o papel escolhido, dentro da instituição
+      fetchAdminUsers(roleFilter, page, size, institutionId!);
+    } else if (query) {
       fetchUsersByNameInInstitution(institutionId!, query, page, size);
     } else {
       fetchUsersByInstitution(institutionId!, page, size);
@@ -45,6 +67,10 @@ export default function InstitutionUsersPage() {
     page,
     size,
     appliedSearch,
+    roleFilter,
+    institutionId,
+    refetchKey,
+    fetchAdminUsers,
     fetchUsersByInstitution,
     fetchUsersByNameInInstitution,
   ]);
@@ -55,12 +81,41 @@ export default function InstitutionUsersPage() {
     setAppliedSearch(search.trim());
   }
 
+  function handleRoleChange(value: RoleFilter) {
+    setRoleFilter(value);
+    setPage(0);
+  }
+
+  async function handleDelete(member: User) {
+    if (!window.confirm(`Excluir o usuário ${member.name}?`)) return;
+
+    try {
+      await deleteUser(roleToUserRole(member.role), member.id);
+      setRefetchKey((key) => key + 1);
+    } catch {
+      // o interceptor do axios já mostrou o erro
+    }
+  }
+
+  // Com um papel escolhido, a busca por nome filtra a página carregada
+  const query = appliedSearch.toLowerCase();
+  const visibleUsers =
+    roleFilter !== "all" && query
+      ? users.filter((u) => u.name.toLowerCase().includes(query))
+      : users;
+
+  const isManager = user?.role === "MANAGER";
+
   return (
     <Main>
       <PageTitle
         title="Membros"
         description="Consulte o cadastro dos membros da instituição"
-        backPath={user?.role=="ADMIN" ? "/institutions" : `/institutions/${user?.institutionId}`}
+        backPath={
+          user?.role == "ADMIN"
+            ? "/institutions"
+            : `/institutions/${user?.institutionId}`
+        }
       />
 
       <div className="flex flex-row flex-wrap items-center justify-between gap-4">
@@ -69,8 +124,36 @@ export default function InstitutionUsersPage() {
         </form>
 
         <div className="w-36">
-          <Button label="Novo Usuário" onClick={() => setModal(true)} variant={"primary"} />
+          <Button
+            label="Novo Usuário"
+            onClick={() => setModal(true)}
+            variant={"primary"}
+          />
         </div>
+      </div>
+
+      <div
+        role="group"
+        aria-label="Filtrar por função"
+        className="flex flex-wrap gap-3"
+      >
+        {roleFilters.map(({ value, label, icon: Icon }) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={roleFilter === value}
+            onClick={() => handleRoleChange(value)}
+            className={clsx(
+              "flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 transition-colors",
+              roleFilter === value
+                ? "border-main bg-main text-white"
+                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100",
+            )}
+          >
+            <Icon size={18} />
+            {label}
+          </button>
+        ))}
       </div>
 
       {error && <Alert message={error} type="error" />}
@@ -86,7 +169,7 @@ export default function InstitutionUsersPage() {
           </p>
         )}
 
-        {users.length != 0 ? (
+        {visibleUsers.length != 0 ? (
           <div className="w-full h-full overflow-scroll">
             <div className="flex justify-center">
               <PaginationSelector
@@ -104,12 +187,17 @@ export default function InstitutionUsersPage() {
               />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              {users?.map((user) => (
+              {visibleUsers.map((member) => (
                 <UserCard
-                  key={user.id}
-                  name={user.name}
-                  email={user.email}
-                  role={user.role}
+                  key={member.id}
+                  name={member.name}
+                  email={member.email}
+                  role={member.role}
+                  onDelete={
+                    isManager && member.id !== user?.id
+                      ? () => handleDelete(member)
+                      : undefined
+                  }
                 />
               ))}
             </div>
