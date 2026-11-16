@@ -1,25 +1,147 @@
-import { FiFolder } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { FiDownload, FiEdit2, FiEye, FiFile, FiPlus, FiRefreshCw, FiTrash2 } from "react-icons/fi";
 import { Card } from "~/components/atoms/card/Card";
+import { Alert } from "~/components/atoms/page/Alert";
+import { downloadClassroomMaterial } from "~/api/classrooms";
+import { ClassroomMaterialModal } from "./ClassroomMaterialModal";
+import { useClassroomMaterials } from "~/hooks/classrooms/useClassroomMaterials";
+import type { ClassroomMaterial } from "~/types/ClassroomMaterial";
 
-/**
- * Aba "Arquivos". O servidor ainda não tem endpoints de materiais por turma
- * (nem o ClassroomController nem o ScenarioController, que é só do ADMIN e
- * não se liga a turmas). Quando existirem, esta aba lista, envia, edita e
- * exclui materiais; o botão de envio fica restrito ao professor.
- */
-export function ClassroomFilesTab() {
+type Mode = "create" | "edit" | "replace";
+type Values = { title: string; description: string; file: File | null };
+
+function formatSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export interface ClassroomFilesTabProps {
+  classroomId: string;
+  isTeacher: boolean;
+  archived: boolean;
+}
+
+export function ClassroomFilesTab({ classroomId, isTeacher, archived }: ClassroomFilesTabProps) {
+  const { items, loading, busy, progress, error, refresh, upload, update, replace, remove } = useClassroomMaterials(classroomId);
+  const [mode, setMode] = useState<Mode | null>(null);
+  const [selected, setSelected] = useState<ClassroomMaterial | null>(null);
+  const [preview, setPreview] = useState<{ url: string; type: string; name: string } | null>(null);
+  const [downloading, setDownloading] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => { if (preview) URL.revokeObjectURL(preview.url); };
+  }, [preview]);
+
+  function openModal(next: Mode, material: ClassroomMaterial | null = null) {
+    setSelected(material);
+    setMode(next);
+  }
+
+  async function submit(values: Values): Promise<boolean> {
+    if (mode === "create") return values.file ? upload(values.title, values.description, values.file) : false;
+    if (mode === "edit" && selected) return update(selected.id, { title: values.title, description: values.description });
+    if (mode === "replace" && selected && values.file) return replace(selected.id, values.file);
+    return false;
+  }
+
+  async function openFile(material: ClassroomMaterial, inline: boolean) {
+    setDownloading(material.id);
+    setFileError(null);
+    try {
+      const data = await downloadClassroomMaterial(classroomId, material.id, inline);
+      const url = URL.createObjectURL(data);
+      if (inline) {
+        setPreview({ url, type: material.contentType, name: material.originalFileName });
+      } else {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = material.originalFileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      }
+    } catch (caught) {
+      setFileError(caught instanceof Error ? caught.message : "Falha ao abrir arquivo.");
+    } finally {
+      setDownloading(null);
+    }
+  }
+
+  async function confirmDelete(material: ClassroomMaterial) {
+    if (!window.confirm(`Excluir o material “${material.title}”?`)) return;
+    await remove(material.id);
+  }
+
+  const canManage = isTeacher && !archived;
+
   return (
-    <Card className="items-center py-16 text-center">
-      <FiFolder size={48} className="text-slate-400" aria-hidden="true" />
+    <Card>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900">Arquivos da turma</h2>
+          <p className="mt-1 text-slate-600">{items.length} {items.length === 1 ? "material disponível" : "materiais disponíveis"}.</p>
+          {archived && <p className="text-sm text-amber-700">Turma arquivada: apenas leitura e download.</p>}
+        </div>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => void refresh()} disabled={loading} aria-label="Atualizar arquivos"
+            className="rounded-lg border border-slate-300 px-3 py-2 text-slate-700 disabled:opacity-40"><FiRefreshCw /></button>
+          {canManage && <button type="button" onClick={() => openModal("create")} disabled={busy}
+            className="flex items-center gap-2 rounded-lg bg-main px-4 py-2 font-semibold text-white disabled:opacity-50"><FiPlus /> Enviar arquivo</button>}
+        </div>
+      </div>
 
-      <h2 className="text-2xl font-bold text-slate-900">
-        Os materiais ainda não estão disponíveis
-      </h2>
+      {error && <Alert message={error} type="error" />}
+      {fileError && <Alert message={fileError} type="error" />}
+      {loading && <p className="text-slate-600">Carregando materiais...</p>}
+      {!loading && !error && items.length === 0 && <p className="py-8 text-center text-slate-500">Nenhum material foi enviado para esta turma.</p>}
+      <ul className="divide-y divide-slate-200">
+        {items.map((material) => (
+          <li key={material.id} className="flex flex-wrap items-start justify-between gap-4 py-5">
+            <div className="flex min-w-0 flex-1 gap-3">
+              <FiFile size={26} className="mt-1 shrink-0 text-slate-500" aria-hidden="true" />
+              <div className="min-w-0">
+                <h3 className="break-words text-lg font-bold text-slate-900">{material.title}</h3>
+                <p className="break-all text-sm text-slate-600">{material.originalFileName}</p>
+                {material.description && <p className="mt-1 whitespace-pre-wrap text-slate-700">{material.description}</p>}
+                <p className="mt-1 text-sm text-slate-500">{formatSize(material.fileSize)} · {material.authorName} · {new Date(material.createdAt).toLocaleDateString("pt-BR")}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 text-sm">
+              {material.previewable && <button type="button" onClick={() => void openFile(material, true)} disabled={!!downloading}
+                className="flex items-center gap-1 rounded-lg border px-3 py-2 text-slate-700"><FiEye /> Visualizar</button>}
+              <button type="button" onClick={() => void openFile(material, false)} disabled={!!downloading}
+                className="flex items-center gap-1 rounded-lg border px-3 py-2 text-slate-700"><FiDownload /> Baixar</button>
+              {canManage && <>
+                <button type="button" onClick={() => openModal("edit", material)} disabled={busy}
+                  className="flex items-center gap-1 rounded-lg border px-3 py-2 text-slate-700"><FiEdit2 /> Editar</button>
+                <button type="button" onClick={() => openModal("replace", material)} disabled={busy}
+                  className="flex items-center gap-1 rounded-lg border px-3 py-2 text-slate-700"><FiRefreshCw /> Trocar</button>
+                <button type="button" onClick={() => void confirmDelete(material)} disabled={busy}
+                  className="flex items-center gap-1 rounded-lg border border-red-200 px-3 py-2 text-red-700"><FiTrash2 /> Excluir</button>
+              </>}
+            </div>
+          </li>
+        ))}
+      </ul>
 
-      <p className="max-w-md text-lg text-slate-600">
-        Quando o envio de materiais for liberado, os arquivos e links da turma
-        aparecerão aqui.
-      </p>
+      <ClassroomMaterialModal isOpen={mode !== null} mode={mode ?? "create"} material={selected}
+        busy={busy} progress={progress} onSubmit={submit} onClose={() => setMode(null)} />
+
+      {preview && (
+        <div role="dialog" aria-modal="true" aria-label={`Visualizar ${preview.name}`}
+          className="fixed inset-0 z-50 flex flex-col bg-black/80 p-4">
+          <div className="mb-3 flex items-center justify-between gap-3 text-white">
+            <p className="truncate font-semibold">{preview.name}</p>
+            <button type="button" onClick={() => setPreview(null)} className="rounded bg-white px-4 py-2 text-slate-900">Fechar</button>
+          </div>
+          {preview.type.startsWith("image/") ?
+            <img src={preview.url} alt={preview.name} className="min-h-0 flex-1 object-contain" /> :
+            <iframe src={preview.url} title={preview.name} sandbox="" className="min-h-0 w-full flex-1 bg-white" />}
+        </div>
+      )}
     </Card>
   );
 }

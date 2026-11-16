@@ -239,7 +239,7 @@ export default function ClassroomWorkspacePage() {
           </div>
         )}
 
-        {tab === "arquivos" && <ClassroomFilesTab />}
+        {tab === "arquivos" && <ClassroomFilesTab classroomId={classroom.id} isTeacher={isTeacher} archived={classroom.archived} />}
 
         {tab === "pessoas" && (
           <ClassroomPeople

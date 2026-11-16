@@ -1,3 +1,5 @@
+import type { ClassroomMaterial, ClassroomMaterialUpdate } from "~/types/ClassroomMaterial";
+import type { AxiosProgressEvent } from "axios";
 import type {
   Classroom,
   ClassroomCodeResponse,
@@ -133,3 +135,69 @@ export async function joinClassroom(
 export async function leaveClassroom(id: string): Promise<void> {
   await api.delete<void>(`${BASE}/${id}/leave`);
 }
+
+// BEGIN CLASSROOM MATERIALS API
+const materialsPath = (classroomId: string) => `${BASE}/${classroomId}/materials`;
+
+export async function findClassroomMaterials(classroomId: string): Promise<ClassroomMaterial[]> {
+  const response = await api.get<ClassroomMaterial[]>(materialsPath(classroomId));
+  return response.data;
+}
+
+function onUploadProgress(callback?: (percent: number | null) => void) {
+  return (event: AxiosProgressEvent) => {
+    if (event.total && event.total > 0) {
+      callback?.(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+    } else {
+      callback?.(null);
+    }
+  };
+}
+
+export async function createClassroomMaterial(
+  classroomId: string, title: string, description: string, file: File,
+  progress?: (percent: number | null) => void,
+): Promise<ClassroomMaterial> {
+  const data = new FormData();
+  data.append("title", title);
+  data.append("description", description);
+  data.append("file", file);
+  const response = await api.post<ClassroomMaterial>(materialsPath(classroomId), data, {
+    onUploadProgress: onUploadProgress(progress),
+  });
+  return response.data;
+}
+
+export async function updateClassroomMaterial(
+  classroomId: string, materialId: string, data: ClassroomMaterialUpdate,
+): Promise<ClassroomMaterial> {
+  const response = await api.patch<ClassroomMaterial>(`${materialsPath(classroomId)}/${materialId}`, data);
+  return response.data;
+}
+
+export async function replaceClassroomMaterialFile(
+  classroomId: string, materialId: string, file: File,
+  progress?: (percent: number | null) => void,
+): Promise<ClassroomMaterial> {
+  const data = new FormData();
+  data.append("file", file);
+  const response = await api.patch<ClassroomMaterial>(`${materialsPath(classroomId)}/${materialId}/file`, data, {
+    onUploadProgress: onUploadProgress(progress),
+  });
+  return response.data;
+}
+
+export async function deleteClassroomMaterial(classroomId: string, materialId: string): Promise<void> {
+  await api.delete(`${materialsPath(classroomId)}/${materialId}`);
+}
+
+export async function downloadClassroomMaterial(
+  classroomId: string, materialId: string, inline = false,
+): Promise<Blob> {
+  const response = await api.get<Blob>(`${materialsPath(classroomId)}/${materialId}/download`, {
+    params: { inline },
+    responseType: "blob",
+  });
+  return response.data;
+}
+// END CLASSROOM MATERIALS API
