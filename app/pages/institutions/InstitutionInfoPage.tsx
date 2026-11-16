@@ -6,9 +6,9 @@ import { ButtonIcon } from "~/components/atoms/ButtonIcon";
 import { Main } from "~/components/atoms/page/Main";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { useAuth } from "~/context/AuthContext";
-import { useDeleteInstitution } from "~/hooks/useDeleteInstitution";
-import { useInstitution } from "~/hooks/useInstitution";
-import { useToggleInstitutionStatus } from "~/hooks/useToggleInstitutionStatus";
+import { useDeleteInstitution } from "~/hooks/institutions/useDeleteInstitution";
+import { useInstitution } from "~/hooks/institutions/useInstitution";
+import { useToggleInstitutionStatus } from "~/hooks/institutions/useToggleInstitutionStatus";
 import type { Institution } from "~/types/Institution";
 import { formatCnpj } from "~/utils/cnpj";
 

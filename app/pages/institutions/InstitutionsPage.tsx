@@ -4,7 +4,7 @@ import { Main } from "~/components/atoms/page/Main";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
 import { InstitutionCard } from "~/components/organisms/InstitutionCard";
-import { useInstitutions } from "~/hooks/useInstitutions";
+import { useInstitutions } from "~/hooks/institutions/useInstitutions";
 
 export default function InstitutionsPage() {
   const navigate = useNavigate();

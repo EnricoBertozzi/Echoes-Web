@@ -48,8 +48,8 @@ export async function createScenario(
   return response.status;
 }
 
-export async function updateScenario(id: string, data: ScenarioUpdateRequest) {
-  await api.patch(`/api/v1/scenarios/${id}`, data);
+export async function updateScenario(data: ScenarioUpdateRequest) {
+  await api.patch(`/api/v1/scenarios/${data.id}`, data);
 }
 
 export async function deleteScenario(id: string) {

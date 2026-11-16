@@ -44,12 +44,12 @@ export function ScenarioAddModal({
       {success ? (
         <>
           <ModalTitle
-            title="Novo Cenário"
-            description="Informe os dados do cenário"
+            title="Cenário Cadastrado"
+            description="Cenário cadastrado com sucesso"
           />
           <div className="flex flex-row justify-end">
             <div className="w-32">
-              <Button label={"Fechar"} variant={"muted"} />
+              <Button label={"Fechar"} variant={"muted"} onClick={onClose} />
             </div>
           </div>
         </>

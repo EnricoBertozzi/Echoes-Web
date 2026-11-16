@@ -17,6 +17,7 @@ export type ScenarioRegisterForm = Omit<ScenarioRegisterRequest, "file"> & {
 };
 
 export interface ScenarioUpdateRequest {
+  id: string;
   name: string;
   description: string;
 }

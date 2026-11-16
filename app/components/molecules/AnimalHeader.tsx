@@ -9,16 +9,23 @@ export interface AnimalHeaderProps {
   onDelete: () => any;
 }
 
-export function AnimalHeader({name = "Animal", model="Modelo", onEdit, onDelete}: AnimalHeaderProps) {
+export function AnimalHeader({
+  name = "Animal",
+  model = "Modelo",
+  onEdit,
+  onDelete,
+}: AnimalHeaderProps) {
   return (
-    <div className="flex gap-8 w-full">
-      <AnimalIcon />
-      
-      <div className="flex flex-col gap-1 w-2xs max-w-56">
-        <h3 className="wrap-break-word font-bold text-slate-900 text-2xl line-clamp-2">
-          {name}
-        </h3>
-        <p className="text-slate-500 text-xl line-clamp-1">{model}</p>
+    <div className="flex gap-8 w-full justify-between">
+      <div className="flex flex-row gap-8">
+        <AnimalIcon />
+
+        <div className="flex flex-col gap-1 w-2xs max-w-56">
+          <h3 className="wrap-break-word font-bold text-slate-900 text-2xl line-clamp-2">
+            {name}
+          </h3>
+          <p className="text-slate-500 text-xl line-clamp-1">{model}</p>
+        </div>
       </div>
 
       <div className="flex gap-8">

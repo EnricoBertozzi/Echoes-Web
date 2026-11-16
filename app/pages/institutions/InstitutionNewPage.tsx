@@ -9,7 +9,7 @@ import { Alert } from "~/components/atoms/page/Alert";
 import { Main } from "~/components/atoms/page/Main";
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 
-import { useCreateInstitution } from "~/hooks/useCreateInstitution";
+import { useCreateInstitution } from "~/hooks/institutions/useCreateInstitution";
 
 import type { InstitutionRegisterRequest } from "~/types/Institution";
 

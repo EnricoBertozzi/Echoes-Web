@@ -120,7 +120,6 @@ export default function AnimalInfoPage() {
     setPointModal(null);
   }
 
-
   async function handlePointDeleteSubmit() {
     if (pointModal?.type !== "delete") {
       return;
@@ -142,17 +141,6 @@ export default function AnimalInfoPage() {
     }));
   }
 
-  async function handleScenarioEditSubmit(data: ScenarioUpdateRequest) {
-    if (scenarioModal?.type !== "edit") {
-      return;
-    }
-
-    await updateScenario(scenarioModal.scenario.id, data);
-
-    await loadScenarios(scenarioModal.pointId);
-
-    setScenarioModal(null);
-  }
 
   async function handleScenarioDeleteSubmit() {
     if (scenarioModal?.type !== "delete") {
@@ -168,68 +156,68 @@ export default function AnimalInfoPage() {
 
   return (
     <Main>
-        <PageTitle
-          title={`${animal?.name}`}
-          description={`${animal?.description}`}
-          backPath="/animals"
+      <PageTitle
+        title={`${animal?.name}`}
+        description={`${animal?.description}`}
+        backPath="/animals"
+      />
+
+      <div className="w-36">
+        <Button
+          onClick={() => setPointModal({ type: "create" })}
+          label="Novo Ponto"
+          variant="primary"
         />
+      </div>
 
-        <div className="w-36">
-          <Button
-            onClick={() => setPointModal({type: "create"})}
-            label="Novo Ponto"
-            variant="primary"
-          />
-        </div>
-
-        <div className="min-h-0 flex-1">
-          <ul className="flex w-full flex-col gap-8">
-            {points.map((point) => (
-              <li key={point.id} className="w-full">
-                <PointCard
-                  position={point.position}
-                  scenarios={scenarios[point.id] ?? []}
-                  onPointEdit={() =>
-                    setPointModal({
-                      type: "edit",
-                      point,
-                    })
-                  }
-                  onPointDelete={() =>
-                    setPointModal({
-                      type: "delete",
-                      point,
-                    })
-                  }
-                  onScenarioAdd={() =>
-                    setScenarioModal({
-                      type: "create",
-                      pointId: point.id,
-                    })
-                  }
-                  onScenarioEdit={(scenario) =>
-                    setScenarioModal({
-                      type: "edit",
-                      scenario,
-                      pointId: point.id,
-                    })
-                  }
-                  onScenarioDelete={(scenario) =>
-                    setScenarioModal({
-                      type: "delete",
-                      scenario,
-                      pointId: point.id,
-                    })
-                  }
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="min-h-0 flex-1">
+        <ul className="flex w-full flex-col gap-8">
+          {points.map((point) => (
+            <li key={point.id} className="w-full">
+              <PointCard
+                position={point.position}
+                scenarios={scenarios[point.id] ?? []}
+                onPointEdit={() =>
+                  setPointModal({
+                    type: "edit",
+                    point,
+                  })
+                }
+                onPointDelete={() =>
+                  setPointModal({
+                    type: "delete",
+                    point,
+                  })
+                }
+                onScenarioAdd={() =>
+                  setScenarioModal({
+                    type: "create",
+                    pointId: point.id,
+                  })
+                }
+                onScenarioEdit={(scenario) =>
+                  setScenarioModal({
+                    type: "edit",
+                    scenario,
+                    pointId: point.id,
+                  })
+                }
+                onScenarioDelete={(scenario) =>
+                  setScenarioModal({
+                    type: "delete",
+                    scenario,
+                    pointId: point.id,
+                  })
+                }
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {pointModal?.type === "create" && (
         <PointAddModal
-          isOpen={pointModal?.type === "create"}
+          isOpen
           animal={animal}
           onClose={() => setPointModal(null)}
         />
@@ -237,7 +225,7 @@ export default function AnimalInfoPage() {
 
       {pointModal?.type === "edit" && (
         <PointEditModal
-          isOpen={pointModal?.type === "edit"}
+          isOpen
           point={pointModal.point}
           onClose={() => setPointModal(null)}
         />
@@ -245,7 +233,7 @@ export default function AnimalInfoPage() {
 
       {pointModal?.type === "delete" && (
         <PointDeleteModal
-          isOpen={pointModal?.type === "delete"}
+          isOpen
           onConfirm={handlePointDeleteSubmit}
           point={pointModal.point}
           onClose={() => setPointModal(null)}
@@ -254,7 +242,7 @@ export default function AnimalInfoPage() {
 
       {scenarioModal?.type === "create" && (
         <ScenarioAddModal
-          isOpen={scenarioModal?.type === "create"}
+          isOpen
           pointId={scenarioModal.pointId}
           onClose={() => setScenarioModal(null)}
         />
@@ -262,16 +250,15 @@ export default function AnimalInfoPage() {
 
       {scenarioModal?.type === "edit" && (
         <ScenarioEditModal
-          isOpen={scenarioModal?.type === "edit"}
+          isOpen
           scenario={scenarioModal.scenario}
           onClose={() => setScenarioModal(null)}
-          onSubmit={handleScenarioEditSubmit}
         />
       )}
 
       {scenarioModal?.type === "delete" && (
         <ScenarioDeleteModal
-          isOpen={scenarioModal?.type === "delete"}
+          isOpen
           scenario={scenarioModal.scenario}
           onClose={() => setScenarioModal(null)}
           onConfirm={handleScenarioDeleteSubmit}

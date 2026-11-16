@@ -17,13 +17,23 @@ export function AnimalDeleteModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50">
       <div className="w-125 rounded-2xl bg-white p-8">
-       
-        <ModalTitle title={"Remover Animal"} description={`Deseja remover o animal ${animal.name}?`} />
+        <ModalTitle
+          title={"Remover Animal"}
+          description={`Deseja remover o animal ${animal.name}?`}
+        />
 
-        <ModalText text="Essa ação não poderá ser desfeita" className="mt-8"/>
+        <ModalText text="Essa ação não poderá ser desfeita" className="mt-8" />
         <div className="mt-12 flex gap-3 justify-end">
-          <ModalButton label="Remover" onAction={onConfirm} className="bg-red-700" variant={"primary"}/>
-          <ModalButton label="Cancelar" onAction={onClose} className="bg-slate-" variant={"primary"}/>
+          <ModalButton
+            label="Cancelar"
+            onAction={onClose}
+            variant={"secondary"}
+          />
+          <ModalButton
+            label="Remover"
+            onAction={onConfirm}
+            variant={"danger"}
+          />
         </div>
       </div>
     </div>

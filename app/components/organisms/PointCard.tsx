@@ -40,8 +40,15 @@ export function PointCard({
           />
         ))}
       </div>
-
-      <Button label="Novo Cenário" onClick={onScenarioAdd} />
+      <div className="flex flex-row justify-end">
+        <div className="w-32">
+          <Button
+            variant="primary"
+            label="Novo Cenário"
+            onClick={onScenarioAdd}
+          />
+        </div>
+      </div>
     </div>
   );
 }
