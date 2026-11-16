@@ -18,6 +18,8 @@ import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
 import { useParams } from "react-router";
 import { useAuth } from "~/context/AuthContext";
 import { AddInstitutionalUserModal } from "~/components/molecules/users/AddInstitutionalUserModal";
+import { deleteUser } from "~/api/users";
+import { roleToUserRole, type User } from "~/types/user";
 
 type RoleFilter = "all" | "manager" | "teacher" | "student";
 
@@ -33,6 +35,7 @@ export default function InstitutionUsersPage() {
   const [search, setSearch] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
+  const [refetchKey, setRefetchKey] = useState(0);
   const { institutionId } = useParams();
   const { user } = useAuth();
 
@@ -66,6 +69,7 @@ export default function InstitutionUsersPage() {
     appliedSearch,
     roleFilter,
     institutionId,
+    refetchKey,
     fetchAdminUsers,
     fetchUsersByInstitution,
     fetchUsersByNameInInstitution,
@@ -82,12 +86,25 @@ export default function InstitutionUsersPage() {
     setPage(0);
   }
 
+  async function handleDelete(member: User) {
+    if (!window.confirm(`Excluir o usuário ${member.name}?`)) return;
+
+    try {
+      await deleteUser(roleToUserRole(member.role), member.id);
+      setRefetchKey((key) => key + 1);
+    } catch {
+      // o interceptor do axios já mostrou o erro
+    }
+  }
+
   // Com um papel escolhido, a busca por nome filtra a página carregada
   const query = appliedSearch.toLowerCase();
   const visibleUsers =
     roleFilter !== "all" && query
       ? users.filter((u) => u.name.toLowerCase().includes(query))
       : users;
+
+  const isManager = user?.role === "MANAGER";
 
   return (
     <Main>
@@ -176,6 +193,11 @@ export default function InstitutionUsersPage() {
                   name={member.name}
                   email={member.email}
                   role={member.role}
+                  onDelete={
+                    isManager && member.id !== user?.id
+                      ? () => handleDelete(member)
+                      : undefined
+                  }
                 />
               ))}
             </div>
