@@ -64,26 +64,6 @@ export default function Animals() {
     setAnimals(data);
   }
 
-  async function handleAnimalAddSubmit(data: AnimalDataRequest) {
-    await createAnimal(data);
-
-    await loadAnimals();
-
-    setModal(null);
-  }
-
-  async function handleAnimalEditSubmit(data: AnimalDataRequest) {
-    if (modal?.type !== "edit") {
-      return;
-    }
-
-    await updateAnimal({ id: modal.animal.id, ...data });
-
-    await loadAnimals();
-
-    setModal(null);
-  }
-
   async function handleDelete() {
     if (modal?.type !== "delete") {
       return;
@@ -146,7 +126,7 @@ export default function Animals() {
         <AnimalAddModal
           isOpen={modal?.type === "create"}
           onClose={() => setModal(null)}
-          onSubmit={handleAnimalAddSubmit}
+          onSuccess={loadAnimals}
         />
       )}
 
@@ -155,7 +135,7 @@ export default function Animals() {
           isOpen={modal?.type === "edit"}
           animal={modal.animal}
           onClose={() => setModal(null)}
-          onSubmit={handleAnimalEditSubmit}
+          onSuccess={loadAnimals}
         />
       )}
 
@@ -163,7 +143,10 @@ export default function Animals() {
         <AnimalDeleteModal
           animal={modal.animal}
           onClose={() => setModal(null)}
-          onConfirm={handleDelete}
+          onConfirm={() => {
+            handleDelete(),
+            loadAnimals()
+          }}
         />
       )}
     </Main>

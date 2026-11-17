@@ -1,7 +1,6 @@
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiEdit, FiMapPin, FiTrash2 } from "react-icons/fi";
 
 import { ButtonIcon } from "../atoms/ButtonIcon";
-import { PointIcon } from "../atoms/ScenarioIcon";
 
 export interface PointHeaderProps {
   position: string;
@@ -11,26 +10,33 @@ export interface PointHeaderProps {
 
 export function PointHeader({ position, onEdit, onDelete }: PointHeaderProps) {
   return (
-    <div className="flex w-full justify-between gap-8">
-      <div className="flex min-w-0 gap-6">
-        <PointIcon />
+    <header className="flex w-full min-w-0 flex-wrap items-start justify-between gap-4">
+      <div className="flex min-w-0 flex-[1_1_12rem] items-start gap-4">
+        <div className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-main">
+          <FiMapPin size={32} className="text-white" />
+        </div>
 
-        <div className="w-2xs max-w-56 min-w-0">
-          <h3 className="wrap-break-word line-clamp-2 text-2xl font-bold text-slate-900">
+        <div className="flex min-w-0 flex-1 flex-col items-start gap-1 text-left">
+          <span className="text-sm text-slate-500">Ponto de ausculta</span>
+
+          <h2
+            title={position}
+            className="w-full wrap-anywhere text-2xl font-bold text-slate-900"
+          >
             {position}
-          </h3>
+          </h2>
         </div>
       </div>
 
-      <div className="flex shrink-0 gap-8">
+      <div className="ml-auto flex max-w-full shrink-0 flex-wrap items-center gap-8">
         <ButtonIcon onClick={onEdit}>
-          <FiEdit size={32} className="text-slate-900" />
+          <FiEdit size={28} className="text-slate-900" />
         </ButtonIcon>
 
         <ButtonIcon onClick={onDelete}>
-          <FiTrash2 size={32} className="text-red-900" />
+          <FiTrash2 size={28} className="text-red-900" />
         </ButtonIcon>
       </div>
-    </div>
+    </header>
   );
 }

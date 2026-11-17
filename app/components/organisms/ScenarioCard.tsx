@@ -14,7 +14,7 @@ export function ScenarioCard({
   onDelete,
 }: ScenarioCardProps) {
   return (
-    <div className="w-full rounded-xl bg-zinc-100 p-6">
+    <article className="flex w-full min-w-0 flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-slate-300 sm:p-6">
       <ScenarioHeader
         name={scenario.name}
         description={scenario.description}
@@ -22,6 +22,6 @@ export function ScenarioCard({
         onEdit={onEdit}
         onDelete={onDelete}
       />
-    </div>
+    </article>
   );
 }

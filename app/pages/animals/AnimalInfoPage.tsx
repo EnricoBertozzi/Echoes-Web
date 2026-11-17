@@ -141,7 +141,6 @@ export default function AnimalInfoPage() {
     }));
   }
 
-
   async function handleScenarioDeleteSubmit() {
     if (scenarioModal?.type !== "delete") {
       return;
@@ -220,6 +219,7 @@ export default function AnimalInfoPage() {
           isOpen
           animal={animal}
           onClose={() => setPointModal(null)}
+          onReload={loadPoints}
         />
       )}
 
@@ -228,6 +228,7 @@ export default function AnimalInfoPage() {
           isOpen
           point={pointModal.point}
           onClose={() => setPointModal(null)}
+          onReload={loadPoints}
         />
       )}
 
@@ -245,6 +246,7 @@ export default function AnimalInfoPage() {
           isOpen
           pointId={scenarioModal.pointId}
           onClose={() => setScenarioModal(null)}
+          onReload={() => loadScenarios(scenarioModal.pointId)}
         />
       )}
 
@@ -253,6 +255,7 @@ export default function AnimalInfoPage() {
           isOpen
           scenario={scenarioModal.scenario}
           onClose={() => setScenarioModal(null)}
+          onReload={() => loadScenarios(scenarioModal.pointId)}
         />
       )}
 

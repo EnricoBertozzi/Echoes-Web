@@ -20,12 +20,14 @@ interface ScenarioAddModalProps {
   isOpen: boolean;
   pointId: string;
   onClose: () => void;
+  onReload: () => void;
 }
 
 export function ScenarioAddModal({
   isOpen,
   pointId,
   onClose,
+  onReload,
 }: ScenarioAddModalProps) {
   const { control, handleSubmit } = useForm<ScenarioRegisterForm>({
     defaultValues: {
@@ -40,7 +42,13 @@ export function ScenarioAddModal({
     useCreateScenario();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        onReload();
+      }}
+    >
       {success ? (
         <>
           <ModalTitle
@@ -49,7 +57,14 @@ export function ScenarioAddModal({
           />
           <div className="flex flex-row justify-end">
             <div className="w-32">
-              <Button label={"Fechar"} variant={"muted"} onClick={onClose} />
+              <Button
+                label={"Fechar"}
+                variant={"muted"}
+                onClick={() => {
+                  onClose();
+                  onReload();
+                }}
+              />
             </div>
           </div>
         </>

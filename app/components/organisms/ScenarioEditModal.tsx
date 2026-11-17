@@ -18,12 +18,14 @@ interface ScenarioEditModalProps {
   isOpen: boolean;
   scenario: Scenario;
   onClose: () => void;
+  onReload: () => void;
 }
 
 export function ScenarioEditModal({
   isOpen,
   scenario,
   onClose,
+  onReload,
 }: ScenarioEditModalProps) {
   const { control, handleSubmit, register } = useForm<ScenarioUpdateRequest>({
     defaultValues: {
@@ -37,7 +39,13 @@ export function ScenarioEditModal({
     useEditScenario();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        onReload();
+      }}
+    >
       {success ? (
         <>
           <ModalTitle
@@ -46,7 +54,14 @@ export function ScenarioEditModal({
           />
           <div className="flex flex-row justify-end">
             <div className="w-32">
-              <Button label={"Fechar"} variant={"muted"} onClick={onClose} />
+              <Button
+                label={"Fechar"}
+                variant={"muted"}
+                onClick={() => {
+                  onClose();
+                  onReload();
+                }}
+              />
             </div>
           </div>
         </>

@@ -16,10 +16,10 @@ import { Alert } from "../atoms/page/Alert";
 interface AnimalAddModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: AnimalDataRequest) => void;
+  onSuccess: () => void;
 }
 
-export function AnimalAddModal({ isOpen, onClose }: AnimalAddModalProps) {
+export function AnimalAddModal({ isOpen, onClose, onSuccess }: AnimalAddModalProps) {
   const { handleSubmit, control } = useForm<AnimalDataRequest>({
     defaultValues: {
       name: "",
@@ -42,7 +42,10 @@ export function AnimalAddModal({ isOpen, onClose }: AnimalAddModalProps) {
 
           <div className="flex flex-row justify-end">
             <div className="w-32">
-              <Button label={"Fechar"} variant={"muted"} onClick={onClose} />
+              <Button label={"Fechar"} variant={"muted"} onClick={() => {
+                onSuccess()
+                onClose()
+              }} />
             </div>
           </div>
         </>

@@ -21,13 +21,14 @@ interface AnimalEditModalProps {
   animal?: Animal;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: AnimalDataRequest) => void;
+  onSuccess: () => void;
 }
 
 export function AnimalEditModal({
   animal,
   onClose,
   isOpen,
+  onSuccess,
 }: AnimalEditModalProps) {
   const { control, handleSubmit, register } = useForm<AnimalUpdateRequest>({
     defaultValues: {
@@ -45,12 +46,19 @@ export function AnimalEditModal({
       {success ? (
         <>
           <ModalTitle
-            title={"Editar Animal"}
-            description="Informe os dados do novo animal"
+            title={"Animal Alterado"}
+            description="Os dados do modelo foram alterados com sucesso"
           />
           <div className="flex flex-row justify-end">
             <div className="w-32">
-              <Button label={"Fechar"} onClick={onClose} variant={"muted"} />
+              <Button
+                label={"Fechar"}
+                onClick={() => {
+                  onClose();
+                  onSuccess();
+                }}
+                variant={"muted"}
+              />
             </div>
           </div>
         </>
