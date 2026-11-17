@@ -1,19 +1,12 @@
 import { FiEye } from "react-icons/fi";
-import type { TermResponseDTO, TermStatus } from "~/types/terms";
-import { formatTermTimestamp, termStatusLabels, termTypeLabels } from "~/types/terms";
+import { TermStatusBadge } from "~/components/atoms/terms/TermStatusBadge";
+import type { TermResponseDTO } from "~/types/terms";
+import { formatTermTimestamp, termTypeLabels } from "~/types/terms";
 
 export interface TermTableRowProps {
   term: TermResponseDTO;
   onView: (term: TermResponseDTO) => void;
 }
-
-const statusBadgeStyles: Record<TermStatus, string> = {
-  PUBLISHED: 'text-emerald-800',
-  APPROVED: 'text-lime-800',
-  IN_REVIEW: 'text-yellow-700',
-  DRAFT: 'text-main/80',
-  ARCHIVED: 'text-main/70',
-};
 
 export function TermTableRow({ term, onView }: TermTableRowProps) {
   return (
@@ -27,9 +20,7 @@ export function TermTableRow({ term, onView }: TermTableRowProps) {
       </td>
 
       <td className='w-1/6 px-4 py-2 border-l border-gray-800/20'>
-        <span className={`rounded px-2 py-0.5 text-xs font-medium ${statusBadgeStyles[term.status]}`}>
-          {termStatusLabels[term.status]}
-        </span>
+        <TermStatusBadge status={term.status} />
       </td>
 
       <td className='w-1/4 px-4 py-2 border-l border-gray-800/20'>
