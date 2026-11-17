@@ -1,5 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
+import { notifyPendingTerms } from "~/utils/termsEvents";
 import { ApiRequestError, parseErrorBody } from "./errors";
 
 export const api = axios.create({
@@ -34,9 +35,22 @@ api.interceptors.response.use(
     if (axios.isAxiosError(error)) {
       const status = error.response?.status ?? 0;
 
-      const { message, fieldErrors } = parseErrorBody(error.response?.data);
+      const { message, fieldErrors, pendingTerms } = parseErrorBody(
+        error.response?.data,
+      );
 
-      const apiError = new ApiRequestError(status, message, fieldErrors);
+      const apiError = new ApiRequestError(
+        status,
+        message,
+        fieldErrors,
+        pendingTerms,
+      );
+
+      // O backend bloqueia a aplicação enquanto houver termos obrigatórios
+      // pendentes. O gate escuta este evento para exibir a tela de aceite.
+      if (status === 403 && pendingTerms?.length) {
+        notifyPendingTerms(pendingTerms);
+      }
 
       toast.error(apiError.message, { position: "bottom-right" });
 

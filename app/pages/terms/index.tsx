@@ -1,19 +1,49 @@
 import { useState } from "react";
+
 import { Main } from "~/components/atoms/page/Main";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { TableHeadColumn } from "~/components/atoms/TableHeadColumn";
 import { TermTableRow } from "~/components/organisms/TermTableRow";
 import { TermViewModal } from "~/components/organisms/TermViewModal";
-import { useTerms } from "~/hooks/useTerms";
+import { TermsAdminPanel } from "~/components/organisms/terms/TermsAdminPanel";
+import { useAuth } from "~/context/AuthContext";
+import { useTerms } from "~/hooks/terms/useTerms";
 import type { TermResponseDTO } from "~/types/terms";
 
 export default function Terms() {
+  const { user } = useAuth();
+
+  if (user?.role === "ADMIN") {
+    return (
+      <Main>
+        <PageTitle
+          title="Termos"
+          description="Crie versões, edite rascunhos e publique termos. Versões publicadas são imutáveis."
+        />
+
+        <TermsAdminPanel />
+      </Main>
+    );
+  }
+
+  return <PublishedTerms />;
+}
+
+/**
+ * Visão somente-leitura dos termos publicados, exibida para os demais perfis.
+ */
+function PublishedTerms() {
   const { terms, loading, error, refetch } = useTerms();
   const [selectedTerm, setSelectedTerm] = useState<TermResponseDTO | null>(null);
 
   return (
     <Main>
-      <PageTitle title={"Termos"} description={"Consulte os termos relacionados a Lei Geral de Proteção de Dados"} />
+      <PageTitle
+        title={"Termos"}
+        description={
+          "Consulte os termos relacionados a Lei Geral de Proteção de Dados"
+        }
+      />
 
       <div className='w-full max-w-5xl mt-4'>
         {/* Aviso quando alguns termos falharam, mas outros carregaram */}
@@ -101,8 +131,9 @@ export default function Terms() {
       {selectedTerm && (
         <TermViewModal
           term={selectedTerm}
-          onClose={() => setSelectedTerm(null)} 
-          isOpen={selectedTerm != null} />
+          onClose={() => setSelectedTerm(null)}
+          isOpen={selectedTerm != null}
+        />
       )}
     </Main>
   );

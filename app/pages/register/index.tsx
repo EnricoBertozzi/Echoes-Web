@@ -7,7 +7,7 @@ import type { Route } from "./+types/index";
 import { PasswordField } from "~/components/molecules/input/PasswordField";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { useForm } from "react-hook-form";
-import { useTerms } from "~/hooks/useTerms";
+import { useTerms } from "~/hooks/terms/useTerms";
 import type { TermResponseDTO } from "~/types/terms";
 import { useState } from "react";
 import { TermViewModal } from "~/components/organisms/TermViewModal";
