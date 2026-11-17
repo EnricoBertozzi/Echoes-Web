@@ -126,7 +126,7 @@ export function Navbar({
         />
       )}
 
-      {user?.role === "ADMIN" && (
+      {isStaff && (
         <NavbarButton
           to="/devices"
           label="Dispositivos"

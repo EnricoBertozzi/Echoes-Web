@@ -11,30 +11,15 @@ export default [
   route("mfa", "pages/login/MfaPage.tsx"),
   route("register", "pages/register/index.tsx"),
 
-  route(
-    "unathorized",
-    "pages/UnathorizedPage.tsx",
-  ),
+  route("unathorized", "pages/UnathorizedPage.tsx"),
 
-  route(
-    "forbidden",
-    "pages/ForbiddenPage.tsx",
-  ),
+  route("forbidden", "pages/ForbiddenPage.tsx"),
 
-  route(
-    "password/forgot",
-    "pages/password/PasswordForgotPage.tsx",
-  ),
+  route("password/forgot", "pages/password/PasswordForgotPage.tsx"),
 
-  route(
-    "password/validate",
-    "pages/password/PasswordValidCodePage.tsx",
-  ),
+  route("password/validate", "pages/password/PasswordValidCodePage.tsx"),
 
-  route(
-    "password/reset",
-    "pages/password/PasswordResetPage.tsx",
-  ),
+  route("password/reset", "pages/password/PasswordResetPage.tsx"),
 
   layout("layouts/Layout.tsx", [
     layout("layouts/StaffLayout.tsx", [
@@ -43,15 +28,11 @@ export default [
         "pages/institutions/InstitutionInfoPage.tsx",
       ),
 
-      route(
-        "dashboard",
-        "pages/dashboard/Overview.tsx",
-      ),
+      route("devices", "pages/devices/Devices.tsx"),
 
-      route(
-        "audit",
-        "pages/audit/Audit.tsx",
-      ),
+      route("dashboard", "pages/dashboard/Overview.tsx"),
+
+      route("audit", "pages/audit/Audit.tsx"),
 
       route(
         "institutions/:institutionId/users",
@@ -76,10 +57,7 @@ export default [
 
     // TEACHER e STUDENT: as turmas em que participam
     layout("layouts/ClassroomMemberLayout.tsx", [
-      route(
-        "classrooms",
-        "pages/classrooms/MyClassroomsPage.tsx",
-      ),
+      route("classrooms", "pages/classrooms/MyClassroomsPage.tsx"),
 
       route(
         "classrooms/:classroomId",
@@ -88,42 +66,19 @@ export default [
     ]),
 
     layout("layouts/AdminLayout.tsx", [
-      route(
-        "institutions",
-        "pages/institutions/InstitutionsPage.tsx",
-      ),
+      route("institutions", "pages/institutions/InstitutionsPage.tsx"),
 
-      route(
-        "institutions/new",
-        "pages/institutions/InstitutionNewPage.tsx",
-      ),
+      route("institutions/new", "pages/institutions/InstitutionNewPage.tsx"),
 
-      route(
-        "users/admins",
-        "pages/users/AdminUsersPage.tsx",
-      ),
+      route("users/admins", "pages/users/AdminUsersPage.tsx"),
 
-      route(
-        "devices",
-        "pages/devices/Devices.tsx",
-      ),
+      route("animals", "pages/animals/AnimalsPage.tsx"),
 
-      route(
-        "animals",
-        "pages/animals/AnimalsPage.tsx",
-      ),
-
-      route(
-        "animals/:animalId",
-        "pages/animals/AnimalInfoPage.tsx",
-      ),
+      route("animals/:animalId", "pages/animals/AnimalInfoPage.tsx"),
     ]),
 
     layout("layouts/ManagerLayout.tsx", []),
 
-    route(
-      "terms",
-      "pages/terms/index.tsx",
-    ),
+    route("terms", "pages/terms/index.tsx"),
   ]),
 ] satisfies RouteConfig;

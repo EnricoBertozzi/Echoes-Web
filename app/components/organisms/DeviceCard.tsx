@@ -3,8 +3,14 @@ import { Button } from "../atoms/Button";
 import { SelectInput } from "../atoms/input/SelectInput";
 import { ModalTextField } from "../atoms/modal/ModalTextField";
 import { FaDog } from "react-icons/fa";
-import type { DeviceInfo, DeviceStatus, DeviceUpdateRequest } from "~/types/device";
+import type {
+  DeviceInfo,
+  DeviceStatus,
+  DeviceUpdateRequest,
+} from "~/types/device";
 import { useState } from "react";
+import { useActionData } from "react-router";
+import { useAuth } from "~/context/AuthContext";
 
 const statusLabels: Record<DeviceStatus, string> = {
   PENDING: "Pendente",
@@ -49,6 +55,10 @@ export function DeviceCard({
   const nameChanged = trimmedName !== (device.name ?? "");
   const nameError = nameChanged && trimmedName === "";
 
+  const { user } = useAuth();
+
+  const isAdmin = user?.role === "ADMIN";
+
   function startEditing() {
     setName(device.name ?? "");
     setInstitutionId(device.institutionId ?? "");
@@ -87,13 +97,13 @@ export function DeviceCard({
   }
 
   return (
-    <article className="flex w-full flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm sm:w-80">
+    <article className="flex w-full min-w-0 flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-main">
           <FaDog size={28} className="text-white" />
         </div>
 
-        {!editing && (
+        {isAdmin && !editing && (
           <button
             type="button"
             onClick={startEditing}
@@ -107,7 +117,7 @@ export function DeviceCard({
         )}
       </div>
 
-      {editing ? (
+      {isAdmin && editing ? (
         <form className="flex flex-col gap-4" onSubmit={handleEditSubmit}>
           <div className="flex flex-col gap-2">
             <ModalTextField
@@ -230,8 +240,10 @@ export function DeviceCard({
               )}
               {device.animalName && (
                 <div className="flex items-baseline justify-between gap-3">
-                  <dt className="shrink-0 font-medium text-slate-700">Animal</dt>
-                  <dd className="truncate text-right" title={device.animalName}>
+                  <dt className="shrink-0 font-medium text-slate-700">
+                    Animal
+                  </dt>
+                  <dd className="truncate" title={device.animalName}>
                     {device.animalName}
                   </dd>
                 </div>
@@ -239,43 +251,45 @@ export function DeviceCard({
             </dl>
           )}
 
-          <div className="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-4">
-            {device.status === "PENDING" ? (
-              <>
-                <SelectInput
-                  id={`institution-${device.id}`}
-                  name={`institution-${device.id}`}
-                  placeholder="Escolha a instituição"
-                  options={approvalInstitutionOptions}
-                  value={approvalInstitutionId}
-                  onChange={(event) =>
-                    setApprovalInstitutionId(event.target.value)
-                  }
-                />
+          {user?.role === "ADMIN" && (
+            <div className="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-4">
+              {device.status === "PENDING" ? (
+                <>
+                  <SelectInput
+                    id={`institution-${device.id}`}
+                    name={`institution-${device.id}`}
+                    placeholder="Escolha a instituição"
+                    options={approvalInstitutionOptions}
+                    value={approvalInstitutionId}
+                    onChange={(event) =>
+                      setApprovalInstitutionId(event.target.value)
+                    }
+                  />
+                  <Button
+                    type="button"
+                    label={busy ? "Aprovando..." : "Aprovar"}
+                    disabled={!approvalInstitutionId || busy}
+                    onClick={() => onApprove(device.id, approvalInstitutionId)}
+                  />
+                </>
+              ) : (
                 <Button
                   type="button"
-                  label={busy ? "Aprovando..." : "Aprovar"}
-                  disabled={!approvalInstitutionId || busy}
-                  onClick={() => onApprove(device.id, approvalInstitutionId)}
+                  label={
+                    device.status === "ACTIVE"
+                      ? busy
+                        ? "Desativando..."
+                        : "Desativar"
+                      : busy
+                        ? "Ativando..."
+                        : "Ativar"
+                  }
+                  disabled={busy}
+                  onClick={() => onToggle(device)}
                 />
-              </>
-            ) : (
-              <Button
-                type="button"
-                label={
-                  device.status === "ACTIVE"
-                    ? busy
-                      ? "Desativando..."
-                      : "Desativar"
-                    : busy
-                      ? "Ativando..."
-                      : "Ativar"
-                }
-                disabled={busy}
-                onClick={() => onToggle(device)}
-              />
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </>
       )}
     </article>

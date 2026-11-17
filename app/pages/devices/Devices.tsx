@@ -1,49 +1,74 @@
 import { useState } from "react";
-import { FaDog } from "react-icons/fa";
-import { FiEdit } from "react-icons/fi";
-import { Button } from "~/components/atoms/Button";
+import type { FormEvent } from "react";
+
 import { SelectInput } from "~/components/atoms/input/SelectInput";
-import { ModalTextField } from "~/components/atoms/modal/ModalTextField";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { Alert } from "~/components/atoms/page/Alert";
 import { Main } from "~/components/atoms/page/Main";
 import { SearchBar } from "~/components/atoms/SearchBar";
+import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
+import { DeviceCard } from "~/components/organisms/DeviceCard";
+
 import { useAnimalOptions } from "~/hooks/useAnimalOptions";
 import { useInstitutionOptions } from "~/hooks/dashboard/useInstitutionOptions";
 import { useDevices } from "~/hooks/useDevices";
-import type {
-  DeviceInfo,
-  DeviceStatus,
-  DeviceUpdateRequest,
-} from "~/types/device";
-import { DeviceCard } from "~/components/organisms/DeviceCard";
-import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
+
+import type { DeviceStatus } from "~/types/device";
+import { useAuth } from "~/context/AuthContext";
 
 export default function Devices() {
   const [search, setSearch] = useState("");
 
-  const institutions = useInstitutionOptions(true);
-  const animals = useAnimalOptions(true);
+  const { user } = useAuth();
+  let institutions = useInstitutionOptions(false);
+  let animals = useAnimalOptions(false);
+
+  if (user?.role === "ADMIN") {
+    institutions = useInstitutionOptions(true);
+    animals = useAnimalOptions(true);
+  }
+
   const {
     devices,
     loading,
     error,
-    page,
     actingId,
-    hasNextPage,
-    hasPrevPage,
-    search: applySearch,
+    page,
+    size,
+    totalPages,
+    totalElements,
     nextPage,
     prevPage,
+    changeSize,
+    status,
+    institutionId,
+    search: applySearch,
+    filterByStatus,
+    filterByInstitution,
     approve,
     toggleStatus,
     update,
   } = useDevices();
 
-  const institutionOptions = new Map<string, string | number>();
+  const institutionOptions = new Map<string, string>();
+  const approvalInstitutionOptions = new Map<string, string>();
+  const institutionFilterOptions = new Map<string, string>();
+  const animalOptions = new Map<string, string>();
+
   for (const institution of institutions) {
     institutionOptions.set(institution.id, institution.name);
+
+    institutionFilterOptions.set(institution.id, institution.name);
+
+    if (institution.active) {
+      approvalInstitutionOptions.set(institution.id, institution.name);
+    }
   }
+
+  for (const animal of animals) {
+    animalOptions.set(animal.id, animal.name);
+  }
+
   for (const device of devices) {
     if (device.institutionId) {
       institutionOptions.set(
@@ -51,20 +76,7 @@ export default function Devices() {
         device.institutionName ?? "Instituição sem nome",
       );
     }
-  }
 
-  const approvalInstitutionOptions = new Map<string, string | number>();
-  for (const institution of institutions) {
-    if (institution.active) {
-      approvalInstitutionOptions.set(institution.id, institution.name);
-    }
-  }
-
-  const animalOptions = new Map<string, string | number>();
-  for (const animal of animals) {
-    animalOptions.set(animal.id, animal.name);
-  }
-  for (const device of devices) {
     if (device.animalId) {
       animalOptions.set(
         device.animalId,
@@ -73,9 +85,20 @@ export default function Devices() {
     }
   }
 
-  function handleSearch(event: React.FormEvent<HTMLFormElement>) {
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     applySearch(search.trim());
+  }
+
+  const isAdmin = user?.role === "ADMIN";
+
+  const statusOptions = new Map<string, string>([
+    ["ACTIVE", "Ativo"],
+    ["INACTIVE", "Inativo"],
+  ]);
+
+  if (isAdmin) {
+    statusOptions.set("PENDING", "Pendente");
   }
 
   return (
@@ -85,27 +108,63 @@ export default function Devices() {
         description="Dispositivos cadastrados no Echoes."
       />
 
-      <form className="w-full max-w-xl" onSubmit={handleSearch}>
-        <SearchBar
-          value={search}
-          onChange={setSearch}
-          placeholder="Buscar dispositivo"
-        />
-      </form>
+      <div className="flex w-full flex-col gap-4 xl:flex-row xl:items-center">
+        <form className="w-full min-w-0 xl:flex-1" onSubmit={handleSearch}>
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+            placeholder="Buscar dispositivo"
+          />
+        </form>
+
+        {user?.role === "ADMIN" && (
+          <div className="w-full xl:w-64">
+            <SelectInput
+              id="institutionFilter"
+              name="institutionFilter"
+              placeholder="Todas as instituições"
+              options={institutionFilterOptions}
+              value={institutionId}
+              disablePlaceholder={false}
+              onChange={(event) => filterByInstitution(event.target.value)}
+            />
+          </div>
+        )}
+
+        <div className="w-full xl:w-48">
+          <SelectInput
+            id="statusFilter"
+            name="statusFilter"
+            placeholder="Todos os status"
+            options={statusOptions}
+            value={status}
+            disablePlaceholder={false}
+            onChange={(event) =>
+              filterByStatus(event.target.value as DeviceStatus | "")
+            }
+          />
+        </div>
+      </div>
+
+      {!loading && !error && (
+        <p className="text-sm text-slate-500">
+          {totalElements} dispositivo(s) encontrado(s)
+        </p>
+      )}
 
       {error && <Alert message={error} type="error" />}
 
-      <div className="min-w-0 w-full">
+      <div className="w-full min-w-0">
         {loading ? (
           <p className="flex h-40 w-full items-center justify-center rounded-xl bg-stone-300 text-xl text-stone-500">
             Carregando dispositivos...
           </p>
-        ) : devices.length === 0 ? (
+        ) : error ? null : devices.length === 0 ? (
           <Alert message="Nenhum dispositivo encontrado." type="muted" />
         ) : (
-          <ul className="flex flex-wrap gap-8">
+          <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 2xl:grid-cols-3">
             {devices.map((device) => (
-              <li key={device.id} className="flex">
+              <li key={device.id} className="flex min-w-0">
                 <DeviceCard
                   device={device}
                   institutionOptions={institutionOptions}
@@ -122,25 +181,18 @@ export default function Devices() {
         )}
       </div>
 
-      {(hasPrevPage || hasNextPage) && (
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={prevPage}
-            disabled={!hasPrevPage}
-            className="cursor-pointer text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Anterior
-          </button>
-          <span className="text-slate-600">Página {page + 1}</span>
-          <button
-            type="button"
-            onClick={nextPage}
-            disabled={!hasNextPage}
-            className="cursor-pointer text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Próxima
-          </button>
+      {!loading && !error && (
+        <div className="mt-auto w-full pt-4">
+          <PaginationSelector
+            label="Itens por página"
+            page={page}
+            size={size}
+            sizeOptions={[6, 12, 18]}
+            totalPages={totalPages}
+            nextPage={nextPage}
+            prevPage={prevPage}
+            onChange={(value) => changeSize(Number(value))}
+          />
         </div>
       )}
     </Main>

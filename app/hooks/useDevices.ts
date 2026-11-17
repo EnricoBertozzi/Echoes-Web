@@ -1,68 +1,153 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import { toast } from "sonner";
+
 import {
   activateDevice,
   approveDevice,
   deactivateDevice,
   findDevices,
-  findDevicesByName,
   updateDevice,
 } from "~/api/devices";
-import type { DeviceInfo, DeviceUpdateRequest } from "~/types/device";
 
-const PAGE_SIZE = 12;
+import type {
+  DeviceInfo,
+  DeviceStatus,
+  DeviceUpdateRequest,
+} from "~/types/device";
+
+const DEFAULT_PAGE_SIZE = 12;
 
 export function useDevices() {
+  // Dados
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
+
+  // Paginação
   const [page, setPage] = useState(0);
+  const [size, setSize] = useState(DEFAULT_PAGE_SIZE);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+
+  // Filtros
   const [query, setQuery] = useState("");
+  const [status, setStatus] = useState<DeviceStatus | "">("");
+  const [institutionId, setInstitutionId] = useState("");
+
+  // Controle de requisições
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actingId, setActingId] = useState<string | null>(null);
-  const [hasNextPage, setHasNextPage] = useState(false);
   const [refetchKey, setRefetchKey] = useState(0);
 
   const latestRequestIdRef = useRef(0);
 
+  // Busca paginada com filtros
   useEffect(() => {
     const requestId = ++latestRequestIdRef.current;
+    let cancelled = false;
 
     setLoading(true);
     setError(null);
 
-    const request = query
-      ? findDevicesByName({ name: query, page, size: PAGE_SIZE + 1 })
-      : findDevices({ page, size: PAGE_SIZE + 1 });
-
-    request
+    findDevices({
+      page,
+      size,
+      name: query || undefined,
+      status: status || undefined,
+      institutionId: institutionId || undefined,
+    })
       .then((result) => {
-        if (latestRequestIdRef.current !== requestId) return;
+        if (cancelled || latestRequestIdRef.current !== requestId) {
+          return;
+        }
 
-        setDevices(result.slice(0, PAGE_SIZE));
-        setHasNextPage(result.length > PAGE_SIZE);
+        setTotalPages(result.totalPages);
+        setTotalElements(result.totalElements);
+
+        // Corrige a página caso uma alteração
+        // reduza a quantidade de resultados.
+        const lastPage = Math.max(0, result.totalPages - 1);
+
+        if (page > lastPage) {
+          setPage(lastPage);
+          return;
+        }
+
+        setDevices(result.content);
       })
       .catch((err: unknown) => {
-        if (latestRequestIdRef.current !== requestId) return;
+        if (cancelled || latestRequestIdRef.current !== requestId) {
+          return;
+        }
 
-        setError(err instanceof Error ? err.message : "Erro na requisição");
+        setDevices([]);
+        setTotalPages(0);
+        setTotalElements(0);
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Erro ao consultar dispositivos.",
+        );
       })
       .finally(() => {
-        if (latestRequestIdRef.current === requestId) setLoading(false);
+        if (!cancelled && latestRequestIdRef.current === requestId) {
+          setLoading(false);
+        }
       });
-  }, [page, query, refetchKey]);
 
+    return () => {
+      cancelled = true;
+    };
+  }, [page, size, query, status, institutionId, refetchKey]);
+
+  // Busca por nome
   const search = useCallback((value: string) => {
-    setQuery(value);
+    setQuery(value.trim());
     setPage(0);
   }, []);
 
-  const nextPage = useCallback(() => setPage((current) => current + 1), []);
+  // Filtro por status
+  const filterByStatus = useCallback((value: DeviceStatus | "") => {
+    setStatus(value);
+    setPage(0);
+  }, []);
 
-  const prevPage = useCallback(
-    () => setPage((current) => Math.max(0, current - 1)),
-    [],
-  );
+  // Filtro por instituição
+  const filterByInstitution = useCallback((value: string) => {
+    setInstitutionId(value);
+    setPage(0);
+  }, []);
 
+  // Quantidade por página
+  const changeSize = useCallback((value: number) => {
+    setSize(value);
+    setPage(0);
+  }, []);
+
+  // Limpa todos os filtros
+  const clearFilters = useCallback(() => {
+    setQuery("");
+    setStatus("");
+    setInstitutionId("");
+    setPage(0);
+  }, []);
+
+  // Paginação
+  const nextPage = useCallback(() => {
+    setPage((current) => Math.min(current + 1, Math.max(0, totalPages - 1)));
+  }, [totalPages]);
+
+  const prevPage = useCallback(() => {
+    setPage((current) => Math.max(0, current - 1));
+  }, []);
+
+  // Recarrega os dispositivos
+  const refetch = useCallback(() => {
+    setRefetchKey((key) => key + 1);
+  }, []);
+
+  // Executa operações sobre dispositivos
   const runAction = useCallback(
     async (
       deviceId: string,
@@ -73,19 +158,25 @@ export function useDevices() {
 
       try {
         await action();
-        toast.success(message, { position: "bottom-right" });
-        setRefetchKey((key) => key + 1);
+
+        toast.success(message, {
+          position: "bottom-right",
+        });
+
+        refetch();
+
         return true;
       } catch {
-        // o interceptor do axios já exibiu o erro
+        // O interceptor do Axios já exibe o erro.
         return false;
       } finally {
         setActingId(null);
       }
     },
-    [],
+    [refetch],
   );
 
+  // Aprovação
   const approve = useCallback(
     (deviceId: string, institutionId: string) =>
       runAction(
@@ -96,6 +187,7 @@ export function useDevices() {
     [runAction],
   );
 
+  // Ativação e desativação
   const toggleStatus = useCallback(
     (device: DeviceInfo) =>
       runAction(
@@ -111,6 +203,7 @@ export function useDevices() {
     [runAction],
   );
 
+  // Atualização
   const update = useCallback(
     (deviceId: string, data: DeviceUpdateRequest) =>
       runAction(
@@ -125,15 +218,27 @@ export function useDevices() {
     devices,
     loading,
     error,
-    page,
     actingId,
-    hasNextPage,
-    hasPrevPage: page > 0,
-    search,
+    page,
+    size,
+    totalPages,
+    totalElements,
     nextPage,
     prevPage,
+    changeSize,
+    hasNextPage: page + 1 < totalPages,
+    hasPrevPage: page > 0,
+    query,
+    status,
+    institutionId,
+    search,
+    filterByStatus,
+    filterByInstitution,
+    clearFilters,
+    refetch,
     approve,
     toggleStatus,
     update,
+    setSize
   };
 }
