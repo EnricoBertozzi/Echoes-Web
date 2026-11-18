@@ -246,7 +246,7 @@ export default function AnimalInfoPage() {
           isOpen
           pointId={scenarioModal.pointId}
           onClose={() => setScenarioModal(null)}
-          onReload={() => loadScenarios(scenarioModal.pointId)}
+          onReload={(id) => loadScenarios(id)}
         />
       )}
 
@@ -255,7 +255,8 @@ export default function AnimalInfoPage() {
           isOpen
           scenario={scenarioModal.scenario}
           onClose={() => setScenarioModal(null)}
-          onReload={() => loadScenarios(scenarioModal.pointId)}
+          onReload={(id) => loadScenarios(id)}
+          pointId={scenarioModal.pointId}
         />
       )}
 

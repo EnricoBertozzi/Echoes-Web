@@ -20,7 +20,7 @@ interface ScenarioAddModalProps {
   isOpen: boolean;
   pointId: string;
   onClose: () => void;
-  onReload: () => void;
+  onReload: (id: string) => void;
 }
 
 export function ScenarioAddModal({
@@ -46,7 +46,7 @@ export function ScenarioAddModal({
       isOpen={isOpen}
       onClose={() => {
         onClose();
-        onReload();
+        onReload(pointId);
       }}
     >
       {success ? (
@@ -62,7 +62,7 @@ export function ScenarioAddModal({
                 variant={"muted"}
                 onClick={() => {
                   onClose();
-                  onReload();
+                  onReload(pointId);
                 }}
               />
             </div>

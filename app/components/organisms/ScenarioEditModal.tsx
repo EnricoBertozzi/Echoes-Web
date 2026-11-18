@@ -15,13 +15,15 @@ import { useEditScenario } from "~/hooks/animals/useEditScenario";
 import { Alert } from "../atoms/page/Alert";
 
 interface ScenarioEditModalProps {
+  pointId: string;
   isOpen: boolean;
   scenario: Scenario;
   onClose: () => void;
-  onReload: () => void;
+  onReload: (id: string) => void;
 }
 
 export function ScenarioEditModal({
+  pointId,
   isOpen,
   scenario,
   onClose,
@@ -43,7 +45,7 @@ export function ScenarioEditModal({
       isOpen={isOpen}
       onClose={() => {
         onClose();
-        onReload();
+        onReload(pointId);
       }}
     >
       {success ? (
@@ -59,7 +61,7 @@ export function ScenarioEditModal({
                 variant={"muted"}
                 onClick={() => {
                   onClose();
-                  onReload();
+                  onReload(pointId);
                 }}
               />
             </div>

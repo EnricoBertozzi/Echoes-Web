@@ -22,6 +22,7 @@ export function ScenarioCard({
         onEdit={onEdit}
         onDelete={onDelete}
       />
+      <h1 className="text-slate-900">{scenario.id}</h1>
     </article>
   );
 }
