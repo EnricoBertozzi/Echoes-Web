@@ -82,5 +82,7 @@ export default [
     route("terms", "pages/terms/index.tsx"),
 
     route("profile", "pages/profile/ProfilePage.tsx"),
+
+    route("institutions/:institutionId/devices", "pages/institutions/InstitutionDevicesPage.tsx"),
   ]),
 ] satisfies RouteConfig;
