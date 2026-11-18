@@ -1,16 +1,13 @@
+import type { ReactNode } from "react";
 import type { IconType } from "react-icons";
 
-interface InstitutionInfoItemProps {
+export interface InfoItemProps {
   icon: IconType;
   label: string;
-  value: string;
+  value: ReactNode;
 }
 
-export function InstitutionInfoItem({
-  icon: Icon,
-  label,
-  value,
-}: InstitutionInfoItemProps) {
+export function InfoItem({ icon: Icon, label, value }: InfoItemProps) {
   return (
     <div className="flex min-w-0 items-start gap-3">
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-slate-100">

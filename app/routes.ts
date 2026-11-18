@@ -80,5 +80,7 @@ export default [
     layout("layouts/ManagerLayout.tsx", []),
 
     route("terms", "pages/terms/index.tsx"),
+
+    route("profile", "pages/profile/ProfilePage.tsx"),
   ]),
 ] satisfies RouteConfig;

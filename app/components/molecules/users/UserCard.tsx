@@ -1,6 +1,8 @@
 import { FaUser } from "react-icons/fa6";
 import { FiTrash2 } from "react-icons/fi";
 
+import { UserAvatar } from "~/components/atoms/users/UserAvatar";
+
 export interface UserCardProps {
   name: string;
   email: string;
@@ -17,9 +19,7 @@ export function UserCard({ name, email, role, onDelete }: UserCardProps) {
 
   return (
     <div className="flex flex-row gap-4 items-center rounded-lg p-5 w-full bg-white">
-      <div className="flex size-16 aspect-square shrink-0 items-center justify-center rounded-full bg-main text-white">
-        <span className="text-2xl font-bold">{name.charAt(0)}</span>
-      </div>
+      <UserAvatar name={name} size="lg" />
 
       <div className="min-w-0 w-full flex flex-col justify-between">
         <p className="font-bold text-xl text-black max-w-full truncate">

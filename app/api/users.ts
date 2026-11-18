@@ -3,6 +3,7 @@ import type {
   CreateUserRequest,
   Page,
   PendingUser,
+  UpdateCurrentUserRequest,
   UpdateUserRequest,
   User,
   UserRole,
@@ -75,4 +76,15 @@ export async function deleteUser(role: UserRole, id: string): Promise<void> {
 export async function fetchCurrentUser() {
   const response = await api.get<User>("/api/v1/users/me");
   return response;
+}
+
+export async function updateCurrentUser(
+  data: UpdateCurrentUserRequest,
+): Promise<User> {
+  const response = await api.patch<User>("/api/v1/users/me", data);
+  return response.data;
+}
+
+export async function deleteCurrentUser(): Promise<void> {
+  await api.delete<void>("/api/v1/users/me");
 }

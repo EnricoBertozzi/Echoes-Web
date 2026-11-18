@@ -30,6 +30,11 @@ export interface UpdateUserRequest {
   institutionId?: string | null;
 }
 
+export interface UpdateCurrentUserRequest {
+  name?: string;
+  email?: string;
+}
+
 export interface CompleteRegistrationRequest {
   password: string;
   code: string;

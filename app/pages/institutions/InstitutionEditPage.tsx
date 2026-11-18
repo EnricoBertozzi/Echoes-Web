@@ -27,7 +27,7 @@ import type {
 } from "~/types/Institution";
 
 import { maskCnpjInput } from "~/utils/cnpj";
-import { InstitutionFormSection } from "~/components/organisms/institutions/InstitutionForm";
+import { SectionCard as InstitutionFormSection } from "~/components/molecules/SectionCard";
 
 export default function EditInstitution() {
   const { institutionId } = useParams();
