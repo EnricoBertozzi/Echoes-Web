@@ -3,6 +3,7 @@ import {
   FiArrowUpRight,
   FiBookOpen,
   FiCheckCircle,
+  FiCpu,
   FiEdit,
   FiFileText,
   FiHome,
@@ -98,6 +99,8 @@ function InstitutionInfoPage({
     institution,
     onRefetch,
   );
+
+  const isManager = user?.role === "MANAGER";
 
   const busy = deleting || toggling;
 
@@ -219,6 +222,17 @@ function InstitutionInfoPage({
                 navigate(`/institutions/${institution.id}/classrooms`)
               }
             />
+
+            {isManager && user?.institutionId === institution.id && (
+              <InstitutionNavigationCard
+                icon={FiCpu}
+                title="Dispositivos e turmas"
+                description="Atribua, transfira e remova dispositivos das turmas."
+                onClick={() =>
+                  navigate(`/institutions/${institution.id}/devices`)
+                }
+              />
+            )}
           </div>
         </section>
 
