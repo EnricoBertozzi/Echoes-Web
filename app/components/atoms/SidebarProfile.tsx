@@ -1,4 +1,8 @@
 import clsx from "clsx";
+import { FiChevronRight } from "react-icons/fi";
+import { NavLink } from "react-router";
+
+import { UserAvatar } from "~/components/atoms/users/UserAvatar";
 import { useAuth } from "~/context/AuthContext";
 
 interface SidebarProfileProps {
@@ -10,36 +14,39 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
 
   if (!user) return null;
 
-  const initial = user.name?.trim().charAt(0).toUpperCase() || "?";
-
   return (
-    <div
-      className={clsx(
-        "flex items-center gap-3 h-14 transition-all duration-300",
-        collapsed ? "w-full justify-center" : "w-full px-6",
-      )}
-      title={collapsed ? user.name : undefined}
+    <NavLink
+      to="/profile"
+      aria-label={`Abrir perfil de ${user.name}`}
+      title={collapsed ? `Abrir perfil de ${user.name}` : undefined}
+      className={({ isActive }) =>
+        clsx(
+          "flex h-14 w-full items-center gap-3 rounded-lg transition-all duration-300",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/70",
+          collapsed ? "justify-center" : "px-6",
+          isActive ? "bg-white/15" : "hover:bg-white/10",
+        )
+      }
     >
-      <div
-        className={clsx(
-          "flex shrink-0 items-center justify-center",
-          "rounded-full border border-white/50",
-          "text-white font-semibold",
-          collapsed ? "w-10 h-10 text-base" : "w-11 h-11 text-lg",
-        )}
-      >
-        {initial}
-      </div>
+      <UserAvatar
+        name={user.name}
+        size={collapsed ? "sm" : "md"}
+        variant="outline"
+      />
 
       {!collapsed && (
-        <div className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-semibold text-white">
-            {user.name}
-          </span>
+        <>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate text-sm font-semibold text-white">
+              {user.name}
+            </span>
 
-          <span className="truncate text-xs text-white/70">{user.email}</span>
-        </div>
+            <span className="truncate text-xs text-white/70">{user.email}</span>
+          </div>
+
+          <FiChevronRight size={16} className="shrink-0 text-white/50" />
+        </>
       )}
-    </div>
+    </NavLink>
   );
 }

@@ -25,7 +25,7 @@ import { useCreateInstitution } from "~/hooks/useCreateInstitution";
 import type { InstitutionCreateForm } from "~/types/Institution";
 
 import { formatCnpjAddress, maskCnpjInput, unmaskCnpj } from "~/utils/cnpj";
-import { InstitutionFormSection } from "~/components/organisms/institutions/InstitutionForm";
+import { SectionCard as InstitutionFormSection } from "~/components/molecules/SectionCard";
 
 const LOOKUP_DEBOUNCE_MS = 500;
 

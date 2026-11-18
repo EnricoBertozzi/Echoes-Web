@@ -29,7 +29,7 @@ import { useToggleInstitutionStatus } from "~/hooks/institutions/useToggleInstit
 import type { Institution } from "~/types/Institution";
 import { formatCnpj } from "~/utils/cnpj";
 import { InstitutionNavigationCard } from "~/components/organisms/institutions/InstitutionNavegationCard";
-import { InstitutionInfoItem } from "~/components/organisms/institutions/InstitutionInfoCard";
+import { InfoItem as InstitutionInfoItem } from "~/components/molecules/InfoItem";
 import { ButtonIcon } from "~/components/atoms/ButtonIcon";
 
 export default function InstitutionDetail() {
