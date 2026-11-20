@@ -10,10 +10,6 @@ export interface MfaRequest {
   code: string;
 }
 
-export interface LoginResponse {
-  token: string;
-}
-
 export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
@@ -24,8 +20,9 @@ export async function login(payload: LoginRequest) {
   return response.status;
 }
 
+// o servidor grava o cookie de sessão na resposta; nada é devolvido no corpo (S10)
 export async function validMfa(payload: MfaRequest) {
-  const response = await api.post<LoginResponse>("/api/v1/auth/mfa", payload);
+  const response = await api.post<void>("/api/v1/auth/mfa", payload);
   return response;
 }
 
@@ -39,4 +36,3 @@ export async function changePassword(
 ): Promise<void> {
   await api.patch<void>("/api/v1/auth/password/change", payload);
 }
-// TODO adicionar para auth gerenciar o token e não localStorage
