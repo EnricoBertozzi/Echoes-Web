@@ -7,7 +7,6 @@ import { useAuth } from "~/context/AuthContext";
 
 export interface UpdateProfileInput {
   name: string;
-  email: string;
 }
 
 export type UpdateProfileResult =
@@ -28,9 +27,9 @@ export function useUpdateProfile() {
     setLoading(true);
 
     try {
+      // S11: só o nome é editável; o e-mail vem do cadastro
       const updatedUser = await updateCurrentUser({
         name: data.name.trim(),
-        email: data.email.trim().toLowerCase(),
       });
 
       updateUser(updatedUser);
@@ -41,15 +40,6 @@ export function useUpdateProfile() {
       return { success: true };
     } catch (error) {
       if (error instanceof ApiRequestError) {
-        // E-mail em uso é um erro de campo, além de ser exibido no alerta.
-        if (error.status === 409) {
-          return {
-            success: false,
-            message: error.message,
-            fieldErrors: { email: error.message },
-          };
-        }
-
         return {
           success: false,
           message: error.message,
