@@ -6,6 +6,7 @@ import { Alert } from "~/components/atoms/page/Alert";
 import { Main } from "~/components/atoms/page/Main";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { TabBar, type TabItem } from "~/components/molecules/TabBar";
+import { ClassroomDevicesTab } from "~/components/organisms/classrooms/ClassroomDevicesTab";
 import { ClassroomFilesTab } from "~/components/organisms/classrooms/ClassroomFilesTab";
 import { ClassroomPeople } from "~/components/organisms/classrooms/ClassroomPeople";
 import { JoinCodePanel } from "~/components/organisms/classrooms/JoinCodePanel";
@@ -19,14 +20,15 @@ import {
   initialsOf,
 } from "~/utils/classroomUi";
 
-type WorkspaceTab = "inicio" | "arquivos" | "pessoas";
+type WorkspaceTab = "inicio" | "arquivos" | "pessoas" | "dispositivos";
 
 const BACK_PATH = "/classrooms";
 
 /**
  * Espaço da turma, no estilo do Teams: cabeçalho colorido e abas
- * Início, Arquivos e Pessoas. Professor e aluno veem o mesmo espaço;
- * o que é do professor (código, exportação) só aparece para ele.
+ * Início, Arquivos e Pessoas, mais Dispositivos para o professor.
+ * Professor e aluno veem o mesmo espaço; o que é do professor (código,
+ * exportação e dispositivos) só aparece para ele.
  */
 export default function ClassroomWorkspacePage() {
   const { classroomId } = useParams();
@@ -51,7 +53,11 @@ export default function ClassroomWorkspacePage() {
 
   const rawTab = searchParams.get("tab");
   const tab: WorkspaceTab =
-    rawTab === "arquivos" || rawTab === "pessoas" ? rawTab : "inicio";
+    rawTab === "arquivos" ||
+    rawTab === "pessoas" ||
+    (rawTab === "dispositivos" && isTeacher)
+      ? rawTab
+      : "inicio";
 
   function changeTab(next: WorkspaceTab) {
     setSearchParams(next === "inicio" ? {} : { tab: next }, { replace: true });
@@ -85,6 +91,10 @@ export default function ClassroomWorkspacePage() {
     { id: "arquivos", label: "Arquivos" },
     { id: "pessoas", label: "Pessoas", count: teachers.length + students.length },
   ];
+
+  if (isTeacher) {
+    tabs.push({ id: "dispositivos", label: "Dispositivos" });
+  }
 
   async function handleLeave() {
     if (!classroom) return;
@@ -247,6 +257,14 @@ export default function ClassroomWorkspacePage() {
             students={students}
             canSeeStudentDetails={isTeacher}
             onExport={isTeacher ? handleExport : undefined}
+          />
+        )}
+
+        {isTeacher && tab === "dispositivos" && (
+          <ClassroomDevicesTab
+            classroomId={classroom.id}
+            isTeacher
+            archived={classroom.archived}
           />
         )}
       </div>

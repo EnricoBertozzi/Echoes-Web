@@ -5,12 +5,15 @@ import { ModalTitle } from "~/components/atoms/modal/ModalTitle";
 
 import type { AuditLog } from "~/types/audit";
 
+import { formatAuditTimestamp } from "~/types/audit";
+
 import {
-  AUDIT_STATUS_LABELS,
-  auditActionLabel,
-  auditEntityLabel,
-  formatAuditTimestamp,
-} from "~/types/audit";
+  actionLabels,
+  describeAuditLog,
+  entityLabels,
+  roleLabels,
+  statusLabels,
+} from "~/utils/auditLabels";
 
 export interface AuditDetailsModalProps {
   log: AuditLog | null;
@@ -43,22 +46,49 @@ export function AuditDetailsModal({
     return null;
   }
 
+  const entityLabel =
+    entityLabels[log.entity]?.label ?? log.entity;
+
   const metadata: Array<[string, string]> = [
     ["ID do log", log.id],
     ["Data/Hora", formatAuditTimestamp(log.timestamp)],
+    ["Evento", describeAuditLog(log)],
     [
       "Entidade",
-      `${auditEntityLabel(log.entity)} (${log.entity})`,
+      log.entityName
+        ? `${entityLabel} (${log.entity}) — ${log.entityName}`
+        : `${entityLabel} (${log.entity})`,
     ],
     [
       "Ação",
-      `${auditActionLabel(log.action)} (${log.action})`,
+      `${actionLabels[log.action] ?? log.action} (${log.action})`,
     ],
-    ["Resultado", AUDIT_STATUS_LABELS[log.status]],
-    ["Registro afetado", log.entityId ?? "—"],
-    ["Autor (ID)", log.userId ?? "—"],
-    ["Endereço IP", log.ip ?? "—"],
+    [
+      "Resultado",
+      statusLabels[log.status] ?? log.status,
+    ],
   ];
+
+  if (log.actorName) {
+    metadata.push(["Autor", log.actorName]);
+  }
+
+  if (log.actorRole) {
+    metadata.push([
+      "Papel",
+      roleLabels[log.actorRole] ?? log.actorRole,
+    ]);
+  }
+
+  if (log.actorInstitutionName) {
+    metadata.push(["Instituição do autor", log.actorInstitutionName]);
+  }
+
+  metadata.push(["Autor (ID)", log.userId ?? "—"]);
+
+  if (log.ip !== null) {
+    metadata.push(["Endereço IP", log.ip]);
+  }
 
   if (isAdmin) {
     metadata.push([
@@ -90,12 +120,26 @@ export function AuditDetailsModal({
               {label}
             </dt>
 
-            <dd className="break-all text-slate-900">
+            <dd
+              className={`break-words text-slate-900 ${
+                label === "Autor (ID)" ? "font-mono text-xs" : ""
+              }`}
+            >
               {value}
             </dd>
           </div>
         ))}
       </dl>
+
+      <div className="mt-4 rounded-lg bg-zinc-50 p-3 text-sm">
+        <dt className="mb-1 font-semibold text-slate-600">
+          Registro afetado (UUID)
+        </dt>
+
+        <dd className="break-all font-mono text-xs text-slate-900">
+          {log.entityId ?? "—"}
+        </dd>
+      </div>
 
       <section className="mt-6">
         <h3 className="mb-2 text-lg font-semibold text-slate-900">
@@ -111,7 +155,7 @@ export function AuditDetailsModal({
           className="mb-2 text-sm"
         />
 
-        <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-slate-200 bg-zinc-50 p-4 font-mono text-xs text-slate-800">
+        <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-zinc-50 p-4 font-mono text-xs text-slate-800">
           {prettyDetails(log.details)}
         </pre>
       </section>
@@ -128,4 +172,3 @@ export function AuditDetailsModal({
     </Modal>
   );
 }
-

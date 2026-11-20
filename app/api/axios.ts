@@ -3,8 +3,14 @@ import { toast } from "sonner";
 import { notifyPendingTerms } from "~/utils/termsEvents";
 import { ApiRequestError, parseErrorBody } from "./errors";
 
+const baseURL = import.meta.env.VITE_API_URL;
+const legacyPrefix = "/api/legacy";
+const usesDirectLocalApi =
+  import.meta.env.DEV &&
+  /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?\/?$/.test(baseURL ?? "");
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL,
 });
 
 /**
@@ -12,6 +18,11 @@ export const api = axios.create({
  */
 api.interceptors.request.use(
   (config) => {
+    // O proxy de produção remove esse prefixo antes de encaminhar ao Spring.
+    if (usesDirectLocalApi && config.url?.startsWith(`${legacyPrefix}/`)) {
+      config.url = config.url.slice(legacyPrefix.length);
+    }
+
     const token = localStorage.getItem("jwt_token");
 
     if (token) {

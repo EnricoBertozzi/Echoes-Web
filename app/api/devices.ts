@@ -7,7 +7,7 @@ import { api } from "./axios";
 import type { Page } from "~/types/user";
 
 // O DeviceController ainda está em "/devices" (sem /api/v1). Se for migrado, troque só aqui.
-const BASE = "/devices";
+const BASE = "/api/legacy/devices";
 
 export interface DeviceSearchParams {
   page: number;
@@ -75,4 +75,8 @@ export async function updateDevice(
 ): Promise<DeviceInfo> {
   const response = await api.patch<DeviceInfo>(`${BASE}/${deviceId}`, params);
   return response.data;
+}
+
+export async function deleteDevice(deviceId: string): Promise<void> {
+  await api.delete(`${BASE}/${deviceId}`);
 }

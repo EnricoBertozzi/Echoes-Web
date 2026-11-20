@@ -55,3 +55,17 @@ export async function updateScenario(data: ScenarioUpdateRequest) {
 export async function deleteScenario(id: string) {
   await api.delete(`/api/v1/scenarios/${id}`);
 }
+
+// carrega todas as páginas de cenários de um ponto (50 por página)
+export async function findAllScenariosByPoint(
+  pointId: string,
+): Promise<Scenario[]> {
+  const all: Scenario[] = [];
+
+  for (let page = 0; ; page++) {
+    const batch = await findScenariosByPointId(pointId, page, 50);
+    all.push(...batch);
+
+    if (batch.length < 50) return all;
+  }
+}

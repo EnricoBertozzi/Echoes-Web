@@ -5,7 +5,6 @@ export interface CodeInputProps {
   value: string;
   error?: string;
   onChange: (value: string) => void;
-  onSubmit: (code: string) => void;
 }
 
 export function CodeInput({
@@ -13,7 +12,6 @@ export function CodeInput({
   value,
   error,
   onChange,
-  onSubmit,
 }: CodeInputProps) {
   const [code, setCode] = useState<string[]>(
     value ? value.split("") : new Array(length).fill(""),
@@ -42,13 +40,7 @@ export function CodeInput({
       inputRefs.current[index + 1]?.focus();
     }
 
-    const fullCode = newCode.join("");
-
-    onChange?.(fullCode);
-
-    if (fullCode.length === length) {
-      onSubmit(fullCode);
-    }
+    onChange?.(newCode.join(""));
   };
 
   const handleKeyDown = (
@@ -98,11 +90,6 @@ export function CodeInput({
 
     const nextIndex = Math.min(digits.length, length - 1);
     inputRefs.current[nextIndex]?.focus();
-
-    const fullCode = newCode.join("");
-    if (fullCode.length === length) {
-      onSubmit(fullCode);
-    }
   };
 
   useEffect(() => {

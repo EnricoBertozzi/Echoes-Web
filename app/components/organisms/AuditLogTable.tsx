@@ -5,12 +5,16 @@ import { TableHeadColumn } from "~/components/atoms/TableHeadColumn";
 
 import type { AuditLog } from "~/types/audit";
 
+import { formatAuditTimestamp } from "~/types/audit";
+
 import {
-  AUDIT_STATUS_LABELS,
-  auditActionLabel,
-  auditEntityLabel,
-  formatAuditTimestamp,
-} from "~/types/audit";
+  actionLabels,
+  describeAuditLog,
+  entityLabels,
+  roleLabels,
+  statusLabels,
+  statusStyles,
+} from "~/utils/auditLabels";
 
 export interface AuditLogTableProps {
   logs: AuditLog[];
@@ -29,106 +33,130 @@ export function AuditLogTable({
   institutionNames,
   onView,
 }: AuditLogTableProps) {
+  const showIp = logs.some((log) => log.ip !== null);
+
   return (
     <div className="w-full overflow-x-auto rounded-xl border border-slate-200">
-      <table className="w-full min-w-[1050px] text-left text-sm text-slate-900">
+      <table className="w-full min-w-[1000px] text-left text-sm text-slate-900">
         <thead className="bg-main text-white">
           <tr>
             <TableHeadColumn>Data/Hora</TableHeadColumn>
-            <TableHeadColumn>Entidade</TableHeadColumn>
-            <TableHeadColumn>Ação</TableHeadColumn>
+            <TableHeadColumn>Evento</TableHeadColumn>
             <TableHeadColumn>Resultado</TableHeadColumn>
-            <TableHeadColumn>Registro afetado</TableHeadColumn>
 
             {isAdmin && (
               <TableHeadColumn>Instituição</TableHeadColumn>
             )}
 
             <TableHeadColumn>Autor</TableHeadColumn>
-            <TableHeadColumn>IP</TableHeadColumn>
+
+            {showIp && <TableHeadColumn>IP</TableHeadColumn>}
+
             <TableHeadColumn>Ações</TableHeadColumn>
           </tr>
         </thead>
 
         <tbody>
-          {logs.map((log) => (
-            <tr
-              key={log.id}
-              className="border-t border-slate-200 align-top transition-colors hover:bg-zinc-50"
-            >
-              <td className="whitespace-nowrap px-4 py-3">
-                {formatAuditTimestamp(log.timestamp)}
-              </td>
+          {logs.map((log) => {
+            const failed = log.status === "FAILED";
 
-              <td className="px-4 py-3">
-                {auditEntityLabel(log.entity)}
-              </td>
-
-              <td className="px-4 py-3">
-                {auditActionLabel(log.action)}
-              </td>
-
-              <td className="px-4 py-3">
-                <span
-                  className={
-                    log.status === "SUCCESS"
-                      ? "inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800"
-                      : "inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-800"
-                  }
-                >
-                  {AUDIT_STATUS_LABELS[log.status]}
-                </span>
-              </td>
-
-              <td
-                className="max-w-44 break-all px-4 py-3 font-mono text-xs"
-                title={log.entityId ?? undefined}
+            return (
+              <tr
+                key={log.id}
+                className={`border-t border-slate-200 align-top transition-colors hover:bg-zinc-50 ${
+                  failed ? "bg-red-50/50" : ""
+                }`}
               >
-                {display(log.entityId)}
-              </td>
-
-              {isAdmin && (
-                <td
-                  className="max-w-52 break-words px-4 py-3"
-                  title={log.institutionId ?? undefined}
-                >
-                  {log.institutionId
-                    ? institutionNames.get(log.institutionId) ??
-                      log.institutionId
-                    : "Global"}
+                <td className="whitespace-nowrap px-4 py-3">
+                  {formatAuditTimestamp(log.timestamp)}
                 </td>
-              )}
 
-              <td
-                className="max-w-44 break-all px-4 py-3 font-mono text-xs"
-                title={log.userId ?? undefined}
-              >
-                {display(log.userId)}
-              </td>
+                <td className="px-4 py-3">
+                  <span className="block font-medium text-slate-900">
+                    {describeAuditLog(log)}
+                  </span>
 
-              <td className="whitespace-nowrap px-4 py-3">
-                {display(log.ip)}
-              </td>
+                  <span className="mt-1 block text-xs text-slate-500">
+                    {actionLabels[log.action] ?? log.action}
+                    {" · "}
+                    {entityLabels[log.entity]?.label ?? log.entity}
+                  </span>
+                </td>
 
-              <td className="px-4 py-3 text-center">
-                <button
-                  type="button"
-                  onClick={() => onView(log)}
-                  className="cursor-pointer rounded-lg p-2 text-main transition-colors hover:bg-main/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main"
-                  aria-label={`Visualizar detalhes do log ${log.id}`}
-                  title="Visualizar detalhes"
-                >
-                  <FiEye
-                    size={21}
-                    aria-hidden="true"
-                  />
-                </button>
-              </td>
-            </tr>
-          ))}
+                <td className="px-4 py-3">
+                  <span
+                    className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
+                      statusStyles[log.status] ??
+                      "text-slate-700 bg-slate-100"
+                    }`}
+                  >
+                    {statusLabels[log.status] ?? log.status}
+                  </span>
+                </td>
+
+                {isAdmin && (
+                  <td
+                    className="max-w-52 break-words px-4 py-3"
+                    title={log.institutionId ?? undefined}
+                  >
+                    {log.institutionId
+                      ? institutionNames.get(log.institutionId) ??
+                        log.institutionId
+                      : "Global"}
+                  </td>
+                )}
+
+                <td className="max-w-44 break-words px-4 py-3">
+                  {log.actorName ? (
+                    <>
+                      <span className="block font-medium text-slate-900">
+                        {log.actorName}
+                      </span>
+
+                      <span className="mt-1 block text-xs text-slate-500">
+                        {log.actorRole
+                          ? roleLabels[log.actorRole] ?? log.actorRole
+                          : null}
+                        {log.actorInstitutionName
+                          ? ` · ${log.actorInstitutionName}`
+                          : null}
+                      </span>
+                    </>
+                  ) : (
+                    <span
+                      className="block break-all font-mono text-xs"
+                      title={log.userId ?? undefined}
+                    >
+                      {display(log.userId)}
+                    </span>
+                  )}
+                </td>
+
+                {showIp && (
+                  <td className="whitespace-nowrap px-4 py-3">
+                    {display(log.ip)}
+                  </td>
+                )}
+
+                <td className="px-4 py-3 text-center">
+                  <button
+                    type="button"
+                    onClick={() => onView(log)}
+                    className="cursor-pointer rounded-lg p-2 text-main transition-colors hover:bg-main/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main"
+                    aria-label={`Visualizar detalhes do log ${log.id}`}
+                    title="Visualizar detalhes"
+                  >
+                    <FiEye
+                      size={21}
+                      aria-hidden="true"
+                    />
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
 }
-

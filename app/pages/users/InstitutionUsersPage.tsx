@@ -190,6 +190,7 @@ export default function InstitutionUsersPage() {
               {visibleUsers.map((member) => (
                 <UserCard
                   key={member.id}
+                  id={member.id}
                   name={member.name}
                   email={member.email}
                   role={member.role}
