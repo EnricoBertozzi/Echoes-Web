@@ -61,9 +61,8 @@ export default function PasswordValidCodePage() {
             minLength: {
               value: 6,
               message: "Código Inválido"
-            } 
+            }
           }}
-          onSubmit={handleSubmit(handleValidatePasswordCode)}
         />
 
         <div className="w-full pt-2">

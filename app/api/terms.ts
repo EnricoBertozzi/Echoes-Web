@@ -7,6 +7,8 @@ import type {
 } from "~/types/terms";
 import { api } from "./axios";
 
+const BASE = "/api/legacy/terms";
+
 /**
  * GET /terms — histórico completo para a administração (ROLE_ADMIN).
  * `type` e `status` são filtros opcionais.
@@ -15,7 +17,7 @@ export async function findTerms(params?: {
   type?: TermType;
   status?: TermStatus;
 }): Promise<TermResponseDTO[]> {
-  const response = await api.get<TermResponseDTO[]>("/terms", { params });
+  const response = await api.get<TermResponseDTO[]>(BASE, { params });
   return response.data;
 }
 
@@ -23,7 +25,7 @@ export async function findTerms(params?: {
  * GET /terms/pending — tipos obrigatórios cujo PUBLISHED atual ainda não foi aceito.
  */
 export async function findPendingTerms(): Promise<TermType[]> {
-  const response = await api.get<TermType[]>("/terms/pending");
+  const response = await api.get<TermType[]>(`${BASE}/pending`);
   return response.data;
 }
 
@@ -33,7 +35,7 @@ export async function findPendingTerms(): Promise<TermType[]> {
 export async function acceptTerm(
   data: AcceptTermRequest,
 ): Promise<TermResponseDTO> {
-  const response = await api.post<TermResponseDTO>("/terms/accept", data);
+  const response = await api.post<TermResponseDTO>(`${BASE}/accept`, data);
   return response.data;
 }
 
@@ -43,7 +45,7 @@ export async function acceptTerm(
 export async function createTerm(
   data: CreateTermRequest,
 ): Promise<TermResponseDTO> {
-  const response = await api.post<TermResponseDTO>("/terms", data);
+  const response = await api.post<TermResponseDTO>(BASE, data);
   return response.data;
 }
 
@@ -54,7 +56,7 @@ export async function updateTermContent(
   id: number,
   content: string,
 ): Promise<TermResponseDTO> {
-  const response = await api.patch<TermResponseDTO>(`/terms/${id}/content`, {
+  const response = await api.patch<TermResponseDTO>(`${BASE}/${id}/content`, {
     content,
   });
   return response.data;
@@ -67,7 +69,7 @@ export async function updateTermStatus(
   id: number,
   status: TermStatus,
 ): Promise<TermResponseDTO> {
-  const response = await api.patch<TermResponseDTO>(`/terms/${id}/status`, {
+  const response = await api.patch<TermResponseDTO>(`${BASE}/${id}/status`, {
     status,
   });
   return response.data;
@@ -78,7 +80,7 @@ export async function updateTermStatus(
  * Erro 500 "No active terms found for type: X" quando não há PUBLISHED do tipo.
  */
 export async function findActiveTerm(type: TermType): Promise<TermResponseDTO> {
-  const response = await api.get<TermResponseDTO>(`/terms/${type}/json`);
+  const response = await api.get<TermResponseDTO>(`${BASE}/${type}/json`);
   return response.data;
 }
 
@@ -87,7 +89,7 @@ export async function findActiveTerm(type: TermType): Promise<TermResponseDTO> {
  * Erro 500 "User not found" quando o e-mail do token não existe na base.
  */
 export async function hasAcceptedTerm(type: TermType): Promise<boolean> {
-  const response = await api.get<boolean>(`/terms/${type}/accepted`);
+  const response = await api.get<boolean>(`${BASE}/${type}/accepted`);
   return response.data;
 }
 

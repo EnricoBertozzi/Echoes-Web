@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useParams } from "react-router";
+import { Navigate, useParams, useSearchParams } from "react-router";
 import type { ReactNode } from "react";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
@@ -45,7 +45,16 @@ function InstitutionDevicesContent({
   institutionId: string;
 }) {
   const [search, setSearch] = useState("");
-  const data = useClassroomDevices(institutionId);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialClassroomId = searchParams.get("classroomId") ?? "";
+  const data = useClassroomDevices(institutionId, initialClassroomId);
+
+  function handleSelectClassroom(id: string) {
+    if (id === data.classroomId) return;
+
+    data.selectClassroom(id);
+    setSearchParams(id ? { classroomId: id } : {}, { replace: true });
+  }
 
   function currentClassroomLabel(device: DeviceInfo) {
     if (!device.classroomId) return "Sem turma";
@@ -96,7 +105,7 @@ function InstitutionDevicesContent({
             id="device-classroom"
             value={data.classroomId}
             disabled={data.busy || data.classrooms.length === 0}
-            onChange={(event) => data.selectClassroom(event.target.value)}
+            onChange={(event) => handleSelectClassroom(event.target.value)}
             className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-900 disabled:opacity-50"
           >
             <option value="" disabled>

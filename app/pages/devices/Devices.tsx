@@ -9,6 +9,7 @@ import { SearchBar } from "~/components/atoms/SearchBar";
 import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
 import { DeviceCard } from "~/components/organisms/DeviceCard";
 
+import { useClassroomLabels } from "~/hooks/classrooms/useClassroomLabels";
 import { useAnimalOptions } from "~/hooks/useAnimalOptions";
 import { useInstitutionOptions } from "~/hooks/dashboard/useInstitutionOptions";
 import { useDevices } from "~/hooks/useDevices";
@@ -48,7 +49,10 @@ export default function Devices() {
     approve,
     toggleStatus,
     update,
+    remove,
   } = useDevices();
+
+  const classroomLabels = useClassroomLabels(devices);
 
   const institutionOptions = new Map<string, string>();
   const approvalInstitutionOptions = new Map<string, string>();
@@ -167,6 +171,7 @@ export default function Devices() {
               <li key={device.id} className="flex min-w-0">
                 <DeviceCard
                   device={device}
+                  classroomLabels={classroomLabels}
                   institutionOptions={institutionOptions}
                   approvalInstitutionOptions={approvalInstitutionOptions}
                   animalOptions={animalOptions}
@@ -174,6 +179,7 @@ export default function Devices() {
                   onApprove={approve}
                   onToggle={toggleStatus}
                   onUpdate={update}
+                  onDelete={remove}
                 />
               </li>
             ))}

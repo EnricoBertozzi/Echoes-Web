@@ -6,6 +6,7 @@ import {
   activateDevice,
   approveDevice,
   deactivateDevice,
+  deleteDevice,
   findDevices,
   updateDevice,
 } from "~/api/devices";
@@ -214,6 +215,17 @@ export function useDevices() {
     [runAction],
   );
 
+  // Exclusão
+  const remove = useCallback(
+    (device: DeviceInfo) =>
+      runAction(
+        device.id,
+        () => deleteDevice(device.id),
+        "Dispositivo excluído",
+      ),
+    [runAction],
+  );
+
   return {
     devices,
     loading,
@@ -239,6 +251,7 @@ export function useDevices() {
     approve,
     toggleStatus,
     update,
+    remove,
     setSize
   };
 }

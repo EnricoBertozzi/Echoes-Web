@@ -6,8 +6,12 @@ export type AuditStatus = "SUCCESS" | "FAILED";
 export interface AuditLog {
   id: string;
   userId: string | null;
+  actorName: string | null;
+  actorRole: string | null;
+  actorInstitutionName: string | null;
   action: string;
   entity: string;
+  entityName: string | null;
   status: AuditStatus;
   details: string | null;
   ip: string | null;
@@ -101,4 +105,3 @@ export function formatAuditTimestamp(iso: string): string {
     second: "2-digit",
   });
 }
-

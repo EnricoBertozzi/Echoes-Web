@@ -41,9 +41,17 @@ async function loadClassrooms(institutionId: string): Promise<Classroom[]> {
   return classrooms.sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
 }
 
-export function useClassroomDevices(institutionId: string) {
+/**
+ * O id inicial vem da URL, quando o gestor abre a página já apontando para
+ * uma turma. Se a turma não pertencer à instituição, a primeira da lista é
+ * selecionada automaticamente.
+ */
+export function useClassroomDevices(
+  institutionId: string,
+  initialClassroomId = "",
+) {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
-  const [classroomId, setClassroomId] = useState("");
+  const [classroomId, setClassroomId] = useState(initialClassroomId);
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
   const [linkedDevices, setLinkedDevices] = useState<DeviceInfo[]>([]);
 

@@ -12,6 +12,12 @@ export interface Classroom {
   joinCode: string | null;
 }
 
+export interface ClassroomLabel {
+  title: string;
+  period: string;
+  archived: boolean;
+}
+
 export interface ClassroomRequest {
   title: string;
   description: string;

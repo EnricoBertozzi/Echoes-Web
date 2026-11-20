@@ -9,23 +9,15 @@ import type {
   DeviceUpdateRequest,
 } from "~/types/device";
 import { useState } from "react";
-import { useActionData } from "react-router";
+import { Link, useActionData } from "react-router";
 import { useAuth } from "~/context/AuthContext";
-
-const statusLabels: Record<DeviceStatus, string> = {
-  PENDING: "Pendente",
-  ACTIVE: "Ativo",
-  INACTIVE: "Inativo",
-};
-
-const statusTextStyles: Record<DeviceStatus, string> = {
-  PENDING: "text-amber-700",
-  ACTIVE: "text-green-700",
-  INACTIVE: "text-red-700",
-};
+import type { ClassroomLabel } from "~/types/Classroom";
+import { deviceStatusLabels, deviceStatusTextStyles } from "~/utils/deviceUi";
+import { DeviceDeleteModal } from "./DeviceDeleteModal";
 
 interface DeviceCardProps {
   device: DeviceInfo;
+  classroomLabels: Map<string, ClassroomLabel>;
   institutionOptions: Map<string, string | number>;
   approvalInstitutionOptions: Map<string, string | number>;
   animalOptions: Map<string, string | number>;
@@ -33,10 +25,12 @@ interface DeviceCardProps {
   onApprove: (deviceId: string, institutionId: string) => void;
   onToggle: (device: DeviceInfo) => void;
   onUpdate: (deviceId: string, data: DeviceUpdateRequest) => Promise<boolean>;
+  onDelete: (device: DeviceInfo) => Promise<boolean>;
 }
 
 export function DeviceCard({
   device,
+  classroomLabels,
   institutionOptions,
   approvalInstitutionOptions,
   animalOptions,
@@ -44,8 +38,11 @@ export function DeviceCard({
   onApprove,
   onToggle,
   onUpdate,
+  onDelete,
 }: DeviceCardProps) {
   const [editing, setEditing] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [approvalInstitutionId, setApprovalInstitutionId] = useState("");
   const [institutionId, setInstitutionId] = useState("");
   const [name, setName] = useState(device.name ?? "");
@@ -58,6 +55,10 @@ export function DeviceCard({
   const { user } = useAuth();
 
   const isAdmin = user?.role === "ADMIN";
+  const isManager = user?.role === "MANAGER";
+  const classroomLabel = device.classroomId
+    ? classroomLabels.get(device.classroomId)
+    : undefined;
 
   function startEditing() {
     setName(device.name ?? "");
@@ -94,6 +95,16 @@ export function DeviceCard({
 
     const updated = await onUpdate(device.id, data);
     if (updated) setEditing(false);
+  }
+
+  async function handleDelete() {
+    if (deleting) return;
+
+    setDeleting(true);
+    const removed = await onDelete(device);
+    setDeleting(false);
+
+    if (removed) setShowDeleteModal(false);
   }
 
   return (
@@ -218,12 +229,23 @@ export function DeviceCard({
 
           <span className="text-lg text-slate-500">
             Status:{" "}
-            <span className={statusTextStyles[device.status]}>
-              {statusLabels[device.status]}
+            <span className={deviceStatusTextStyles[device.status]}>
+              {deviceStatusLabels[device.status]}
             </span>
           </span>
 
-          {(device.institutionName || device.animalName) && (
+          {device.status === "ACTIVE" &&
+            (!device.classroomId || classroomLabel?.archived) && (
+              <p className="text-sm text-amber-700">
+                {!device.classroomId
+                  ? "Não toca áudio: sem turma."
+                  : "Não toca áudio: turma arquivada."}
+              </p>
+            )}
+
+          {(device.institutionName ||
+            device.animalName ||
+            device.status !== "PENDING") && (
             <dl className="flex flex-col gap-1 text-sm text-slate-600">
               {device.institutionName && (
                 <div className="flex items-baseline justify-between gap-3">
@@ -238,6 +260,7 @@ export function DeviceCard({
                   </dd>
                 </div>
               )}
+
               {device.animalName && (
                 <div className="flex items-baseline justify-between gap-3">
                   <dt className="shrink-0 font-medium text-slate-700">
@@ -248,47 +271,108 @@ export function DeviceCard({
                   </dd>
                 </div>
               )}
+
+              {device.status !== "PENDING" && (
+                <div className="flex items-baseline justify-between gap-3">
+                  <dt className="shrink-0 font-medium text-slate-700">
+                    Turma
+                  </dt>
+                  <dd
+                    className="truncate text-right"
+                    title={
+                      classroomLabel
+                        ? `${classroomLabel.title} • ${classroomLabel.period}${classroomLabel.archived ? " (arquivada)" : ""}`
+                        : undefined
+                    }
+                  >
+                    {!device.classroomId ? (
+                      "Sem turma"
+                    ) : classroomLabel ? (
+                      <Link
+                        to={`/institutions/${device.institutionId}/classrooms/${device.classroomId}`}
+                        className="text-main underline-offset-2 hover:underline"
+                      >
+                        {classroomLabel.title} • {classroomLabel.period}
+                        {classroomLabel.archived ? " (arquivada)" : ""}
+                      </Link>
+                    ) : (
+                      "Turma vinculada"
+                    )}
+                  </dd>
+                </div>
+              )}
             </dl>
           )}
 
-          {user?.role === "ADMIN" && (
-            <div className="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-4">
-              {device.status === "PENDING" ? (
-                <>
-                  <SelectInput
-                    id={`institution-${device.id}`}
-                    name={`institution-${device.id}`}
-                    placeholder="Escolha a instituição"
-                    options={approvalInstitutionOptions}
-                    value={approvalInstitutionId}
-                    onChange={(event) =>
-                      setApprovalInstitutionId(event.target.value)
-                    }
-                  />
+          {(isAdmin || (isManager && device.status !== "PENDING")) &&
+            !editing && (
+              <div className="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-4">
+                {device.status !== "PENDING" && (
+                  <Link
+                    to={`/devices/${device.id}/scenarios`}
+                    className="flex w-full cursor-pointer items-center justify-center rounded bg-gray-300 py-3 text-black"
+                  >
+                    Cenários
+                  </Link>
+                )}
+
+                {isAdmin && device.status === "PENDING" && (
+                  <>
+                    <SelectInput
+                      id={`institution-${device.id}`}
+                      name={`institution-${device.id}`}
+                      placeholder="Escolha a instituição"
+                      options={approvalInstitutionOptions}
+                      value={approvalInstitutionId}
+                      onChange={(event) =>
+                        setApprovalInstitutionId(event.target.value)
+                      }
+                    />
+                    <Button
+                      type="button"
+                      label={busy ? "Aprovando..." : "Aprovar"}
+                      disabled={!approvalInstitutionId || busy}
+                      onClick={() => onApprove(device.id, approvalInstitutionId)}
+                    />
+                  </>
+                )}
+
+                {isAdmin && device.status !== "PENDING" && (
                   <Button
                     type="button"
-                    label={busy ? "Aprovando..." : "Aprovar"}
-                    disabled={!approvalInstitutionId || busy}
-                    onClick={() => onApprove(device.id, approvalInstitutionId)}
+                    label={
+                      device.status === "ACTIVE"
+                        ? busy
+                          ? "Desativando..."
+                          : "Desativar"
+                        : busy
+                          ? "Ativando..."
+                          : "Ativar"
+                    }
+                    disabled={busy}
+                    onClick={() => onToggle(device)}
                   />
-                </>
-              ) : (
-                <Button
-                  type="button"
-                  label={
-                    device.status === "ACTIVE"
-                      ? busy
-                        ? "Desativando..."
-                        : "Desativar"
-                      : busy
-                        ? "Ativando..."
-                        : "Ativar"
-                  }
-                  disabled={busy}
-                  onClick={() => onToggle(device)}
-                />
-              )}
-            </div>
+                )}
+
+                {isAdmin && (
+                  <Button
+                    type="button"
+                    label={deleting ? "Excluindo..." : "Excluir"}
+                    variant="danger"
+                    disabled={busy || deleting}
+                    onClick={() => setShowDeleteModal(true)}
+                  />
+                )}
+              </div>
+            )}
+
+          {isAdmin && showDeleteModal && (
+            <DeviceDeleteModal
+              device={device}
+              busy={deleting}
+              onClose={() => setShowDeleteModal(false)}
+              onConfirm={() => void handleDelete()}
+            />
           )}
         </>
       )}

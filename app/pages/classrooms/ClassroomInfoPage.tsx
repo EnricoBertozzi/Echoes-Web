@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import {
   addClassroomMember,
   clearClassroomStudents,
@@ -14,6 +14,7 @@ import { Alert } from "~/components/atoms/page/Alert";
 import { Main } from "~/components/atoms/page/Main";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { UserCard } from "~/components/molecules/users/UserCard";
+import { ClassroomDevicesTab } from "~/components/organisms/classrooms/ClassroomDevicesTab";
 import { useAuth } from "~/context/AuthContext";
 import type { Classroom, ClassroomMember } from "~/types/Classroom";
 import type { User } from "~/types/user";
@@ -192,6 +193,25 @@ export default function ClassroomInfoPage() {
           ))}
         </div>
       )}
+
+      <div className="mt-8 flex flex-col gap-4">
+        {isManager && institutionId && (
+          <div className="flex justify-end">
+            <Link
+              to={`/institutions/${institutionId}/devices?classroomId=${classroom.id}`}
+              className="text-main underline-offset-2 hover:underline"
+            >
+              Gerenciar vínculos de dispositivos
+            </Link>
+          </div>
+        )}
+
+        <ClassroomDevicesTab
+          classroomId={classroom.id}
+          isTeacher={false}
+          archived={classroom.archived}
+        />
+      </div>
     </Main>
   );
 }

@@ -60,7 +60,6 @@ export default function MfaPage() {
                 message: "Código incompleto",
               },
             }}
-            onSubmit={() => handleSubmit(handleMfaSubmit)()}
           />
         </div>
 

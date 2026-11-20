@@ -46,6 +46,11 @@ export async function findUser(role: UserRole, id: string): Promise<User> {
   return response.data;
 }
 
+export async function findUserEmail(id: string): Promise<string> {
+  const response = await api.get<{ email: string }>(`/api/v1/users/${id}/email`);
+  return response.data.email;
+}
+
 export async function findUsersByName(
   role: UserRole, 
   name: string,

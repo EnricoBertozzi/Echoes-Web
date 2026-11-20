@@ -5,11 +5,13 @@ import type {
 } from "~/types/Animal";
 import { api } from "./axios";
 
+const BASE = "/api/legacy/animals";
+
 export async function findAllAnimals(
   page: number,
   size: number,
 ): Promise<Animal[]> {
-  const response = await api.get<Animal[]>("/animals", {
+  const response = await api.get<Animal[]>(BASE, {
     params: {
       page,
       size,
@@ -24,7 +26,7 @@ export async function findAnimalsByName(
   page: number,
   size: number,
 ) {
-  const response = await api.get<Animal[]>("/animals/search", {
+  const response = await api.get<Animal[]>(`${BASE}/search`, {
     params: {
       name,
       page,
@@ -36,21 +38,21 @@ export async function findAnimalsByName(
 }
 
 export async function findAnimalById(id?: string) {
-  const response = await api.get(`/animals/${id}`);
+  const response = await api.get(`${BASE}/${id}`);
 
   return response.data;
 }
 
 export async function createAnimal(data: AnimalDataRequest) {
-  const response = await api.post<void>("/animals", data);
+  const response = await api.post<void>(BASE, data);
 
   return response.status;
 }
 
 export async function updateAnimal(data: AnimalUpdateRequest) {
-  await api.patch(`/animals/${data.id}`, data);
+  await api.patch(`${BASE}/${data.id}`, data);
 }
 
 export async function deleteAnimal(id: string) {
-  await api.delete(`/animals/${id}`);
+  await api.delete(`${BASE}/${id}`);
 }

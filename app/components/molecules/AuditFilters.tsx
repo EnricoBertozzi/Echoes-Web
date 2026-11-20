@@ -3,12 +3,13 @@ import { SelectInput } from "~/components/atoms/input/SelectInput";
 
 import type { Institution } from "~/types/Institution";
 
+import type { AuditStatus } from "~/types/audit";
+
 import {
-  AUDIT_ACTION_LABELS,
-  AUDIT_ENTITY_LABELS,
-  AUDIT_STATUS_LABELS,
-  type AuditStatus,
-} from "~/types/audit";
+  actionOptions,
+  entityOptions,
+  statusLabels,
+} from "~/utils/auditLabels";
 
 export interface AuditFiltersProps {
   isAdmin: boolean;
@@ -27,21 +28,30 @@ export interface AuditFiltersProps {
   ) => void;
 }
 
-const entityOptions = new Map<string, string>([
-  ["all", "Todas as entidades"],
-  ...Object.entries(AUDIT_ENTITY_LABELS),
+const entitySelectOptions = new Map<string, string>(
+  entityOptions.map(
+    ({ value, label }): [string, string] => [value, label],
+  ),
+);
+
+const actionSelectOptions = new Map<string, string>(
+  actionOptions.map(
+    ({ value, label }): [string, string] => [value, label],
+  ),
+);
+
+const statusSelectOptions = new Map<string, string>([
+  ["SUCCESS", statusLabels.SUCCESS],
+  ["FAILED", "Somente falhas"],
 ]);
 
-const actionOptions = new Map<string, string>([
-  ["all", "Todas as ações"],
-  ...Object.entries(AUDIT_ACTION_LABELS),
-]);
+function selectedValue(value: string): string {
+  return value === "all" ? "" : value;
+}
 
-const statusOptions = new Map<string, string>([
-  ["all", "Todos os resultados"],
-  ["SUCCESS", AUDIT_STATUS_LABELS.SUCCESS],
-  ["FAILED", AUDIT_STATUS_LABELS.FAILED],
-]);
+function filterValue(value: string): string {
+  return value === "" ? "all" : value;
+}
 
 export function AuditFilters({
   isAdmin,
@@ -55,16 +65,14 @@ export function AuditFilters({
   onActionChange,
   onStatusChange,
 }: AuditFiltersProps) {
-  const institutionOptions = new Map<string, string>([
-    ["all", "Todas as instituições"],
-
-    ...institutions.map(
+  const institutionOptions = new Map<string, string>(
+    institutions.map(
       (institution): [string, string] => [
         institution.id,
         institution.name,
       ],
     ),
-  ]);
+  );
 
   return (
     <section
@@ -83,11 +91,14 @@ export function AuditFilters({
           <SelectInput
             id="audit-institution"
             name="institutionId"
-            placeholder="Selecione a instituição"
+            placeholder="Todas as instituições"
+            disablePlaceholder={false}
             options={institutionOptions}
-            value={institutionFilter}
+            value={selectedValue(institutionFilter)}
             onChange={(event) =>
-              onInstitutionChange(event.target.value)
+              onInstitutionChange(
+                filterValue(event.target.value),
+              )
             }
           />
         </div>
@@ -104,11 +115,12 @@ export function AuditFilters({
         <SelectInput
           id="audit-entity"
           name="entity"
-          placeholder="Selecione a entidade"
-          options={entityOptions}
-          value={entityFilter}
+          placeholder="Todas as entidades"
+          disablePlaceholder={false}
+          options={entitySelectOptions}
+          value={selectedValue(entityFilter)}
           onChange={(event) =>
-            onEntityChange(event.target.value)
+            onEntityChange(filterValue(event.target.value))
           }
         />
       </div>
@@ -124,11 +136,12 @@ export function AuditFilters({
         <SelectInput
           id="audit-action"
           name="action"
-          placeholder="Selecione a ação"
-          options={actionOptions}
-          value={actionFilter}
+          placeholder="Todas as ações"
+          disablePlaceholder={false}
+          options={actionSelectOptions}
+          value={selectedValue(actionFilter)}
           onChange={(event) =>
-            onActionChange(event.target.value)
+            onActionChange(filterValue(event.target.value))
           }
         />
       </div>
@@ -144,12 +157,15 @@ export function AuditFilters({
         <SelectInput
           id="audit-status"
           name="status"
-          placeholder="Selecione o resultado"
-          options={statusOptions}
-          value={statusFilter}
+          placeholder="Todos"
+          disablePlaceholder={false}
+          options={statusSelectOptions}
+          value={selectedValue(statusFilter)}
           onChange={(event) =>
             onStatusChange(
-              event.target.value as "all" | AuditStatus,
+              filterValue(event.target.value) as
+                | "all"
+                | AuditStatus,
             )
           }
         />

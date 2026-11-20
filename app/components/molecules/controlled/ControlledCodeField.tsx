@@ -15,7 +15,6 @@ export interface ControlledCodeFieldProps<T extends FieldValues> {
   control: Control<T>;
   length: number,
   rules?: RegisterOptions<T, Path<T>>;
-  onSubmit: () => void
 }
 
 export function ControlledCodeField<T extends FieldValues>({
@@ -25,7 +24,6 @@ export function ControlledCodeField<T extends FieldValues>({
   length,
   control,
   rules,
-  onSubmit
 }: ControlledCodeFieldProps<T>) {
   return (
     <Controller
@@ -43,7 +41,6 @@ export function ControlledCodeField<T extends FieldValues>({
           onChange={field.onChange}
           length={length}
           error={error?.message}
-          onSubmit={() => onSubmit()}
         />
       )}
     />
