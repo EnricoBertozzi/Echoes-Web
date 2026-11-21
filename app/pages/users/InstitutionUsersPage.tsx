@@ -18,6 +18,7 @@ import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
 import { useParams } from "react-router";
 import { useAuth } from "~/context/AuthContext";
 import { AddInstitutionalUserModal } from "~/components/molecules/users/AddInstitutionalUserModal";
+import { PendingInvitationsList } from "~/components/molecules/users/PendingInvitationsList";
 import { deleteUser } from "~/api/users";
 import { roleToUserRole, type User } from "~/types/user";
 
@@ -32,6 +33,7 @@ const roleFilters: { value: RoleFilter; label: string; icon: IconType }[] = [
 
 export default function InstitutionUsersPage() {
   const [modal, setModal] = useState(false);
+  const [pendingKey, setPendingKey] = useState(0);
   const [search, setSearch] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
@@ -156,6 +158,11 @@ export default function InstitutionUsersPage() {
         ))}
       </div>
 
+      <PendingInvitationsList
+        institutionId={institutionId}
+        refreshKey={pendingKey}
+      />
+
       {error && <Alert message={error} type="error" />}
 
       <div className="min-w-0 w-full h-full">
@@ -210,7 +217,10 @@ export default function InstitutionUsersPage() {
 
       <AddInstitutionalUserModal
         isOpen={modal}
-        onClose={() => setModal(false)}
+        onClose={() => {
+          setModal(false);
+          setPendingKey((key) => key + 1);
+        }}
         institutionId={institutionId!}
       />
     </Main>

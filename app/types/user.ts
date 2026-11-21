@@ -79,3 +79,13 @@ const apiRoleToUserRole: Record<ApiRole, UserRole> = {
 export function roleToUserRole(apiRole: ApiRole): UserRole {
   return apiRoleToUserRole[apiRole];
 }
+
+// Convite de cadastro ainda válido (GET /api/v1/users/pending)
+export interface PendingInvitation {
+  name: string;
+  email: string;
+  role: ApiRole;
+  institutionId: string | null;
+  invitedAt: string;
+  expiresAt: string;
+}

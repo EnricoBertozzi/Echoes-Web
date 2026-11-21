@@ -2,6 +2,7 @@ import type {
   CompleteRegistrationRequest,
   CreateUserRequest,
   Page,
+  PendingInvitation,
   PendingUser,
   UpdateCurrentUserRequest,
   UpdateUserRequest,
@@ -92,4 +93,13 @@ export async function updateCurrentUser(
 
 export async function deleteCurrentUser(): Promise<void> {
   await api.delete<void>("/api/v1/users/me");
+}
+
+export async function findPendingInvitations(
+  institutionId?: string,
+): Promise<PendingInvitation[]> {
+  const response = await api.get<PendingInvitation[]>("/api/v1/users/pending", {
+    params: institutionId ? { institutionId } : undefined,
+  });
+  return response.data;
 }
