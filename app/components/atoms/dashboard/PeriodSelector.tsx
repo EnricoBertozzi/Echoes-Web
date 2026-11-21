@@ -11,7 +11,7 @@ export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
     <div
       role="group"
       aria-label="Período"
-      className="inline-flex overflow-hidden rounded-lg border border-slate-300 bg-white"
+      className="inline-flex w-full overflow-hidden rounded-lg border border-slate-300 bg-white sm:w-auto"
     >
       {dashboardPeriods.map((period) => (
         <button
@@ -20,7 +20,7 @@ export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
           aria-pressed={value === period}
           onClick={() => onChange(period)}
           className={clsx(
-            "cursor-pointer px-4 py-3 text-sm transition-colors",
+            "min-h-11 flex-1 cursor-pointer px-2 py-3 text-sm whitespace-nowrap transition-colors sm:px-4",
             value === period
               ? "bg-main text-white"
               : "text-slate-700 hover:bg-slate-100",

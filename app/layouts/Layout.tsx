@@ -7,12 +7,12 @@ export default function DashboardLayout() {
   return (
     <ProtectedLayout>
       <TermsGate>
-        <div className="flex w-full h-full bg-zinc-200">
+        <div className="flex h-dvh w-full flex-col bg-zinc-200 lg:h-full lg:flex-row">
           <Sidebar />
 
-          <main className="flex flex-1">
+          <div className="flex min-h-0 min-w-0 flex-1">
             <Outlet />
-          </main>
+          </div>
         </div>
       </TermsGate>
     </ProtectedLayout>

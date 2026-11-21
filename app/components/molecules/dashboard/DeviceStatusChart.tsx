@@ -26,7 +26,7 @@ export function DeviceStatusChart({ institutions }: DeviceStatusChartProps) {
           return (
             <li key={row.institutionId} className="flex flex-col gap-1">
               <div className="flex items-baseline justify-between gap-4">
-                <span className="line-clamp-1 font-semibold text-slate-900">
+                <span className="min-w-0 font-semibold text-slate-900 wrap-anywhere lg:line-clamp-1">
                   {row.institutionName}
                 </span>
                 <span className="shrink-0 text-sm tabular-nums text-slate-500">
