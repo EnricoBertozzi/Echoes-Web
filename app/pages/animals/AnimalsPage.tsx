@@ -97,7 +97,7 @@ export default function Animals() {
         </div>
       </div>
 
-      <ul className="grid grid-cols-2 gap-8">
+      <ul className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {animals.map((animal) => (
           <li key={animal.id}>
             <AnimalCard

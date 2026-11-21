@@ -1,5 +1,6 @@
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { Button } from "../atoms/Button";
+import { ButtonIcon } from "../atoms/ButtonIcon";
 import { SelectInput } from "../atoms/input/SelectInput";
 import { ModalTextField } from "../atoms/modal/ModalTextField";
 import { FaDog } from "react-icons/fa";
@@ -115,16 +116,18 @@ export function DeviceCard({
         </div>
 
         {isAdmin && !editing && (
-          <button
-            type="button"
-            onClick={startEditing}
-            disabled={busy}
-            className="cursor-pointer text-slate-500 transition-colors hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-            aria-label="Editar dispositivo"
-            title="Editar dispositivo"
-          >
-            <FiEdit size={22} />
-          </button>
+          <div className="flex shrink-0 gap-1">
+            <ButtonIcon label="Editar dispositivo" onClick={startEditing} disabled={busy}>
+              <FiEdit size={22} className="text-slate-900" aria-hidden="true" />
+            </ButtonIcon>
+            <ButtonIcon
+              label={deleting ? "Excluindo dispositivo" : "Excluir dispositivo"}
+              onClick={() => setShowDeleteModal(true)}
+              disabled={busy || deleting}
+            >
+              <FiTrash2 size={22} className="text-red-900" aria-hidden="true" />
+            </ButtonIcon>
+          </div>
         )}
       </div>
 
@@ -225,14 +228,13 @@ export function DeviceCard({
             >
               {device.hardwareId}
             </p>
-          </div>
-
-          <span className="text-lg text-slate-500">
-            Status:{" "}
-            <span className={deviceStatusTextStyles[device.status]}>
-              {deviceStatusLabels[device.status]}
+            <span className="text-lg text-slate-500">
+              Status:{" "}
+              <span className={deviceStatusTextStyles[device.status]}>
+                {deviceStatusLabels[device.status]}
+              </span>
             </span>
-          </span>
+          </div>
 
           {device.status === "ACTIVE" &&
             (!device.classroomId || classroomLabel?.archived) && (
@@ -351,16 +353,6 @@ export function DeviceCard({
                     }
                     disabled={busy}
                     onClick={() => onToggle(device)}
-                  />
-                )}
-
-                {isAdmin && (
-                  <Button
-                    type="button"
-                    label={deleting ? "Excluindo..." : "Excluir"}
-                    variant="danger"
-                    disabled={busy || deleting}
-                    onClick={() => setShowDeleteModal(true)}
                   />
                 )}
               </div>

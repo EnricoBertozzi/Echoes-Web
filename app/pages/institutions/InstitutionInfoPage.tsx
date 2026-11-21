@@ -115,13 +115,13 @@ function InstitutionInfoPage({
       <div className="flex w-full min-w-0 flex-col gap-8">
         <Card>
           <div className="flex flex-col gap-6">
-            <header className="flex flex-wrap items-start justify-between gap-4">
-              <div className="flex min-w-0 items-center gap-4">
+            <header className="flex items-start gap-3">
+              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-4">
                 <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-main">
                   <FiHome size={36} className="text-white" />
                 </div>
 
-                <div className="flex min-w-0 flex-col gap-1">
+                <div className="flex min-w-0 flex-[1_1_8rem] flex-col gap-1">
                   <h2 className="break-words text-2xl font-bold text-slate-900">
                     {institution.name}
                   </h2>
@@ -147,8 +147,8 @@ function InstitutionInfoPage({
               </div>
 
               {isAdmin && (
-                <ButtonIcon onClick={onEdit}>
-                  <FiEdit size={24} className="text-slate-900" />
+                <ButtonIcon label={`Editar instituição ${institution.name}`} onClick={onEdit}>
+                  <FiEdit size={22} className="text-slate-900" aria-hidden="true" />
                 </ButtonIcon>
               )}
             </header>
