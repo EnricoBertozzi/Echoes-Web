@@ -22,7 +22,7 @@ interface PersonRowProps {
 
 function PersonRow({ member, showEmail, showJoinedAt }: PersonRowProps) {
   return (
-    <li className="flex items-center gap-4 py-3">
+    <li className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-x-4">
       <span
         aria-hidden="true"
         className="flex size-12 shrink-0 items-center justify-center rounded-full bg-main text-lg font-bold text-white"
@@ -30,18 +30,18 @@ function PersonRow({ member, showEmail, showJoinedAt }: PersonRowProps) {
         {member.name.charAt(0).toUpperCase()}
       </span>
 
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-lg font-bold text-slate-900">
+      <div className="min-w-0">
+        <p className="text-lg font-bold text-slate-900 wrap-anywhere sm:truncate">
           {member.name}
         </p>
 
         {showEmail && (
-          <p className="truncate text-base text-slate-600">{member.email}</p>
+          <p className="text-base text-slate-600 wrap-anywhere sm:truncate">{member.email}</p>
         )}
       </div>
 
       {showJoinedAt && (
-        <p className="hidden shrink-0 text-base text-slate-500 sm:block">
+        <p className="col-start-2 text-sm text-slate-500 sm:col-start-3 sm:row-start-1 sm:text-base">
           Ingressou em {formatDate(member.joinedAt)}
         </p>
       )}
@@ -75,8 +75,11 @@ export function ClassroomPeople({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-        <form className="w-96 max-w-full" onSubmit={(e) => e.preventDefault()}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <form
+          className="w-full sm:w-96 sm:max-w-full"
+          onSubmit={(e) => e.preventDefault()}
+        >
           <SearchBar
             value={search}
             onChange={setSearch}
@@ -85,7 +88,7 @@ export function ClassroomPeople({
         </form>
 
         {onExport && (
-          <div className="flex w-56 items-center">
+          <div className="w-full sm:w-56">
             <Button
               label="Exportar alunos (CSV)"
               variant="muted"
@@ -96,7 +99,7 @@ export function ClassroomPeople({
         )}
       </div>
 
-      <Card>
+      <Card className="max-lg:p-4">
         <h2 className="text-2xl font-bold text-slate-900">
           Professores ({filteredTeachers.length})
         </h2>
@@ -117,7 +120,7 @@ export function ClassroomPeople({
         )}
       </Card>
 
-      <Card>
+      <Card className="max-lg:p-4">
         <h2 className="text-2xl font-bold text-slate-900">
           Alunos ({filteredStudents.length})
         </h2>

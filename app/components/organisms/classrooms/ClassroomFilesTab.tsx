@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiDownload, FiEdit2, FiEye, FiFile, FiPlus, FiRefreshCw, FiTrash2 } from "react-icons/fi";
 import { Card } from "~/components/atoms/card/Card";
+import { ButtonIcon } from "~/components/atoms/ButtonIcon";
 import { Alert } from "~/components/atoms/page/Alert";
 import { downloadClassroomMaterial } from "~/api/classrooms";
 import { ClassroomMaterialModal } from "./ClassroomMaterialModal";
@@ -78,18 +79,18 @@ export function ClassroomFilesTab({ classroomId, isTeacher, archived }: Classroo
   const canManage = isTeacher && !archived;
 
   return (
-    <Card>
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <Card className="max-lg:p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Arquivos da turma</h2>
           <p className="mt-1 text-slate-600">{items.length} {items.length === 1 ? "material disponível" : "materiais disponíveis"}.</p>
           {archived && <p className="text-sm text-amber-700">Turma arquivada: apenas leitura e download.</p>}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button type="button" onClick={() => void refresh()} disabled={loading} aria-label="Atualizar arquivos"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-slate-700 disabled:opacity-40"><FiRefreshCw /></button>
+            className="grid place-items-center rounded-lg border border-slate-300 px-3 py-2 text-slate-700 disabled:opacity-40 max-sm:size-11"><FiRefreshCw /></button>
           {canManage && <button type="button" onClick={() => openModal("create")} disabled={busy}
-            className="flex items-center gap-2 rounded-lg bg-main px-4 py-2 font-semibold text-white disabled:opacity-50"><FiPlus /> Enviar arquivo</button>}
+            className="flex items-center justify-center gap-2 rounded-lg bg-main px-4 py-2 font-semibold text-white disabled:opacity-50 max-sm:min-h-11 max-sm:flex-1"><FiPlus /> Enviar arquivo</button>}
         </div>
       </div>
 
@@ -99,29 +100,43 @@ export function ClassroomFilesTab({ classroomId, isTeacher, archived }: Classroo
       {!loading && !error && items.length === 0 && <p className="py-8 text-center text-slate-500">Nenhum material foi enviado para esta turma.</p>}
       <ul className="divide-y divide-slate-200">
         {items.map((material) => (
-          <li key={material.id} className="flex flex-wrap items-start justify-between gap-4 py-5">
+          <li key={material.id} className="flex flex-wrap items-start gap-3 py-5">
             <div className="flex min-w-0 flex-1 gap-3">
               <FiFile size={26} className="mt-1 shrink-0 text-slate-500" aria-hidden="true" />
-              <div className="min-w-0">
-                <h3 className="break-words text-lg font-bold text-slate-900">{material.title}</h3>
+              <div className="min-w-0 wrap-anywhere">
+                <h3 className="text-lg font-bold text-slate-900">{material.title}</h3>
                 <p className="break-all text-sm text-slate-600">{material.originalFileName}</p>
                 {material.description && <p className="mt-1 whitespace-pre-wrap text-slate-700">{material.description}</p>}
                 <p className="mt-1 text-sm text-slate-500">{formatSize(material.fileSize)} · {material.authorName} · {new Date(material.createdAt).toLocaleDateString("pt-BR")}</p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 text-sm">
+            {canManage && (
+              <div className="flex shrink-0 gap-1">
+                <ButtonIcon
+                  label={`Editar material ${material.title}`}
+                  onClick={() => openModal("edit", material)}
+                  disabled={busy}
+                >
+                  <FiEdit2 size={22} className="text-slate-900" aria-hidden="true" />
+                </ButtonIcon>
+                <ButtonIcon
+                  label={`Excluir material ${material.title}`}
+                  onClick={() => void confirmDelete(material)}
+                  disabled={busy}
+                >
+                  <FiTrash2 size={22} className="text-red-900" aria-hidden="true" />
+                </ButtonIcon>
+              </div>
+            )}
+            <div className="flex w-full flex-wrap gap-2 text-sm max-sm:[&>button]:min-h-11">
               {material.previewable && <button type="button" onClick={() => void openFile(material, true)} disabled={!!downloading}
                 className="flex items-center gap-1 rounded-lg border px-3 py-2 text-slate-700"><FiEye /> Visualizar</button>}
               <button type="button" onClick={() => void openFile(material, false)} disabled={!!downloading}
                 className="flex items-center gap-1 rounded-lg border px-3 py-2 text-slate-700"><FiDownload /> Baixar</button>
-              {canManage && <>
-                <button type="button" onClick={() => openModal("edit", material)} disabled={busy}
-                  className="flex items-center gap-1 rounded-lg border px-3 py-2 text-slate-700"><FiEdit2 /> Editar</button>
+              {canManage && (
                 <button type="button" onClick={() => openModal("replace", material)} disabled={busy}
                   className="flex items-center gap-1 rounded-lg border px-3 py-2 text-slate-700"><FiRefreshCw /> Trocar</button>
-                <button type="button" onClick={() => void confirmDelete(material)} disabled={busy}
-                  className="flex items-center gap-1 rounded-lg border border-red-200 px-3 py-2 text-red-700"><FiTrash2 /> Excluir</button>
-              </>}
+              )}
             </div>
           </li>
         ))}
@@ -132,13 +147,13 @@ export function ClassroomFilesTab({ classroomId, isTeacher, archived }: Classroo
 
       {preview && (
         <div role="dialog" aria-modal="true" aria-label={`Visualizar ${preview.name}`}
-          className="fixed inset-0 z-50 flex flex-col bg-black/80 p-4">
-          <div className="mb-3 flex items-center justify-between gap-3 text-white">
+          className="fixed inset-x-0 top-0 z-50 flex h-dvh flex-col bg-black/80 p-3 sm:p-4">
+          <div className="mb-3 flex shrink-0 items-center justify-between gap-3 text-white">
             <p className="truncate font-semibold">{preview.name}</p>
-            <button type="button" onClick={() => setPreview(null)} className="rounded bg-white px-4 py-2 text-slate-900">Fechar</button>
+            <button type="button" onClick={() => setPreview(null)} className="shrink-0 rounded bg-white px-4 py-2 text-slate-900 max-sm:min-h-11">Fechar</button>
           </div>
           {preview.type.startsWith("image/") ?
-            <img src={preview.url} alt={preview.name} className="min-h-0 flex-1 object-contain" /> :
+            <img src={preview.url} alt={preview.name} className="min-h-0 w-full flex-1 object-contain" /> :
             <iframe src={preview.url} title={preview.name} sandbox="" className="min-h-0 w-full flex-1 bg-white" />}
         </div>
       )}

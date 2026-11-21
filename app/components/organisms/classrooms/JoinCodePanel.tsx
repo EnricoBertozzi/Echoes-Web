@@ -56,14 +56,14 @@ export function JoinCodePanel({
   }
 
   return (
-    <Card>
+    <Card className="max-lg:p-4">
       <h2 className="text-2xl font-bold text-slate-900">Código de entrada</h2>
 
       {code ? (
         <>
-          <div className="flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-5 py-4">
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-slate-100 px-3 py-4 sm:gap-3 sm:px-5">
             <span
-              className="select-all text-3xl font-bold tracking-[0.3em] text-slate-900"
+              className="select-all text-2xl font-bold tracking-[0.2em] text-slate-900 sm:text-3xl sm:tracking-[0.3em]"
               aria-label={`Código ${code.split("").join(" ")}`}
             >
               {code}
@@ -73,7 +73,7 @@ export function JoinCodePanel({
               type="button"
               onClick={handleCopy}
               aria-label="Copiar código"
-              className="shrink-0 cursor-pointer rounded-lg p-2 text-main hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-main"
+              className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg text-main hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-main lg:size-10"
             >
               <FiCopy size={24} />
             </button>

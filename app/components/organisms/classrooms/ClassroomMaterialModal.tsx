@@ -42,9 +42,16 @@ export function ClassroomMaterialModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => { if (!busy) onClose(); }} className="w-[min(94vw,38rem)] max-h-[90vh] overflow-y-auto">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => { if (!busy) onClose(); }}
+      className="w-[min(94vw,38rem)] max-h-[90dvh] overflow-y-auto overscroll-contain max-sm:px-4"
+    >
       <ModalTitle title={names[mode]} description={mode === "replace" ? "O arquivo anterior será substituído após salvar." : "Materiais compartilhados com a turma."} />
-      <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-4">
+      <form
+        onSubmit={handleSubmit(submit)}
+        className="flex flex-col gap-4 max-sm:[&_input]:min-w-0"
+      >
         {mode !== "replace" && (
           <>
             <ControlledTextField<Values>
@@ -77,9 +84,9 @@ export function ClassroomMaterialModal({
             <progress className="w-full" max={100} value={progress} />
           </div>
         )}
-        <div className="mt-3 flex gap-3 justify-end">
-          <div className="min-w-28"><Button type="button" label="Cancelar" variant="muted" disabled={busy} onClick={onClose} /></div>
-          <div className="min-w-28"><Button type="submit" label={busy ? "Salvando..." : "Salvar"} disabled={busy} /></div>
+        <div className="mt-3 flex flex-col justify-end gap-3 sm:flex-row">
+          <div className="sm:min-w-28"><Button type="button" label="Cancelar" variant="muted" disabled={busy} onClick={onClose} /></div>
+          <div className="sm:min-w-28"><Button type="submit" label={busy ? "Salvando..." : "Salvar"} disabled={busy} /></div>
         </div>
       </form>
     </Modal>

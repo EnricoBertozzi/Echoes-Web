@@ -33,7 +33,7 @@ export function ClassroomDevicesTab({
   }
 
   return (
-    <Card>
+    <Card className="wrap-anywhere max-lg:p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">
@@ -81,7 +81,7 @@ export function ClassroomDevicesTab({
           {devices.map((device) => (
             <li
               key={device.id}
-              className="flex flex-wrap items-start justify-between gap-4 py-5"
+              className="flex flex-col gap-4 py-5 sm:flex-row sm:items-start sm:justify-between"
             >
               <div className="min-w-0 flex-1">
                 <h3 className="break-words text-lg font-bold text-slate-900">
@@ -111,7 +111,7 @@ export function ClassroomDevicesTab({
               </div>
 
               {device.status !== "PENDING" && (
-                <div className="w-full sm:w-36">
+                <div className="w-full shrink-0 sm:w-36">
                   <Link
                     to={scenariosPath(device.id)}
                     className="flex w-full items-center justify-center rounded bg-gray-300 px-4 py-3 text-black"

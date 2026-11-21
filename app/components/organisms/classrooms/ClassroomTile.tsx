@@ -20,7 +20,7 @@ export function ClassroomTile({ classroom }: ClassroomTileProps) {
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main",
       )}
     >
-      <div className={clsx("flex h-28 items-end p-5", accent.banner)}>
+      <div className={clsx("flex h-28 items-end p-4 sm:p-5", accent.banner)}>
         <span
           aria-hidden="true"
           className={clsx(
@@ -32,29 +32,30 @@ export function ClassroomTile({ classroom }: ClassroomTileProps) {
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-5">
+      <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
         <h3 className="line-clamp-2 text-xl font-bold text-slate-900 group-hover:underline">
           {classroom.title}
         </h3>
 
-        <p className="text-base text-slate-500">Período {classroom.period}</p>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <p className="text-base text-slate-500">Período {classroom.period}</p>
+          <span
+            className={clsx(
+              "w-fit rounded-full px-3 py-1 text-sm font-semibold",
+              classroom.archived
+                ? "bg-stone-200 text-stone-600"
+                : "bg-emerald-100 text-emerald-800",
+            )}
+          >
+            {classroom.archived ? "Arquivada" : "Ativa"}
+          </span>
+        </div>
 
         {classroom.description && (
           <p className="line-clamp-2 text-base text-slate-700">
             {classroom.description}
           </p>
         )}
-
-        <span
-          className={clsx(
-            "mt-auto w-fit rounded-full px-3 py-1 text-sm font-semibold",
-            classroom.archived
-              ? "bg-stone-200 text-stone-600"
-              : "bg-emerald-100 text-emerald-800",
-          )}
-        >
-          {classroom.archived ? "Arquivada" : "Ativa"}
-        </span>
       </div>
     </Link>
   );

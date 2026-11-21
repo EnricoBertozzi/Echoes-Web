@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router";
 import {
   archiveClassroom,
@@ -9,6 +10,7 @@ import {
   updateClassroom,
 } from "~/api/classrooms";
 import { Button } from "~/components/atoms/Button";
+import { ButtonIcon } from "~/components/atoms/ButtonIcon";
 import { Card } from "~/components/atoms/card/Card";
 import { Alert } from "~/components/atoms/page/Alert";
 import { Main } from "~/components/atoms/page/Main";
@@ -118,31 +120,50 @@ export default function ClassroomsPage() {
 
       <ul className="grid gap-4 md:grid-cols-2">
         {classrooms.map((classroom) => (
-          <li key={classroom.id}>
-            <Card>
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <h3 className="line-clamp-2 text-2xl font-bold text-slate-900">
+          <li key={classroom.id} className="min-w-0">
+            <Card className="max-lg:p-4">
+              <div className="flex items-start gap-3">
+                <div className="min-w-0 flex-1">
+                  <h3 className="line-clamp-2 text-2xl font-bold text-slate-900 wrap-anywhere">
                     {classroom.title}
                   </h3>
-                  <p className="text-xl text-slate-500">
-                    Período: {classroom.period}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <p className="min-w-0 text-xl text-slate-500 wrap-anywhere">
+                      Período: {classroom.period}
+                    </p>
+                    <span
+                      className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                        classroom.archived
+                          ? "bg-stone-200 text-stone-600"
+                          : "bg-emerald-100 text-emerald-800"
+                      }`}
+                    >
+                      {classroom.archived ? "Arquivada" : "Ativa"}
+                    </span>
+                  </div>
                 </div>
 
-                <span
-                  className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold ${
-                    classroom.archived
-                      ? "bg-stone-200 text-stone-600"
-                      : "bg-emerald-100 text-emerald-800"
-                  }`}
-                >
-                  {classroom.archived ? "Arquivada" : "Ativa"}
-                </span>
+                {isManager && (
+                  <div className="flex shrink-0 gap-1">
+                    <ButtonIcon
+                      label={`Editar turma ${classroom.title}`}
+                      disabled={classroom.archived}
+                      onClick={() => setModal({ type: "edit", classroom })}
+                    >
+                      <FiEdit size={22} className="text-slate-900" aria-hidden="true" />
+                    </ButtonIcon>
+                    <ButtonIcon
+                      label={`Excluir turma ${classroom.title}`}
+                      onClick={() => handleDelete(classroom)}
+                    >
+                      <FiTrash2 size={22} className="text-red-900" aria-hidden="true" />
+                    </ButtonIcon>
+                  </div>
+                )}
               </div>
 
               {classroom.description && (
-                <p className="line-clamp-3 text-lg text-slate-700">
+                <p className="line-clamp-3 text-lg text-slate-700 wrap-anywhere">
                   {classroom.description}
                 </p>
               )}
@@ -160,36 +181,19 @@ export default function ClassroomsPage() {
                 </div>
 
                 {isManager && (
-                  <>
-                    <div className="w-28">
-                      <Button
-                        label="Editar"
-                        variant="muted"
-                        disabled={classroom.archived}
-                        onClick={() => setModal({ type: "edit", classroom })}
-                      />
-                    </div>
-                    <div className="w-32">
-                      <Button
-                        label={classroom.archived ? "Desarquivar" : "Arquivar"}
-                        variant="muted"
-                        onClick={() =>
-                          run(() =>
-                            classroom.archived
-                              ? unarchiveClassroom(classroom.id)
-                              : archiveClassroom(classroom.id),
-                          )
-                        }
-                      />
-                    </div>
-                    <div className="w-28">
-                      <Button
-                        label="Excluir"
-                        variant="danger"
-                        onClick={() => handleDelete(classroom)}
-                      />
-                    </div>
-                  </>
+                  <div className="w-32">
+                    <Button
+                      label={classroom.archived ? "Desarquivar" : "Arquivar"}
+                      variant="muted"
+                      onClick={() =>
+                        run(() =>
+                          classroom.archived
+                            ? unarchiveClassroom(classroom.id)
+                            : archiveClassroom(classroom.id),
+                        )
+                      }
+                    />
+                  </div>
                 )}
               </div>
             </Card>
