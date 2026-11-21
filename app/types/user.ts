@@ -24,15 +24,14 @@ export interface CreateInstitutionalUserRequest {
   institutionId?: string;
 }
 
+// S11: o e-mail não é editável; só o cadastro o define
 export interface UpdateUserRequest {
   name?: string;
-  email?: string;
   institutionId?: string | null;
 }
 
 export interface UpdateCurrentUserRequest {
   name?: string;
-  email?: string;
 }
 
 export interface CompleteRegistrationRequest {

@@ -4,6 +4,7 @@ import { ProfileDangerZone } from "~/components/organisms/profile/ProfileDangerZ
 import { ProfileDetailsForm } from "~/components/organisms/profile/ProfileDetailsForm";
 import { ProfileHeader } from "~/components/organisms/profile/ProfileHeader";
 import { ProfilePasswordForm } from "~/components/organisms/profile/ProfilePasswordForm";
+import { ProfilePrivacySection } from "~/components/organisms/profile/ProfilePrivacySection";
 import { useAuth } from "~/context/AuthContext";
 
 export default function ProfilePage() {
@@ -24,6 +25,8 @@ export default function ProfilePage() {
         <ProfileDetailsForm />
 
         <ProfilePasswordForm />
+
+        <ProfilePrivacySection />
 
         <ProfileDangerZone />
       </div>

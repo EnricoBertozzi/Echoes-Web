@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { validMfa, type MfaRequest } from "~/api/auth";
 import { fetchCurrentUser } from "~/api/users";
 import { useAuth } from "~/context/AuthContext";
+import { setSessionHint } from "~/utils/session";
 
 export function useValidMfa() {
   const navigate = useNavigate();
@@ -14,10 +15,10 @@ export function useValidMfa() {
     submitting.current = true;
 
     try {
-      const mfaResponse = await validMfa(data);
-      const token = mfaResponse.data.token;
+      // o cookie de sessão é gravado pelo servidor nesta resposta (S10)
+      await validMfa(data);
+      setSessionHint(true);
 
-      localStorage.setItem("jwt_token", token);
       const currentUserResponse = await fetchCurrentUser();
       const currentUser = currentUserResponse.data;
 
@@ -30,6 +31,9 @@ export function useValidMfa() {
       navigate(isClassroomMember ? "/classrooms" : "/dashboard", {
         replace: true,
       });
+    } catch (error) {
+      setSessionHint(false);
+      throw error;
     } finally {
       submitting.current = false;
     }

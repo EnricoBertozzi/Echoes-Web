@@ -29,15 +29,21 @@ export function AddInstitutionalUserModal({
   isOpen,
   onClose,
 }: AddInstitutionalUserModalProps) {
-  const { control, register, handleSubmit } =
-    useForm<CreateInstitutionalUserRequest>({
-      defaultValues: {
-        email: "",
-        name: "",
-        institutionId: institutionId,
-        role: "student",
-      },
-    });
+  // Sem função pré-selecionada: o valor padrão precisa existir nas opções
+  // do select. Um padrão fora das opções (ex.: "student" para o Admin) mostra
+  // a primeira opção na tela, mas envia o valor antigo.
+  type InstitutionalUserForm = Omit<CreateInstitutionalUserRequest, "role"> & {
+    role: CreateInstitutionalUserRequest["role"] | "";
+  };
+
+  const { control, register, handleSubmit } = useForm<InstitutionalUserForm>({
+    defaultValues: {
+      email: "",
+      name: "",
+      institutionId: institutionId,
+      role: "",
+    },
+  });
 
   const options = new Map<string, string>();
   const { user } = useAuth();
@@ -84,7 +90,12 @@ export function AddInstitutionalUserModal({
             description="Digite os dados do novo usuário"
           />
           <ModalForm
-            onSubmit={handleSubmit(handleCreateInstitutionalUserSubmit)}
+            onSubmit={handleSubmit((values) =>
+              // a regra "required" do select garante que role não está vazio aqui
+              handleCreateInstitutionalUserSubmit(
+                values as CreateInstitutionalUserRequest,
+              ),
+            )}
           >
             <input
               type="hidden"

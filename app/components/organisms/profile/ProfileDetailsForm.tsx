@@ -5,14 +5,12 @@ import { FiUser } from "react-icons/fi";
 import { Button } from "~/components/atoms/Button";
 import { Alert } from "~/components/atoms/page/Alert";
 import { SectionCard } from "~/components/molecules/SectionCard";
-import { ControlledEmailField } from "~/components/molecules/controlled/ControlledEmailField";
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 import { useAuth } from "~/context/AuthContext";
 import { useUpdateProfile } from "~/hooks/profile/useUpdateProfile";
 
 interface ProfileFormValues {
   name: string;
-  email: string;
 }
 
 export function ProfileDetailsForm() {
@@ -31,7 +29,6 @@ export function ProfileDetailsForm() {
     mode: "onBlur",
     defaultValues: {
       name: user?.name ?? "",
-      email: user?.email ?? "",
     },
   });
 
@@ -39,7 +36,7 @@ export function ProfileDetailsForm() {
   // (por exemplo, depois de salvar ou de restaurar a sessão).
   useEffect(() => {
     if (user) {
-      reset({ name: user.name, email: user.email });
+      reset({ name: user.name });
     }
   }, [user, reset]);
 
@@ -60,7 +57,7 @@ export function ProfileDetailsForm() {
 
     if (result.fieldErrors) {
       for (const [field, message] of Object.entries(result.fieldErrors)) {
-        if (field === "name" || field === "email") {
+        if (field === "name") {
           setError(field, { message });
           hasFieldError = true;
         }
@@ -95,16 +92,23 @@ export function ProfileDetailsForm() {
             }}
           />
 
-          <ControlledEmailField
-            id="profile-email"
-            name="email"
-            label="E-mail"
-            placeholder="Digite seu e-mail"
-            control={control}
-            rules={{
-              required: "O e-mail é obrigatório.",
-            }}
-          />
+          {/* S11: o e-mail é definido no cadastro e não pode ser alterado */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="profile-email" className="text-sm font-medium text-slate-700">
+              E-mail
+            </label>
+            <input
+              id="profile-email"
+              name="email"
+              value={user.email}
+              disabled
+              readOnly
+              className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-slate-600"
+            />
+            <p className="text-xs text-slate-500">
+              O e-mail não pode ser alterado.
+            </p>
+          </div>
         </div>
 
         {formError && <Alert message={formError} type="error" />}
