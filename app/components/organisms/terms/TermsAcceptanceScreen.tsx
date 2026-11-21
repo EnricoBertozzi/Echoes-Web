@@ -52,9 +52,9 @@ export function TermsAcceptanceScreen({
   }
 
   return (
-    <main className="flex h-full w-full justify-center overflow-y-auto bg-zinc-200 px-4 py-10">
-      <div className="flex w-full max-w-4xl flex-col gap-6">
-        <header className="flex flex-wrap items-start justify-between gap-4">
+    <main className="flex min-h-dvh w-full justify-center bg-zinc-200 px-4 py-6 max-lg:wrap-anywhere lg:h-full lg:min-h-0 lg:overflow-y-auto lg:py-10">
+      <div className="flex w-full min-w-0 max-w-4xl flex-col gap-6">
+        <header className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:flex-wrap">
           <PageTitle
             title="Termos atualizados"
             description="Para continuar usando o Echoes, leia e aceite os termos abaixo."
@@ -63,7 +63,7 @@ export function TermsAcceptanceScreen({
           <form onSubmit={onLogout}>
             <button
               type="submit"
-              className="cursor-pointer text-sm text-slate-500 underline underline-offset-2 hover:text-slate-800"
+              className="cursor-pointer text-sm text-slate-500 underline underline-offset-2 hover:text-slate-800 max-lg:min-h-11"
             >
               Sair da conta
             </button>
@@ -78,7 +78,7 @@ export function TermsAcceptanceScreen({
         {error && (
           <div className="flex flex-col gap-2">
             <Alert message={error} type="error" />
-            <div className="w-40">
+            <div className="w-full sm:w-40">
               <Button label="Tentar novamente" variant="muted" onClick={onRetry} />
             </div>
           </div>
@@ -92,7 +92,7 @@ export function TermsAcceptanceScreen({
 
           if (!term) {
             return (
-              <Card key={type}>
+              <Card key={type} className="max-lg:p-4">
                 <h2 className="text-2xl font-bold text-slate-900">
                   {termTypeLabels[type]}
                 </h2>
@@ -105,7 +105,7 @@ export function TermsAcceptanceScreen({
           }
 
           return (
-            <Card key={type}>
+            <Card key={type} className="max-lg:p-4">
               <header className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex min-w-0 flex-col gap-1">
                   <h2 className="text-2xl font-bold text-slate-900">
@@ -120,17 +120,17 @@ export function TermsAcceptanceScreen({
                 <TermStatusBadge status={term.status} />
               </header>
 
-              <div className="max-h-96 overflow-y-auto rounded border border-zinc-200 bg-zinc-50 px-6 py-4">
+              <div className="rounded border border-zinc-200 bg-zinc-50 px-3 py-4 sm:px-6 max-lg:[&_pre]:overflow-x-auto lg:max-h-96 lg:overflow-y-auto">
                 <Markdown content={term.content} />
               </div>
 
-              <label className="flex items-start gap-3 text-sm text-slate-700">
+              <label className="flex items-start gap-3 text-sm text-slate-700 max-lg:min-h-11">
                 <input
                   type="checkbox"
                   checked={checked}
                   disabled={disabled}
                   onChange={() => toggleChecked(type)}
-                  className="mt-1"
+                  className="mt-1 shrink-0"
                 />
 
                 <span>
@@ -140,7 +140,7 @@ export function TermsAcceptanceScreen({
               </label>
 
               <div className="flex justify-end">
-                <div className="w-48">
+                <div className="w-full sm:w-48">
                   <Button
                     type="button"
                     label={accepting ? "Aceitando..." : "Aceitar termo"}
