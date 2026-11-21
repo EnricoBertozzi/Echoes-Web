@@ -72,8 +72,8 @@ export default function Register() {
 
   if (!hasValidParams) {
     return (
-      <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
-        <div className="bg-white px-8 py-5 rounded shadow flex flex-col gap-6 w-full max-w-md items-center text-center">
+      <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
+        <div className="my-auto flex w-full max-w-md shrink-0 flex-col items-center gap-6 rounded bg-white px-4 py-5 text-center shadow wrap-anywhere sm:px-8">
           <FiAlertCircle size={48} className="text-main" />
           <h1 className="text-lg text-black font-semibold">Link inválido</h1>
           <p className="text-sm text-gray-600">
@@ -90,8 +90,8 @@ export default function Register() {
 
   if (registeredUser) {
     return (
-      <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
-        <div className="bg-white px-8 py-5 rounded shadow flex flex-col gap-6 w-full max-w-md items-center text-center">
+      <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
+        <div className="my-auto flex w-full max-w-md shrink-0 flex-col items-center gap-6 rounded bg-white px-4 py-5 text-center shadow wrap-anywhere sm:px-8">
           <FiCheckCircle size={48} className="text-green-600" />
           <h1 className="text-lg text-black font-semibold">
             Conta ativada com sucesso!
@@ -109,9 +109,9 @@ export default function Register() {
   }
 
   return (
-    <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
+    <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
       <form
-        className="bg-white p-8 rounded shadow flex flex-col gap-8 w-104"
+        className="my-auto flex w-full max-w-104 shrink-0 flex-col gap-6 rounded bg-white p-4 shadow wrap-anywhere sm:gap-8 sm:p-8"
         onSubmit={handleSubmit(handleRegisterSubmit)}
       >
         <PageTitle

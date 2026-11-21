@@ -43,9 +43,9 @@ export default function PasswordResetPage() {
   }
 
   return (
-    <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
+    <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
       <form
-        className="bg-white p-8 rounded shadow flex flex-col gap-8 w-104"
+        className="my-auto flex w-full max-w-104 shrink-0 flex-col gap-6 rounded bg-white p-4 shadow sm:gap-8 sm:p-8"
         onSubmit={handleSubmit(handleResetPassword)}
       >
         <PageTitle
@@ -97,25 +97,25 @@ export default function PasswordResetPage() {
         </div>
       </form>
 
-      <Modal isOpen={isSuccess} onClose={() => navigate("/")}>
+      <Modal
+        isOpen={isSuccess || isError}
+        onClose={() => navigate("/")}
+        className="w-150 max-w-[calc(100%_-_2rem)] max-h-[calc(100dvh_-_2rem)] overflow-y-auto overscroll-contain"
+      >
         <ModalTitle
-          title="Senha alterada com sucesso!"
-          description="Clique no botão para retornar ao login"
+          title={
+            isSuccess
+              ? "Senha alterada com sucesso!"
+              : "Não foi possível alterar a senha"
+          }
+          description={
+            isSuccess
+              ? "Clique no botão para retornar ao login"
+              : "Tente novamente mais tarde..."
+          }
         />
-        <div className="w-full flex flex-row justify-end">
-          <div className="w-32">
-            <Button label="Voltar" onClick={() => navigate("/")} />
-          </div>
-        </div>
-      </Modal>
-
-      <Modal isOpen={isError} onClose={() => navigate("/")}>
-        <ModalTitle
-          title="Não foi possível alterar a senha"
-          description="Tente novamente mais tarde..."
-        />
-        <div className="w-full flex flex-row justify-end">
-          <div className="w-32">
+        <div className="flex justify-end">
+          <div className="w-full sm:w-32">
             <Button label="Voltar" onClick={() => navigate("/")} />
           </div>
         </div>
