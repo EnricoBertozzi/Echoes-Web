@@ -3,6 +3,7 @@ import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
 import { AddAdminModal } from "~/components/molecules/users/AddAdminModal";
+import { PendingInvitationsList } from "~/components/molecules/users/PendingInvitationsList";
 import { useFetchUsers } from "~/hooks/users/useFetchUsers";
 import { UserCard } from "~/components/molecules/users/UserCard";
 import { Main } from "~/components/atoms/page/Main";
@@ -11,6 +12,7 @@ import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
 
 export default function AdminPageUsers() {
   const [modal, setModal] = useState(false);
+  const [pendingKey, setPendingKey] = useState(0);
   const [search, setSearch] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
 
@@ -52,6 +54,8 @@ export default function AdminPageUsers() {
           <Button label="Novo Usuário" onClick={() => setModal(true)} />
         </div>
       </div>
+
+      <PendingInvitationsList roles={["ADMIN"]} refreshKey={pendingKey} />
 
       {error && <Alert message={error} type="error" />}
 
@@ -100,7 +104,13 @@ export default function AdminPageUsers() {
         )}
       </div>
 
-      <AddAdminModal isOpen={modal} onClose={() => setModal(false)} />
+      <AddAdminModal
+        isOpen={modal}
+        onClose={() => {
+          setModal(false);
+          setPendingKey((key) => key + 1);
+        }}
+      />
     </Main>
   )
 }
