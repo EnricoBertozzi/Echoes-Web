@@ -99,8 +99,8 @@ export function CodeInput({
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-2">
+    <div className="flex min-w-0 max-w-full flex-col gap-2">
+      <div className="flex gap-1 sm:gap-2">
         {code.map((val, index) => {
           return (
             <input
@@ -114,7 +114,7 @@ export function CodeInput({
               onKeyDown={(e) => handleKeyDown(e, index)}
               onClick={() => handleClick(index)}
               onPaste={handlePaste}
-              className={`size-12 text-center text-lg border text-slate-700 border-black rounded 
+              className={`size-12 min-w-0 text-center text-lg border text-slate-700 border-black rounded
                         ${error ? "border-red-500 focus:border-red-600" : "border-slate-300 focus:border-slate-500"}`}
             />
           );

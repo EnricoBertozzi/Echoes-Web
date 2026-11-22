@@ -140,7 +140,7 @@ export function useDeviceScenarios(
       try {
         await createPresetRequest(deviceId, data);
 
-        toast.success("Caso clínico salvo", {
+        toast.success("Cenário clínico salvo", {
           position: "bottom-right",
         });
 
@@ -175,7 +175,7 @@ export function useDeviceScenarios(
       try {
         await activatePresetRequest(deviceId, presetId);
 
-        toast.success("Caso clínico ativado", {
+        toast.success("Cenário clínico ativado", {
           position: "bottom-right",
         });
 

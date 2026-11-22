@@ -4,6 +4,7 @@ import { NavLink } from "react-router";
 
 import { UserAvatar } from "~/components/atoms/users/UserAvatar";
 import { useAuth } from "~/context/AuthContext";
+import { roleToUserRole, userRoleLabels } from "~/types/user";
 
 interface SidebarProfileProps {
   collapsed: boolean;
@@ -14,10 +15,12 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
 
   if (!user) return null;
 
+  const roleLabel = userRoleLabels[roleToUserRole(user.role)];
+
   return (
     <NavLink
       to="/profile"
-      aria-label={`Abrir perfil de ${user.name}`}
+      aria-label={`Abrir perfil de ${user.name}, ${roleLabel}`}
       title={collapsed ? `Abrir perfil de ${user.name}` : undefined}
       className={({ isActive }) =>
         clsx(
@@ -41,7 +44,7 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
               {user.name}
             </span>
 
-            <span className="truncate text-xs text-white/70">{user.email}</span>
+            <span className="truncate text-xs text-white/70">{roleLabel}</span>
           </div>
 
           <FiChevronRight size={16} className="shrink-0 text-white/50" />

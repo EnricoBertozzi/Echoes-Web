@@ -8,7 +8,7 @@ import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
 import { TabBar, type TabItem } from "~/components/molecules/TabBar";
 import { JoinClassroomModal } from "~/components/organisms/JoinClassroomModal";
-import { ClassroomTile } from "~/components/organisms/classrooms/ClassroomTile";
+import { ClassroomCard } from "~/components/organisms/classrooms/ClassroomCard";
 import { useAuth } from "~/context/AuthContext";
 import { useMyClassrooms } from "~/hooks/classrooms/useMyClassrooms";
 
@@ -78,8 +78,11 @@ export default function MyClassroomsPage() {
         }
       />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-        <form className="w-96 max-w-full" onSubmit={(e) => e.preventDefault()}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <form
+          className="w-full sm:w-96 sm:max-w-full"
+          onSubmit={(e) => e.preventDefault()}
+        >
           <SearchBar
             value={search}
             onChange={setSearch}
@@ -88,7 +91,7 @@ export default function MyClassroomsPage() {
         </form>
 
         {isStudent && (
-          <div className="w-48">
+          <div className="w-full sm:w-48">
             <Button
               label="Entrar em turma"
               disabled={loading || alreadyEnrolled}
@@ -110,15 +113,21 @@ export default function MyClassroomsPage() {
         tabs={tabs}
         active={status}
         onChange={setStatus}
+        className="max-sm:flex-wrap max-sm:[&>button]:px-2"
       />
 
-      <div id={`panel-${status}`} role="tabpanel" aria-labelledby={`tab-${status}`}>
+      <div
+        id={`panel-${status}`}
+        role="tabpanel"
+        aria-labelledby={`tab-${status}`}
+        className="wrap-anywhere"
+      >
         {loading && <Alert message="Carregando turmas..." type="muted" />}
 
         {!loading && error && (
           <div className="flex flex-col items-start gap-4">
             <Alert message={error} type="error" />
-            <div className="w-48">
+            <div className="w-full sm:w-48">
               <Button label="Tentar de novo" variant="muted" onClick={refetch} />
             </div>
           </div>
@@ -129,10 +138,13 @@ export default function MyClassroomsPage() {
         )}
 
         {!loading && !error && visible.length > 0 && (
-          <ul className="grid gap-6 sm:grid-cols-2 2xl:grid-cols-3">
+          <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 2xl:grid-cols-3">
             {visible.map((classroom) => (
               <li key={classroom.id} className="min-w-0">
-                <ClassroomTile classroom={classroom} />
+                <ClassroomCard
+                  classroom={classroom}
+                  onOpen={() => navigate(`/classrooms/${classroom.id}`)}
+                />
               </li>
             ))}
           </ul>

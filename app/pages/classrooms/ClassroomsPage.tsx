@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useConfirmation } from "~/context/ConfirmationContext";
 import { useNavigate, useParams } from "react-router";
 import {
   archiveClassroom,
@@ -9,12 +10,12 @@ import {
   updateClassroom,
 } from "~/api/classrooms";
 import { Button } from "~/components/atoms/Button";
-import { Card } from "~/components/atoms/card/Card";
 import { Alert } from "~/components/atoms/page/Alert";
 import { Main } from "~/components/atoms/page/Main";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
 import { ClassroomFormModal } from "~/components/organisms/ClassroomFormModal";
+import { ClassroomCard } from "~/components/organisms/classrooms/ClassroomCard";
 import { useAuth } from "~/context/AuthContext";
 import type { Classroom, ClassroomRequest } from "~/types/Classroom";
 
@@ -28,6 +29,7 @@ type ModalState =
  * o administrador só consulta (o backend não libera essas ações para ele).
  */
 export default function ClassroomsPage() {
+  const confirmAction = useConfirmation();
   const navigate = useNavigate();
   const { institutionId } = useParams();
   const { user } = useAuth();
@@ -78,10 +80,29 @@ export default function ClassroomsPage() {
     }
   }
 
-  function handleDelete(classroom: Classroom) {
-    if (!window.confirm(`Excluir a turma ${classroom.title}?`)) return;
+  async function handleDelete(classroom: Classroom) {
+    const confirmed = await confirmAction({
+      title: "Excluir turma",
+      description: `Excluir a turma ${classroom.title}?`,
+      confirmLabel: "Excluir",
+      variant: "danger",
+    });
+    if (!confirmed) return;
     run(() => deleteClassroom(classroom.id));
   }
+
+  const management = isManager
+    ? {
+        onEdit: (classroom: Classroom) => setModal({ type: "edit", classroom }),
+        onDelete: handleDelete,
+        onToggleArchive: (classroom: Classroom) =>
+          run(() =>
+            classroom.archived
+              ? unarchiveClassroom(classroom.id)
+              : archiveClassroom(classroom.id),
+          ),
+      }
+    : undefined;
 
   return (
     <Main>
@@ -95,13 +116,13 @@ export default function ClassroomsPage() {
         backPath={`/institutions/${institutionId}`}
       />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-        <form className="w-96" onSubmit={handleSearch}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <form className="w-full sm:w-96 sm:max-w-full" onSubmit={handleSearch}>
           <SearchBar value={search} onChange={setSearch} />
         </form>
 
         {isManager && (
-          <div className="w-36">
+          <div className="w-full sm:w-36">
             <Button
               label="Nova Turma"
               onClick={() => setModal({ type: "create" })}
@@ -118,81 +139,14 @@ export default function ClassroomsPage() {
 
       <ul className="grid gap-4 md:grid-cols-2">
         {classrooms.map((classroom) => (
-          <li key={classroom.id}>
-            <Card>
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <h3 className="line-clamp-2 text-2xl font-bold text-slate-900">
-                    {classroom.title}
-                  </h3>
-                  <p className="text-xl text-slate-500">
-                    Período: {classroom.period}
-                  </p>
-                </div>
-
-                <span
-                  className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold ${
-                    classroom.archived
-                      ? "bg-stone-200 text-stone-600"
-                      : "bg-emerald-100 text-emerald-800"
-                  }`}
-                >
-                  {classroom.archived ? "Arquivada" : "Ativa"}
-                </span>
-              </div>
-
-              {classroom.description && (
-                <p className="line-clamp-3 text-lg text-slate-700">
-                  {classroom.description}
-                </p>
-              )}
-
-              <div className="flex flex-wrap gap-2">
-                <div className="w-28">
-                  <Button
-                    label="Abrir"
-                    onClick={() =>
-                      navigate(
-                        `/institutions/${institutionId}/classrooms/${classroom.id}`,
-                      )
-                    }
-                  />
-                </div>
-
-                {isManager && (
-                  <>
-                    <div className="w-28">
-                      <Button
-                        label="Editar"
-                        variant="muted"
-                        disabled={classroom.archived}
-                        onClick={() => setModal({ type: "edit", classroom })}
-                      />
-                    </div>
-                    <div className="w-32">
-                      <Button
-                        label={classroom.archived ? "Desarquivar" : "Arquivar"}
-                        variant="muted"
-                        onClick={() =>
-                          run(() =>
-                            classroom.archived
-                              ? unarchiveClassroom(classroom.id)
-                              : archiveClassroom(classroom.id),
-                          )
-                        }
-                      />
-                    </div>
-                    <div className="w-28">
-                      <Button
-                        label="Excluir"
-                        variant="danger"
-                        onClick={() => handleDelete(classroom)}
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-            </Card>
+          <li key={classroom.id} className="min-w-0">
+            <ClassroomCard
+              classroom={classroom}
+              onOpen={() =>
+                navigate(`/institutions/${institutionId}/classrooms/${classroom.id}`)
+              }
+              management={management}
+            />
           </li>
         ))}
       </ul>

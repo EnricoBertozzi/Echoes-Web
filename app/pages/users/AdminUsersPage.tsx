@@ -45,12 +45,12 @@ export default function AdminPageUsers() {
         description="Consulte o cadastro dos admistradores do sistema"
       />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-        <form className="w-96" onSubmit={handleSearch}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <form className="w-full sm:w-96 sm:max-w-full" onSubmit={handleSearch}>
           <SearchBar value={search} onChange={setSearch} />
         </form>
 
-        <div className="w-36">
+        <div className="w-full sm:w-36">
           <Button label="Novo Usuário" onClick={() => setModal(true)} />
         </div>
       </div>
@@ -59,19 +59,17 @@ export default function AdminPageUsers() {
 
       {error && <Alert message={error} type="error" />}
 
-      <div className="min-w-0 w-full h-full">
+      <div className="w-full min-w-0">
         {loading && (
           <p
-            className="w-full h-full rounded-xl 
-              flex justify-center items-center text-xl 
-            bg-stone-300 text-stone-500"
+            className="flex min-h-40 w-full items-center justify-center rounded-xl bg-stone-300 p-4 text-center text-xl text-stone-500"
           >
             Carregando Usuários...
           </p>
         )}
 
         {users.length != 0 ? (
-          <div className="w-full h-full overflow-scroll">
+          <div className="flex w-full min-w-0 flex-col gap-4">
             <div className="flex justify-center">
               <PaginationSelector
                 label={"Usuários"}
@@ -93,7 +91,6 @@ export default function AdminPageUsers() {
                   key={user.id}
                   id={user.id}
                   name={user.name}
-                  email={user.email}
                   role={user.role}
                 />
               ))}

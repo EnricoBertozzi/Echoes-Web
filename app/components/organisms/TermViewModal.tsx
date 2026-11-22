@@ -12,13 +12,17 @@ export interface TermViewModalProps {
 
 export function TermViewModal({ term, isOpen, onClose }: TermViewModalProps) {
   return (
-    <Modal isOpen={isOpen}  onClose={onClose} className='w-[52rem] max-w-[92vw]'>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      className="w-[52rem] max-w-[92vw] max-lg:max-h-[calc(100dvh_-_2rem)] max-lg:overflow-y-auto max-lg:overscroll-contain max-lg:wrap-anywhere"
+    >
       <ModalTitle
         title={termTypeLabels[term.type]}
         description={`Versão ${term.version} · ${termStatusLabels[term.status]} · Atualizado em ${formatTermTimestamp(term.timestamp)}`}
       />
 
-      <div className='max-h-[60vh] overflow-y-auto rounded border border-zinc-200 bg-zinc-50 px-6 py-4'>
+      <div className='rounded border border-zinc-200 bg-zinc-50 px-3 py-4 sm:px-6 lg:max-h-[60vh] lg:overflow-y-auto'>
         <Markdown content={term.content} />
       </div>
 

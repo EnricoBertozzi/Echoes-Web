@@ -135,7 +135,7 @@ export function TermStatusModal({
 
         {error && <Alert type="error" message={error} />}
 
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col justify-end gap-3 sm:flex-row">
           <Button
             type="button"
             label="Cancelar"

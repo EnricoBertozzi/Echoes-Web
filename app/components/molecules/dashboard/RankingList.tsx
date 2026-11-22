@@ -23,9 +23,11 @@ export function RankingList({ items, emptyMessage }: RankingListProps) {
     <ol className="flex flex-col gap-3">
       {items.map((item) => (
         <li key={item.id} className="flex flex-col gap-1">
-          <div className="flex items-baseline justify-between gap-4">
-            <span className="line-clamp-1 text-slate-900">{item.label}</span>
-            <span className="shrink-0 tabular-nums text-slate-500">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+            <span className="min-w-0 text-slate-900 wrap-anywhere lg:line-clamp-1">
+              {item.label}
+            </span>
+            <span className="tabular-nums text-slate-500 wrap-anywhere sm:shrink-0">
               {formatNumber(item.value)}
               {item.detail ? ` · ${item.detail}` : ""}
             </span>

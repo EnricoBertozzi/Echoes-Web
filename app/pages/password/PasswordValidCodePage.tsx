@@ -29,16 +29,16 @@ export default function PasswordValidCodePage() {
   });
 
   return (
-    <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
+    <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
       <form
-        className="bg-white p-8 rounded shadow flex flex-col gap-8 w-104"
+        className="my-auto flex w-full max-w-104 shrink-0 flex-col gap-6 rounded bg-white p-4 shadow sm:gap-8 sm:p-8"
         onSubmit={handleSubmit(handleValidatePasswordCode)}
       >
         <div className="flex flex-col gap-2">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="cursor-pointer text-left text-sm text-slate-500 hover:underline"
+            className="min-h-11 cursor-pointer text-left text-sm text-slate-500 hover:underline lg:min-h-0"
           >
             Voltar
           </button>

@@ -106,7 +106,7 @@ function EditInstitutionForm({ institution }: { institution: Institution }) {
               </div>
 
               <div className="flex min-w-0 flex-col gap-1">
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-xl font-bold text-slate-900 wrap-anywhere">
                   {institution.name}
                 </h2>
 
@@ -234,7 +234,7 @@ function EditInstitutionForm({ institution }: { institution: Institution }) {
           <Alert message={form.generalError} type="error" />
         )}
 
-        <div className="mt-3 flex gap-3 justify-end">
+        <div className="mt-3 flex flex-col justify-end gap-3 sm:flex-row">
           <Button
             label="Cancelar"
             variant="muted"

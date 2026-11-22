@@ -80,10 +80,10 @@ export function ClinicalPresetModal({
       onClose={() => {
         if (!busy) onClose();
       }}
-      className="w-[min(94vw,38rem)] max-h-[90vh] overflow-y-auto"
+      className="w-[min(94vw,38rem)] max-h-[90dvh] overflow-y-auto"
     >
       <ModalTitle
-        title="Novo caso clínico"
+        title="Novo cenário clínico"
         description="Escolha um cenário para cada ponto de ausculta."
       />
 
@@ -92,7 +92,7 @@ export function ClinicalPresetModal({
           id="preset-name"
           name="name"
           label="Nome"
-          placeholder="Nome do caso clínico"
+          placeholder="Nome do cenário clínico"
           control={control}
           rules={{
             required: "Informe o nome.",
@@ -148,12 +148,12 @@ export function ClinicalPresetModal({
         })}
 
         <p className="text-sm text-slate-500">
-          O caso clínico fica disponível para todos os dispositivos com este
+          O cenário clínico fica disponível para todos os dispositivos com este
           animal e não pode ser editado nem excluído depois de salvo.
         </p>
 
-        <div className="mt-3 flex gap-3 justify-end">
-          <div className="min-w-28">
+        <div className="mt-3 flex flex-col justify-end gap-3 sm:flex-row">
+          <div className="sm:min-w-28">
             <Button
               type="button"
               label="Cancelar"
@@ -162,7 +162,7 @@ export function ClinicalPresetModal({
               onClick={onClose}
             />
           </div>
-          <div className="min-w-28">
+          <div className="sm:min-w-28">
             <Button
               type="submit"
               label={busy ? "Salvando..." : "Salvar"}

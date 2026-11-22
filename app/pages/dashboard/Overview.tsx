@@ -73,7 +73,10 @@ export default function Overview() {
 
       <div className="flex flex-wrap items-center gap-4">
         {isAdmin && (
-          <div className="w-72">
+          <div className="w-full sm:w-72">
+            <label htmlFor="institution-filter" className="sr-only">
+              Instituição
+            </label>
             <SelectInput
               id="institution-filter"
               name="institution-filter"
@@ -104,11 +107,11 @@ export default function Overview() {
 
       {usage && devices && rankings && (
         <div
-          className={`flex flex-col gap-8 transition-opacity ${loading ? "opacity-60" : ""}`}
+          className={`flex min-w-0 flex-col gap-6 transition-opacity lg:gap-8 ${loading ? "opacity-60" : ""}`}
         >
           <section
             aria-label="Resumo"
-            className="grid grid-cols-2 gap-4 lg:grid-cols-4"
+            className="grid grid-cols-1 gap-4 min-[380px]:grid-cols-2 lg:grid-cols-4"
           >
             <KpiCard
               label="Sessões"
@@ -141,8 +144,8 @@ export default function Overview() {
             )}
           </section>
 
-          <div className="grid gap-8 lg:grid-cols-[3fr_2fr]">
-            <Card>
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-8">
+            <Card className="max-lg:p-4">
               <h2 className="text-2xl font-bold text-slate-900">
                 Sessões por dia
               </h2>
@@ -152,7 +155,7 @@ export default function Overview() {
               <UsageChart days={usage.days} />
             </Card>
 
-            <Card>
+            <Card className="max-lg:p-4">
               <h2 className="text-2xl font-bold text-slate-900">
                 Dispositivos por instituição
               </h2>
@@ -171,8 +174,8 @@ export default function Overview() {
             />
           )}
 
-          <div className="grid gap-8 lg:grid-cols-2">
-            <Card>
+          <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+            <Card className="max-lg:p-4">
               <h2 className="text-2xl font-bold text-slate-900">
                 Cenários mais usados
               </h2>
@@ -187,7 +190,7 @@ export default function Overview() {
               />
             </Card>
 
-            <Card>
+            <Card className="max-lg:p-4">
               <h2 className="text-2xl font-bold text-slate-900">
                 Dispositivos mais usados
               </h2>

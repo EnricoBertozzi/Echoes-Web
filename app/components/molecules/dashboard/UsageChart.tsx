@@ -26,7 +26,7 @@ export function UsageChart({ days }: UsageChartProps) {
   }));
 
   return (
-    <div className="h-72 w-full">
+    <div className="h-56 w-full min-w-0 sm:h-72">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}

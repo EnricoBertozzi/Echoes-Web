@@ -346,7 +346,7 @@ export default function NewInstitution() {
               : "Revise os dados antes de cadastrar."}
           </span>
 
-          <div className="mt-3 flex gap-3 justify-end">
+          <div className="mt-3 flex flex-col justify-end gap-3 sm:flex-row">
             <Button
               variant="muted"
               label="Cancelar"

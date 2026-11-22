@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useConfirmation } from "~/context/ConfirmationContext";
 import clsx from "clsx";
 import type { IconType } from "react-icons";
 import {
@@ -32,6 +33,7 @@ const roleFilters: { value: RoleFilter; label: string; icon: IconType }[] = [
 ];
 
 export default function InstitutionUsersPage() {
+  const confirmAction = useConfirmation();
   const [modal, setModal] = useState(false);
   const [pendingKey, setPendingKey] = useState(0);
   const [search, setSearch] = useState("");
@@ -89,7 +91,13 @@ export default function InstitutionUsersPage() {
   }
 
   async function handleDelete(member: User) {
-    if (!window.confirm(`Excluir o usuário ${member.name}?`)) return;
+    const confirmed = await confirmAction({
+      title: "Excluir usuário",
+      description: `Excluir o usuário ${member.name}?`,
+      confirmLabel: "Excluir",
+      variant: "danger",
+    });
+    if (!confirmed) return;
 
     try {
       await deleteUser(roleToUserRole(member.role), member.id);
@@ -120,12 +128,12 @@ export default function InstitutionUsersPage() {
         }
       />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-        <form className="w-96" onSubmit={handleSearch}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <form className="w-full sm:w-96 sm:max-w-full" onSubmit={handleSearch}>
           <SearchBar value={search} onChange={setSearch} />
         </form>
 
-        <div className="w-36">
+        <div className="w-full sm:w-36">
           <Button
             label="Novo Usuário"
             onClick={() => setModal(true)}
@@ -165,19 +173,17 @@ export default function InstitutionUsersPage() {
 
       {error && <Alert message={error} type="error" />}
 
-      <div className="min-w-0 w-full h-full">
+      <div className="w-full min-w-0">
         {loading && (
           <p
-            className="w-full h-full rounded-xl 
-              flex justify-center items-center text-xl 
-            bg-stone-300 text-stone-500"
+            className="flex min-h-40 w-full items-center justify-center rounded-xl bg-stone-300 p-4 text-center text-xl text-stone-500"
           >
             Carregando Usuários...
           </p>
         )}
 
         {visibleUsers.length != 0 ? (
-          <div className="w-full h-full overflow-scroll">
+          <div className="flex w-full min-w-0 flex-col gap-4">
             <div className="flex justify-center">
               <PaginationSelector
                 label={"Membros: "}
@@ -199,7 +205,6 @@ export default function InstitutionUsersPage() {
                   key={member.id}
                   id={member.id}
                   name={member.name}
-                  email={member.email}
                   role={member.role}
                   onDelete={
                     isManager && member.id !== user?.id

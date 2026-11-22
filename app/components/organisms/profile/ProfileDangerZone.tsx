@@ -2,10 +2,8 @@ import { useState } from "react";
 
 import { Button } from "~/components/atoms/Button";
 import { Alert } from "~/components/atoms/page/Alert";
-import { Modal } from "~/components/atoms/modal/Modal";
-import { ModalButton } from "~/components/atoms/modal/ModalButton";
-import { ModalTitle } from "~/components/atoms/modal/ModalTitle";
 import { SectionCard } from "~/components/molecules/SectionCard";
+import { DeleteConfirmationModal } from "~/components/organisms/modal/DeleteConfirmationModal";
 import { useDeleteAccount } from "~/hooks/profile/useDeleteAccount";
 
 export function ProfileDangerZone() {
@@ -42,36 +40,23 @@ export function ProfileDangerZone() {
         </div>
       </SectionCard>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalTitle
-          title="Excluir conta"
-          description="Tem certeza de que deseja excluir sua conta?"
-        />
-
-        <div className="flex flex-col gap-5">
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-relaxed text-red-700">
-            Sua conta será desativada e seus dados pessoais serão anonimizados.
-            Esta ação é permanente.
-          </div>
-
-          {error && <Alert message={error} type="error" />}
-
-          <div className="flex justify-end gap-3">
-            <ModalButton
-              label="Cancelar"
-              onAction={closeModal}
-              disabled={deleting}
-            />
-
-            <ModalButton
-              label={deleting ? "Excluindo..." : "Excluir conta"}
-              variant="danger"
-              onAction={handleDeleteAccount}
-              disabled={deleting}
-            />
-          </div>
+      <DeleteConfirmationModal
+        isOpen={isModalOpen}
+        title="Excluir conta"
+        description="Tem certeza de que deseja excluir sua conta?"
+        confirmLabel={deleting ? "Excluindo..." : "Excluir conta"}
+        confirmDisabled={deleting}
+        cancelDisabled={deleting}
+        onClose={closeModal}
+        onConfirm={handleDeleteAccount}
+      >
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-relaxed text-red-700">
+          Sua conta será desativada e seus dados pessoais serão anonimizados.
+          Esta ação é permanente.
         </div>
-      </Modal>
+
+        {error && <Alert message={error} type="error" />}
+      </DeleteConfirmationModal>
     </>
   );
 }

@@ -34,8 +34,45 @@ export function PendingDevicesCard({
       .map((institution) => [institution.id, institution.name]),
   );
 
+  const rows = devices.map((device) => ({
+    device,
+    registeredAt: formatDateTime(device.createdAt),
+    institutionId: selected[device.id] ?? "",
+  }));
+
+  function renderInstitutionSelect(deviceId: string, institutionId: string, id: string) {
+    return (
+      <SelectInput
+        id={id}
+        name={id}
+        placeholder="Escolha a instituição"
+        options={options}
+        value={institutionId}
+        onChange={(event) =>
+          setSelected((current) => ({
+            ...current,
+            [deviceId]: event.target.value,
+          }))
+        }
+      />
+    );
+  }
+
+  function renderApproveButton(deviceId: string, institutionId: string) {
+    const approving = approvingId === deviceId;
+
+    return (
+      <Button
+        type="button"
+        label={approving ? "Aprovando..." : "Aprovar"}
+        disabled={!institutionId || approving}
+        onClick={() => onApprove(deviceId, institutionId)}
+      />
+    );
+  }
+
   return (
-    <Card>
+    <Card className="max-lg:p-4">
       <header className="flex flex-col gap-1">
         <h2 className="text-2xl font-bold text-slate-900">
           Aguardando aprovação
@@ -52,25 +89,54 @@ export function PendingDevicesCard({
       ) : devices.length === 0 ? (
         <Alert message="Nenhum dispositivo aguardando aprovação." type="muted" />
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-3xl text-left">
-            <thead className="bg-main text-white">
-              <tr>
-                <TableHeadColumn className="rounded-tl-md">
-                  Identificador
-                </TableHeadColumn>
-                <TableHeadColumn>Nome enviado</TableHeadColumn>
-                <TableHeadColumn>Registrado</TableHeadColumn>
-                <TableHeadColumn>Instituição</TableHeadColumn>
-                <TableHeadColumn className="rounded-tr-md" />
-              </tr>
-            </thead>
-            <tbody>
-              {devices.map((device) => {
-                const institutionId = selected[device.id] ?? "";
-                const approving = approvingId === device.id;
+        <>
+          <ul className="divide-y divide-slate-200 lg:hidden">
+            {rows.map(({ device, registeredAt, institutionId }) => {
+              const selectId = `mobile-institution-${device.id}`;
 
-                return (
+              return (
+                <li key={device.id} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
+                  <dl className="grid gap-3 text-sm text-slate-900 wrap-anywhere sm:grid-cols-3">
+                    <div>
+                      <dt className="font-semibold">Identificador</dt>
+                      <dd className="font-mono">{device.hardwareId}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold">Nome enviado</dt>
+                      <dd>{device.name}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold">Registrado</dt>
+                      <dd>{registeredAt}</dd>
+                    </div>
+                  </dl>
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor={selectId} className="text-sm font-semibold text-slate-900">
+                      Instituição
+                    </label>
+                    {renderInstitutionSelect(device.id, institutionId, selectId)}
+                  </div>
+                  {renderApproveButton(device.id, institutionId)}
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="hidden overflow-x-auto lg:block">
+            <table className="w-full min-w-3xl text-left">
+              <thead className="bg-main text-white">
+                <tr>
+                  <TableHeadColumn className="rounded-tl-md">
+                    Identificador
+                  </TableHeadColumn>
+                  <TableHeadColumn>Nome enviado</TableHeadColumn>
+                  <TableHeadColumn>Registrado</TableHeadColumn>
+                  <TableHeadColumn>Instituição</TableHeadColumn>
+                  <TableHeadColumn className="rounded-tr-md" />
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(({ device, registeredAt, institutionId }) => (
                   <tr
                     key={device.id}
                     className="border-b border-gray-800/20 text-black"
@@ -80,36 +146,27 @@ export function PendingDevicesCard({
                     </td>
                     <td className="px-6 py-3">{device.name}</td>
                     <td className="px-6 py-3 whitespace-nowrap">
-                      {formatDateTime(device.createdAt)}
+                      {registeredAt}
                     </td>
                     <td className="min-w-56 px-6 py-3">
-                      <SelectInput
-                        id={`institution-${device.id}`}
-                        name={`institution-${device.id}`}
-                        placeholder="Escolha a instituição"
-                        options={options}
-                        value={institutionId}
-                        onChange={(event) =>
-                          setSelected((current) => ({
-                            ...current,
-                            [device.id]: event.target.value,
-                          }))
-                        }
-                      />
+                      <label htmlFor={`institution-${device.id}`} className="sr-only">
+                        Instituição
+                      </label>
+                      {renderInstitutionSelect(
+                        device.id,
+                        institutionId,
+                        `institution-${device.id}`,
+                      )}
                     </td>
                     <td className="w-32 px-6 py-3">
-                      <Button
-                        label={approving ? "Aprovando..." : "Aprovar"}
-                        disabled={!institutionId || approving}
-                        onClick={() => onApprove(device.id, institutionId)}
-                      />
+                      {renderApproveButton(device.id, institutionId)}
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </Card>
   );

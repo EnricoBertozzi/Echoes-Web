@@ -15,9 +15,9 @@ export default function PasswordForgotPage() {
   const { handleSubmit, control } = useForm<FormData>();
 
   return (
-    <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
+    <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
       <form
-        className="bg-white p-8 rounded shadow flex flex-col gap-8 w-104"
+        className="my-auto flex w-full max-w-104 shrink-0 flex-col gap-6 rounded bg-white p-4 shadow sm:gap-8 sm:p-8"
         onSubmit={handleSubmit(handleForgotPassword)}
       >
         <PageTitle

@@ -161,7 +161,7 @@ export default function AnimalInfoPage() {
         backPath="/animals"
       />
 
-      <div className="w-36">
+      <div className="w-full sm:w-36">
         <Button
           onClick={() => setPointModal({ type: "create" })}
           label="Novo Ponto"

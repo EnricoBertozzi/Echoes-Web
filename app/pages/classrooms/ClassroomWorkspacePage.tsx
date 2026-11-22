@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useConfirmation } from "~/context/ConfirmationContext";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { Button } from "~/components/atoms/Button";
 import { Card } from "~/components/atoms/card/Card";
@@ -31,6 +32,7 @@ const BACK_PATH = "/classrooms";
  * exportação e dispositivos) só aparece para ele.
  */
 export default function ClassroomWorkspacePage() {
+  const confirmAction = useConfirmation();
   const { classroomId } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -98,7 +100,13 @@ export default function ClassroomWorkspacePage() {
 
   async function handleLeave() {
     if (!classroom) return;
-    if (!window.confirm(`Sair da turma ${classroom.title}?`)) return;
+    const confirmed = await confirmAction({
+      title: "Sair da turma",
+      description: `Sair da turma ${classroom.title}?`,
+      confirmLabel: "Sair da turma",
+      variant: "danger",
+    });
+    if (!confirmed) return;
 
     if (await leave()) {
       navigate(BACK_PATH, { replace: true });
@@ -122,17 +130,17 @@ export default function ClassroomWorkspacePage() {
         backPath={BACK_PATH}
       />
 
-      <header className="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <header className="shrink-0 overflow-hidden rounded-2xl bg-white shadow-sm">
         <div
           className={clsx(
-            "flex flex-wrap items-center gap-5 px-8 py-6 text-white",
+            "flex flex-wrap items-center gap-3 px-4 py-4 text-white sm:gap-5 sm:px-8 sm:py-6",
             accent.banner,
           )}
         >
           <span
             aria-hidden="true"
             className={clsx(
-              "flex size-16 shrink-0 items-center justify-center rounded-xl bg-white text-2xl font-bold",
+              "flex size-12 shrink-0 items-center justify-center rounded-xl bg-white text-xl font-bold sm:size-16 sm:text-2xl",
               accent.text,
             )}
           >
@@ -140,15 +148,17 @@ export default function ClassroomWorkspacePage() {
           </span>
 
           <div className="min-w-0 flex-1">
-            <h2 className="line-clamp-2 text-3xl font-bold">{classroom.title}</h2>
-            <p className="text-lg text-white/90">
+            <h2 className="text-2xl font-bold wrap-anywhere sm:line-clamp-2 sm:text-3xl">
+              {classroom.title}
+            </h2>
+            <p className="text-lg text-white/90 wrap-anywhere">
               Período {classroom.period}
               {classroom.archived ? ", arquivada" : ""}
             </p>
           </div>
 
           {isStudent && (
-            <div className="w-40">
+            <div className="w-full sm:w-40">
               <Button
                 label={leaving ? "Saindo..." : "Sair da turma"}
                 variant="muted"
@@ -164,11 +174,16 @@ export default function ClassroomWorkspacePage() {
           tabs={tabs}
           active={tab}
           onChange={changeTab}
-          className="px-4"
+          className="px-3 max-sm:flex-wrap max-sm:[&>button]:min-w-0 max-sm:[&>button]:px-2 max-sm:[&>button]:text-base max-[480px]:grid max-[480px]:grid-cols-2 max-[480px]:gap-y-0 sm:px-4"
         />
       </header>
 
-      <div id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`}>
+      <div
+        id={`panel-${tab}`}
+        role="tabpanel"
+        aria-labelledby={`tab-${tab}`}
+        className="min-w-0 wrap-anywhere"
+      >
         {classroom.archived && (
           <div className="mb-6">
             <Alert
@@ -180,14 +195,14 @@ export default function ClassroomWorkspacePage() {
 
         {tab === "inicio" && (
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
-            <Card>
+            <Card className="max-lg:p-4">
               <h2 className="text-2xl font-bold text-slate-900">Sobre a turma</h2>
 
               <p className="whitespace-pre-line text-lg text-slate-700">
                 {classroom.description || "Esta turma ainda não tem descrição."}
               </p>
 
-              <dl className="grid gap-4 border-t border-slate-100 pt-4 sm:grid-cols-3">
+              <dl className="grid gap-4 border-t border-slate-100 pt-4 sm:grid-cols-[repeat(auto-fit,minmax(min(100%,6rem),1fr))]">
                 <div>
                   <dt className="text-base text-slate-500">Criada em</dt>
                   <dd className="text-lg font-bold text-slate-900">
@@ -221,7 +236,7 @@ export default function ClassroomWorkspacePage() {
                 />
               )}
 
-              <Card>
+              <Card className="max-lg:p-4">
                 <h2 className="text-2xl font-bold text-slate-900">
                   {teachers.length === 1 ? "Professor" : "Professores"}
                 </h2>
@@ -234,10 +249,10 @@ export default function ClassroomWorkspacePage() {
                   <ul className="flex flex-col gap-3">
                     {teachers.map((teacher) => (
                       <li key={teacher.userId} className="min-w-0">
-                        <p className="truncate text-lg font-bold text-slate-900">
+                        <p className="text-lg font-bold text-slate-900 sm:truncate">
                           {teacher.name}
                         </p>
-                        <p className="truncate text-base text-slate-600">
+                        <p className="text-base text-slate-600 sm:truncate">
                           {teacher.email}
                         </p>
                       </li>
