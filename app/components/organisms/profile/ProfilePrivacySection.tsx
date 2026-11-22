@@ -7,10 +7,6 @@ import { Button } from "~/components/atoms/Button";
 import { SectionCard } from "~/components/molecules/SectionCard";
 import { useAuth } from "~/context/AuthContext";
 
-/**
- * Direitos do titular: exportação dos dados (RF18) e revogação do
- * consentimento (RF17). A revogação encerra a sessão.
- */
 export function ProfilePrivacySection() {
   const confirmAction = useConfirmation();
   const { logout } = useAuth();

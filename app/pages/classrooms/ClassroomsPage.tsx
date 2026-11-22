@@ -91,8 +91,6 @@ export default function ClassroomsPage() {
     run(() => deleteClassroom(classroom.id));
   }
 
-  // RNF16: arquivar exige confirmação explícita; reativar também confirma, para
-  // o gestor não liberar por engano uma turma encerrada
   async function handleToggleArchive(classroom: Classroom) {
     const confirmed = classroom.archived
       ? await confirmAction({

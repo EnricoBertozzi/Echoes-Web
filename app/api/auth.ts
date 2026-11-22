@@ -20,7 +20,6 @@ export async function login(payload: LoginRequest) {
   return response.status;
 }
 
-// o servidor grava o cookie de sessão na resposta; nada é devolvido no corpo (S10)
 export async function validMfa(payload: MfaRequest) {
   const response = await api.post<void>("/api/v1/auth/mfa", payload);
   return response;

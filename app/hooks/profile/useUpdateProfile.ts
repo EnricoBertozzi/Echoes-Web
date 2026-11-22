@@ -27,7 +27,6 @@ export function useUpdateProfile() {
     setLoading(true);
 
     try {
-      // S11: só o nome é editável; o e-mail vem do cadastro
       const updatedUser = await updateCurrentUser({
         name: data.name.trim(),
       });
