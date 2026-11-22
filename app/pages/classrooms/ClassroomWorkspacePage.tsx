@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useConfirmation } from "~/context/ConfirmationContext";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { Button } from "~/components/atoms/Button";
 import { Card } from "~/components/atoms/card/Card";
@@ -31,6 +32,7 @@ const BACK_PATH = "/classrooms";
  * exportação e dispositivos) só aparece para ele.
  */
 export default function ClassroomWorkspacePage() {
+  const confirmAction = useConfirmation();
   const { classroomId } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -98,7 +100,13 @@ export default function ClassroomWorkspacePage() {
 
   async function handleLeave() {
     if (!classroom) return;
-    if (!window.confirm(`Sair da turma ${classroom.title}?`)) return;
+    const confirmed = await confirmAction({
+      title: "Sair da turma",
+      description: `Sair da turma ${classroom.title}?`,
+      confirmLabel: "Sair da turma",
+      variant: "danger",
+    });
+    if (!confirmed) return;
 
     if (await leave()) {
       navigate(BACK_PATH, { replace: true });

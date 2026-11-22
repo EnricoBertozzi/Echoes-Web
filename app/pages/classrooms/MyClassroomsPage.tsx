@@ -8,7 +8,7 @@ import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
 import { TabBar, type TabItem } from "~/components/molecules/TabBar";
 import { JoinClassroomModal } from "~/components/organisms/JoinClassroomModal";
-import { ClassroomTile } from "~/components/organisms/classrooms/ClassroomTile";
+import { ClassroomCard } from "~/components/organisms/classrooms/ClassroomCard";
 import { useAuth } from "~/context/AuthContext";
 import { useMyClassrooms } from "~/hooks/classrooms/useMyClassrooms";
 
@@ -141,7 +141,10 @@ export default function MyClassroomsPage() {
           <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 2xl:grid-cols-3">
             {visible.map((classroom) => (
               <li key={classroom.id} className="min-w-0">
-                <ClassroomTile classroom={classroom} />
+                <ClassroomCard
+                  classroom={classroom}
+                  onOpen={() => navigate(`/classrooms/${classroom.id}`)}
+                />
               </li>
             ))}
           </ul>

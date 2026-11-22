@@ -115,41 +115,45 @@ function InstitutionInfoPage({
       <div className="flex w-full min-w-0 flex-col gap-8">
         <Card>
           <div className="flex flex-col gap-6">
-            <header className="flex items-start gap-3">
-              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-4">
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-main">
-                  <FiHome size={36} className="text-white" />
-                </div>
+            <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-x-6">
+              <div className="col-start-1 row-start-1 grid size-16 place-items-center rounded-2xl bg-main sm:size-20">
+                <FiHome className="size-7 text-white sm:size-9" aria-hidden="true" />
+              </div>
 
-                <div className="flex min-w-0 flex-[1_1_8rem] flex-col gap-1">
-                  <h2 className="break-words text-2xl font-bold text-slate-900">
-                    {institution.name}
-                  </h2>
+              <div
+                className={`col-start-1 col-end-3 row-start-2 flex min-w-0 flex-col gap-2 wrap-anywhere sm:col-start-2 sm:row-start-1 sm:self-center ${
+                  isAdmin ? "" : "sm:col-end-4"
+                }`}
+              >
+                <h2 className="text-2xl leading-tight font-bold text-slate-900">
+                  {institution.name}
+                </h2>
 
-                  <p className="text-sm text-slate-500">
-                    {institution.acronym}
-                  </p>
+                <p className="text-sm text-slate-500">{institution.acronym}</p>
 
-                  <div
-                    className={`flex items-center gap-2 text-sm font-medium ${
-                      institution.active ? "text-green-700" : "text-red-700"
-                    }`}
-                  >
-                    {institution.active ? (
-                      <FiCheckCircle size={16} />
-                    ) : (
-                      <FiXCircle size={16} />
-                    )}
-
-                    {institution.active ? "Ativa" : "Desativada"}
-                  </div>
+                <div
+                  className={`flex items-center gap-2 text-sm font-medium ${
+                    institution.active ? "text-green-700" : "text-red-700"
+                  }`}
+                >
+                  {institution.active ? (
+                    <FiCheckCircle size={16} className="shrink-0" aria-hidden="true" />
+                  ) : (
+                    <FiXCircle size={16} className="shrink-0" aria-hidden="true" />
+                  )}
+                  {institution.active ? "Ativa" : "Desativada"}
                 </div>
               </div>
 
               {isAdmin && (
-                <ButtonIcon label={`Editar instituição ${institution.name}`} onClick={onEdit}>
-                  <FiEdit size={22} className="text-slate-900" aria-hidden="true" />
-                </ButtonIcon>
+                <div className="col-start-2 row-start-1 justify-self-end sm:col-start-3">
+                  <ButtonIcon
+                    label={`Editar instituição ${institution.name}`}
+                    onClick={onEdit}
+                  >
+                    <FiEdit size={22} className="text-slate-900" aria-hidden="true" />
+                  </ButtonIcon>
+                </div>
               )}
             </header>
 
@@ -267,7 +271,7 @@ function InstitutionInfoPage({
                     </p>
                   </div>
 
-                  <div className="w-32">
+                  <div className="w-full sm:w-32 sm:shrink-0">
                     <Button
                       label={
                         toggling
@@ -297,7 +301,7 @@ function InstitutionInfoPage({
                     </p>
                   </div>
 
-                  <div className="w-32">
+                  <div className="w-full sm:w-32 sm:shrink-0">
                     <Button
                       label={deleting ? "Excluindo..." : "Excluir"}
                       onClick={handleDelete}

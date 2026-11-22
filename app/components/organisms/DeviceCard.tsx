@@ -109,7 +109,7 @@ export function DeviceCard({
   }
 
   return (
-    <article className="flex w-full min-w-0 flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <article className="flex w-full min-w-0 flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <div className="flex items-start justify-between gap-3">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-main">
           <FaDog size={28} className="text-white" />
@@ -200,14 +200,14 @@ export function DeviceCard({
               type="button"
               onClick={() => setEditing(false)}
               disabled={busy}
-              className="flex-1 cursor-pointer rounded bg-stone-300 px-4 py-3 text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-w-0 flex-1 cursor-pointer rounded bg-stone-300 px-4 py-3 text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={busy || nameError}
-              className="flex-1 cursor-pointer rounded bg-main px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-w-0 flex-1 cursor-pointer rounded bg-main px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               {busy ? "Salvando..." : "Salvar"}
             </button>

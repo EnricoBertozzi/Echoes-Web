@@ -32,7 +32,7 @@ export function PointScenarioCard({
     selected !== "" && selected !== currentScenarioId && !busy;
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-slate-200 p-5">
+    <div className="flex flex-col gap-4 rounded-xl border border-slate-200 p-3 sm:p-5">
       <div className="flex flex-wrap items-center gap-3">
         <h3 className="text-lg font-bold text-slate-900">
           Ponto: {point.position}

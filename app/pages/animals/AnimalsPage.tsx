@@ -83,12 +83,12 @@ export default function Animals() {
         description="Modelos de animais representados pelos simuladores."
       />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-        <form className="w-96">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <form className="w-full sm:w-96 sm:max-w-full">
           <SearchBar value={search} onChange={handleSearch} />
         </form>
 
-        <div className="w-36">
+        <div className="w-full sm:w-36">
           <Button
             label="Novo Animal"
             onClick={() => setModal({ type: "create" })}

@@ -85,7 +85,7 @@ export function ClassroomFormModal({
           }}
         />
 
-        <div className="mt-3 flex justify-end gap-3">
+        <div className="mt-3 flex flex-col justify-end gap-3 sm:flex-row">
           <Button
             label="Cancelar"
             variant="muted"

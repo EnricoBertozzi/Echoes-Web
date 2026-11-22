@@ -29,8 +29,8 @@ export default function InstitutionsPage() {
         description="Instituições de ensino cadastradas no Echoes."
       />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-        <form className="w-96">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <form className="w-full sm:w-96 sm:max-w-full">
           <SearchBar
             value={name}
             onChange={setName}
@@ -38,7 +38,7 @@ export default function InstitutionsPage() {
           />
         </form>
 
-        <div className="w-36">
+        <div className="w-full sm:w-36">
           <Button
             label="Nova instituição"
             onClick={() => navigate("/institutions/new")}
@@ -46,7 +46,7 @@ export default function InstitutionsPage() {
         </div>
       </div>
 
-      <div className="overflow-y-scroll">
+      <div className="min-w-0">
         {loading ? (
           <p className="text-xl text-slate-500">Carregando...</p>
         ) : error ? (
@@ -56,9 +56,9 @@ export default function InstitutionsPage() {
             Nenhuma instituição encontrada.
           </p>
         ) : (
-          <ul className="flex flex-wrap gap-8">
+          <ul className="grid gap-4 sm:grid-cols-[repeat(auto-fill,minmax(min(100%,15rem),1fr))] sm:gap-6">
             {institutions.map((institution) => (
-              <li key={institution.id}>
+              <li key={institution.id} className="min-w-0">
                 <InstitutionCard
                   institution={institution}
                   onOpen={() => navigate(`/institutions/${institution.id}`)}
@@ -70,12 +70,12 @@ export default function InstitutionsPage() {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <button
             type="button"
             onClick={() => setPage(page - 1)}
             disabled={!hasPrevPage}
-            className="cursor-pointer text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-11 cursor-pointer text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Anterior
           </button>
@@ -86,7 +86,7 @@ export default function InstitutionsPage() {
             type="button"
             onClick={() => setPage(page + 1)}
             disabled={!hasNextPage}
-            className="cursor-pointer text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-h-11 cursor-pointer text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Próxima
           </button>

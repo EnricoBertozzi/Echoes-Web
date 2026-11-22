@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useConfirmation } from "~/context/ConfirmationContext";
 import { FiDownload, FiEdit2, FiEye, FiFile, FiPlus, FiRefreshCw, FiTrash2 } from "react-icons/fi";
 import { Card } from "~/components/atoms/card/Card";
 import { ButtonIcon } from "~/components/atoms/ButtonIcon";
@@ -24,6 +25,7 @@ export interface ClassroomFilesTabProps {
 }
 
 export function ClassroomFilesTab({ classroomId, isTeacher, archived }: ClassroomFilesTabProps) {
+  const confirmAction = useConfirmation();
   const { items, loading, busy, progress, error, refresh, upload, update, replace, remove } = useClassroomMaterials(classroomId);
   const [mode, setMode] = useState<Mode | null>(null);
   const [selected, setSelected] = useState<ClassroomMaterial | null>(null);
@@ -72,7 +74,13 @@ export function ClassroomFilesTab({ classroomId, isTeacher, archived }: Classroo
   }
 
   async function confirmDelete(material: ClassroomMaterial) {
-    if (!window.confirm(`Excluir o material “${material.title}”?`)) return;
+    const confirmed = await confirmAction({
+      title: "Excluir material",
+      description: `Excluir o material “${material.title}”?`,
+      confirmLabel: "Excluir",
+      variant: "danger",
+    });
+    if (!confirmed) return;
     await remove(material.id);
   }
 

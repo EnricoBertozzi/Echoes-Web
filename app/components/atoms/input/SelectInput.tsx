@@ -26,7 +26,7 @@ export function SelectInput({
   disablePlaceholder = true,
 }: SelectInputProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex min-w-0 flex-col gap-2">
       <select
         id={id}
         name={name}
@@ -35,7 +35,7 @@ export function SelectInput({
         value={value}
         onChange={onChange}
         className={`
-          w-full px-4 py-3 rounded-lg border
+          min-w-0 w-full px-4 py-3 rounded-lg border
           text-slate-900 bg-transparent appearance-none
           focus:outline-none transition-colors cursor-pointer
           ${

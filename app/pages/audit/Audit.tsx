@@ -108,11 +108,24 @@ export default function Audit() {
             type="button"
             onClick={refetch}
             disabled={loading}
-            className="cursor-pointer rounded-lg bg-main px-4 py-2 text-sm font-medium text-white hover:bg-main/80 disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-11 w-full cursor-pointer rounded-lg bg-main px-4 py-2 text-sm font-medium text-white hover:bg-main/80 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             Atualizar
           </button>
         </header>
+
+        {!loading && !error && totalPages > 0 && (
+          <PaginationSelector
+            label="Por página"
+            page={page}
+            totalPages={totalPages}
+            size={size}
+            sizeOptions={[10, 20, 50, 100]}
+            prevPage={() => setPage(page - 1)}
+            nextPage={() => setPage(page + 1)}
+            onChange={(value) => setSize(Number(value))}
+          />
+        )}
 
         {error && (
           <Alert
@@ -139,21 +152,6 @@ export default function Audit() {
             isAdmin={isAdmin}
             institutionNames={institutionNames}
             onView={setSelectedLog}
-          />
-        )}
-
-        {!loading && !error && totalPages > 0 && (
-          <PaginationSelector
-            label="Por página"
-            page={page}
-            totalPages={totalPages}
-            size={size}
-            sizeOptions={[10, 20, 50, 100]}
-            prevPage={() => setPage(page - 1)}
-            nextPage={() => setPage(page + 1)}
-            onChange={(value) =>
-              setSize(Number(value))
-            }
           />
         )}
       </Card>

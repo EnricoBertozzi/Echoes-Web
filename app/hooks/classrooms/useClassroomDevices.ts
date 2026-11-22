@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { assignClassroomDevice, findClassroomDevices, removeClassroomDevice } from "~/api/classroomDesvices";
 import { findClassrooms } from "~/api/classrooms";
 import { findDevices } from "~/api/devices";
+import { useConfirmation } from "~/context/ConfirmationContext";
 
 import type { Classroom } from "~/types/Classroom";
 import type { DeviceInfo } from "~/types/device";
@@ -50,6 +51,7 @@ export function useClassroomDevices(
   institutionId: string,
   initialClassroomId = "",
 ) {
+  const confirmAction = useConfirmation();
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [classroomId, setClassroomId] = useState(initialClassroomId);
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
@@ -207,7 +209,7 @@ export function useClassroomDevices(
     }
   }
 
-  function assign(device: DeviceInfo) {
+  async function assign(device: DeviceInfo) {
     if (
       busy ||
       !classroom ||
@@ -224,11 +226,13 @@ export function useClassroomDevices(
         (item) => item.id === device.classroomId,
       );
 
-      const confirmed = window.confirm(
-        `Transferir "${device.name || device.hardwareId}" de ` +
+      const confirmed = await confirmAction({
+        title: "Transferir dispositivo",
+        description: `Transferir "${device.name || device.hardwareId}" de ` +
           `"${previous?.title ?? "outra turma"}" para ` +
           `"${classroom.title}"? O vínculo anterior será substituído.`,
-      );
+        confirmLabel: "Transferir",
+      });
 
       if (!confirmed) return;
     }
@@ -239,13 +243,16 @@ export function useClassroomDevices(
     );
   }
 
-  function remove(device: DeviceInfo) {
+  async function remove(device: DeviceInfo) {
     if (busy || !classroom) return;
 
-    const confirmed = window.confirm(
-      `Remover "${device.name || device.hardwareId}" ` +
+    const confirmed = await confirmAction({
+      title: "Remover dispositivo da turma",
+      description: `Remover "${device.name || device.hardwareId}" ` +
         `da turma "${classroom.title}"?`,
-    );
+      confirmLabel: "Remover vínculo",
+      variant: "danger",
+    });
 
     if (!confirmed) return;
 

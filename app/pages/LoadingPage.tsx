@@ -1,9 +1,8 @@
 import { OrbitProgress } from "react-loading-indicators";
-import { Main } from "../components/atoms/page/Main";
 
 export function LoadingPage() {
   return (
-    <main className="h-full w-full bg-zinc-200 flex justify-center align-middle">
+    <main className="flex min-h-dvh w-full items-center justify-center bg-zinc-200 px-4">
       <OrbitProgress color="#62748e" size="medium" text="" textColor="" />
     </main>
   );

@@ -271,12 +271,12 @@ function InstitutionDevicesContent({
             </div>
 
             {data.totalPages > 1 && (
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4">
                 <button
                   type="button"
                   disabled={data.busy || data.page === 0}
                   onClick={() => data.changePage(data.page - 1)}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-slate-700 disabled:opacity-40"
+                  className="min-h-11 rounded-lg border border-slate-300 px-3 py-2 text-slate-700 disabled:opacity-40 sm:px-4"
                 >
                   Anterior
                 </button>
@@ -289,7 +289,7 @@ function InstitutionDevicesContent({
                   type="button"
                   disabled={data.busy || data.page + 1 >= data.totalPages}
                   onClick={() => data.changePage(data.page + 1)}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-slate-700 disabled:opacity-40"
+                  className="min-h-11 rounded-lg border border-slate-300 px-3 py-2 text-slate-700 disabled:opacity-40 sm:px-4"
                 >
                   Próxima
                 </button>

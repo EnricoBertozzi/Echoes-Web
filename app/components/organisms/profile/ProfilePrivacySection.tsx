@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useConfirmation } from "~/context/ConfirmationContext";
 
 import { exportMyData, revokeMyConsent } from "~/api/privacy";
 import { logout as endServerSession } from "~/api/auth";
@@ -11,6 +12,7 @@ import { useAuth } from "~/context/AuthContext";
  * consentimento (RF17). A revogação encerra a sessão.
  */
 export function ProfilePrivacySection() {
+  const confirmAction = useConfirmation();
   const { logout } = useAuth();
   const [busy, setBusy] = useState(false);
 
@@ -24,9 +26,13 @@ export function ProfilePrivacySection() {
   }
 
   async function handleRevoke() {
-    const confirmed = window.confirm(
-      "Revogar o consentimento encerra sua sessão. Para voltar a usar o Echoes, você precisará aceitar novamente os termos. Deseja continuar?",
-    );
+    const confirmed = await confirmAction({
+      title: "Revogar consentimento",
+      description:
+        "Revogar o consentimento encerra sua sessão. Para voltar a usar o Echoes, você precisará aceitar novamente os termos. Deseja continuar?",
+      confirmLabel: "Revogar",
+      variant: "danger",
+    });
     if (!confirmed) return;
 
     setBusy(true);
