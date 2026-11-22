@@ -57,13 +57,14 @@ export function ProfilePrivacySection() {
         conta.
       </p>
 
-      <div className="flex w-full flex-col gap-3 sm:w-80">
+      <div className="flex w-full flex-col gap-3 sm:flex-row">
         <Button
           type="button"
           label={busy ? "Aguarde..." : "Baixar meus dados"}
           variant="primary"
           disabled={busy}
           onClick={handleExport}
+          className="sm:w-56"
         />
 
         <Button
@@ -72,6 +73,7 @@ export function ProfilePrivacySection() {
           variant="danger"
           disabled={busy}
           onClick={handleRevoke}
+          className="sm:w-56"
         />
       </div>
     </SectionCard>

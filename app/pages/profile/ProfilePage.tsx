@@ -19,7 +19,7 @@ export default function ProfilePage() {
         description="Gerencie seus dados pessoais, senha e conta."
       />
 
-      <div className="flex w-full max-w-5xl flex-col gap-6 sm:gap-8">
+      <div className="flex w-full flex-col gap-6 sm:gap-8">
         <ProfileHeader user={user} />
 
         <ProfileDetailsForm />

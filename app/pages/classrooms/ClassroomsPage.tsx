@@ -91,16 +91,36 @@ export default function ClassroomsPage() {
     run(() => deleteClassroom(classroom.id));
   }
 
+  // RNF16: arquivar exige confirmação explícita; reativar também confirma, para
+  // o gestor não liberar por engano uma turma encerrada
+  async function handleToggleArchive(classroom: Classroom) {
+    const confirmed = classroom.archived
+      ? await confirmAction({
+          title: "Reativar turma",
+          description: `Reativar a turma ${classroom.title}? Ela volta a aceitar edições, novos membros, materiais e o uso dos simuladores vinculados.`,
+          confirmLabel: "Reativar",
+          variant: "primary",
+        })
+      : await confirmAction({
+          title: "Arquivar turma",
+          description: `Arquivar a turma ${classroom.title}? Ela fica somente leitura: não poderá ser editada, não gera código de convite nem aceita novos membros, não recebe materiais e os simuladores vinculados deixam de receber cenários. Você poderá reativá-la depois.`,
+          confirmLabel: "Arquivar",
+          variant: "danger",
+        });
+    if (!confirmed) return;
+
+    run(() =>
+      classroom.archived
+        ? unarchiveClassroom(classroom.id)
+        : archiveClassroom(classroom.id),
+    );
+  }
+
   const management = isManager
     ? {
         onEdit: (classroom: Classroom) => setModal({ type: "edit", classroom }),
         onDelete: handleDelete,
-        onToggleArchive: (classroom: Classroom) =>
-          run(() =>
-            classroom.archived
-              ? unarchiveClassroom(classroom.id)
-              : archiveClassroom(classroom.id),
-          ),
+        onToggleArchive: handleToggleArchive,
       }
     : undefined;
 
