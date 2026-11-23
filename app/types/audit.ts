@@ -17,6 +17,7 @@ export interface AuditLog {
   ip: string | null;
   entityId: string | null;
   institutionId: string | null;
+  institutionName?: string | null;
   timestamp: string;
 }
 

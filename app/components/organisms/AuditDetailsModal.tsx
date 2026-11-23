@@ -9,6 +9,7 @@ import { formatAuditTimestamp } from "~/types/audit";
 
 import {
   actionLabels,
+  auditInstitutionLabel,
   describeAuditLog,
   entityLabels,
   roleLabels,
@@ -18,7 +19,6 @@ import {
 export interface AuditDetailsModalProps {
   log: AuditLog | null;
   isAdmin: boolean;
-  institutionName: string | null;
   onClose: () => void;
 }
 
@@ -39,7 +39,6 @@ function prettyDetails(details: string | null): string {
 export function AuditDetailsModal({
   log,
   isAdmin,
-  institutionName,
   onClose,
 }: AuditDetailsModalProps) {
   if (!log) {
@@ -91,12 +90,7 @@ export function AuditDetailsModal({
   }
 
   if (isAdmin) {
-    metadata.push([
-      "Instituição",
-      log.institutionId
-        ? institutionName ?? log.institutionId
-        : "Evento global",
-    ]);
+    metadata.push(["Instituição", auditInstitutionLabel(log)]);
   }
 
   return (

@@ -204,3 +204,10 @@ export function describeActor(log: AuditLog): string {
 export function describeAuditLog(log: AuditLog): string {
   return `${describeActor(log)} ${describePhrase(log)}`;
 }
+
+export function auditInstitutionLabel(log: AuditLog): string {
+  return log.institutionName
+    ?? (log.institutionId || log.entity === "Institution" || log.entity === "DeletionRecovery"
+      ? "Instituição não identificada"
+      : "Global");
+}

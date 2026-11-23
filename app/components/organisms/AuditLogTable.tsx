@@ -4,6 +4,7 @@ import { TableHeadColumn } from "~/components/atoms/TableHeadColumn";
 import { formatAuditTimestamp, type AuditLog } from "~/types/audit";
 import {
   actionLabels,
+  auditInstitutionLabel,
   describeAuditLog,
   entityLabels,
   roleLabels,
@@ -14,7 +15,6 @@ import {
 export interface AuditLogTableProps {
   logs: AuditLog[];
   isAdmin: boolean;
-  institutionNames: ReadonlyMap<string, string>;
   onView: (log: AuditLog) => void;
 }
 
@@ -70,7 +70,6 @@ function auditAuthor(log: AuditLog) {
 export function AuditLogTable({
   logs,
   isAdmin,
-  institutionNames,
   onView,
 }: AuditLogTableProps) {
   const columns: AuditColumn[] = [
@@ -87,9 +86,7 @@ export function AuditLogTable({
     columns.push({
       label: "Instituição",
       cellClassName: "max-w-52",
-      render: (log) => log.institutionId
-        ? institutionNames.get(log.institutionId) ?? log.institutionId
-        : "Global",
+      render: auditInstitutionLabel,
     });
   }
 

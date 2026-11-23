@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 
 import { Card } from "~/components/atoms/card/Card";
@@ -24,17 +24,6 @@ export default function Audit() {
   const isAdmin = user?.role === "ADMIN";
 
   const institutions = useInstitutionOptions(isAdmin);
-
-  const institutionNames = useMemo(
-    () =>
-      new Map(
-        institutions.map((institution) => [
-          institution.id,
-          institution.name,
-        ]),
-      ),
-    [institutions],
-  );
 
   const [selectedLog, setSelectedLog] =
     useState<AuditLog | null>(null);
@@ -158,7 +147,6 @@ export default function Audit() {
           <AuditLogTable
             logs={logs}
             isAdmin={isAdmin}
-            institutionNames={institutionNames}
             onView={setSelectedLog}
           />
         )}
@@ -167,13 +155,6 @@ export default function Audit() {
       <AuditDetailsModal
         log={selectedLog}
         isAdmin={isAdmin}
-        institutionName={
-          selectedLog?.institutionId
-            ? institutionNames.get(
-                selectedLog.institutionId,
-              ) ?? null
-            : null
-        }
         onClose={() => setSelectedLog(null)}
       />
     </Main>
