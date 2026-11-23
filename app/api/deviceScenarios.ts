@@ -46,6 +46,13 @@ export async function createPreset(
   return response.data;
 }
 
+export async function deletePreset(
+  deviceId: string,
+  presetId: string,
+): Promise<void> {
+  await api.delete(`${BASE}/${deviceId}/scenario-presets/${presetId}`);
+}
+
 export async function activatePreset(
   deviceId: string,
   presetId: string,

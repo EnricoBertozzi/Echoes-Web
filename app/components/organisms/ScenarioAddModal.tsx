@@ -23,6 +23,15 @@ interface ScenarioAddModalProps {
   onReload: (id: string) => void;
 }
 
+
+// Os aparelhos só tocam MP3 (decodificador do firmware), então o cenário aceita só esse formato.
+const MP3_MIME_TYPES = ["audio/mpeg", "audio/mp3"];
+
+function isMp3(file: File): boolean {
+  if (!file.name.toLowerCase().endsWith(".mp3")) return false;
+  return file.type === "" || MP3_MIME_TYPES.includes(file.type);
+}
+
 export function ScenarioAddModal({
   isOpen,
   pointId,
@@ -101,14 +110,14 @@ export function ScenarioAddModal({
               name="file"
               label="Arquivo de áudio"
               control={control}
-              accept="audio/*"
+              accept=".mp3,audio/mpeg"
               rules={{
                 required: "O arquivo de áudio é obrigatório.",
                 validate: {
                   type: (file) =>
                     !file ||
-                    file.type.startsWith("audio/") ||
-                    "Selecione um arquivo de áudio.",
+                    isMp3(file) ||
+                    "Envie um arquivo de áudio no formato MP3.",
                 },
               }}
             />

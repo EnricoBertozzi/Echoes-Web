@@ -1,4 +1,6 @@
+import { FiTrash2 } from "react-icons/fi";
 import { Button } from "~/components/atoms/Button";
+import { ButtonIcon } from "~/components/atoms/ButtonIcon";
 import { useConfirmation } from "~/context/ConfirmationContext";
 import type { Scenario } from "~/types/Scenario";
 import type { ClinicalPreset, PointConfig } from "~/types/deviceScenario";
@@ -10,6 +12,7 @@ interface ClinicalPresetCardProps {
   canActivate: boolean;
   busy: boolean;
   onActivate: (presetId: string) => Promise<boolean>;
+  onDelete: (presetId: string) => Promise<boolean>;
 }
 
 export function ClinicalPresetCard({
@@ -19,6 +22,7 @@ export function ClinicalPresetCard({
   canActivate,
   busy,
   onActivate,
+  onDelete,
 }: ClinicalPresetCardProps) {
   const confirmAction = useConfirmation();
   const selected = new Map(
@@ -31,6 +35,18 @@ export function ClinicalPresetCard({
         selected.has(point.pointId) &&
         selected.get(point.pointId) === (point.scenario?.id ?? null),
     );
+
+  async function handleDelete() {
+    if (busy) return;
+
+    const confirmed = await confirmAction({
+      title: "Excluir cenário clínico",
+      description: `Excluir o cenário clínico “${preset.name}”? Esta ação não pode ser desfeita. A configuração atual dos aparelhos não muda.`,
+      confirmLabel: "Excluir",
+    });
+
+    if (confirmed) void onDelete(preset.id);
+  }
 
   function scenarioName(pointId: string, scenarioId: string): string {
     return (
@@ -87,6 +103,14 @@ export function ClinicalPresetCard({
               onClick={handleActivate}
             />
           </div>
+
+          <ButtonIcon
+            label={`Excluir cenário clínico ${preset.name}`}
+            onClick={handleDelete}
+            disabled={busy}
+          >
+            <FiTrash2 size={22} className="text-red-900" aria-hidden="true" />
+          </ButtonIcon>
         </div>
       </div>
 

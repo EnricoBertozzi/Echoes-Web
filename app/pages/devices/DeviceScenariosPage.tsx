@@ -90,6 +90,7 @@ function DeviceScenariosContent({
     selectScenario,
     createPreset,
     activatePreset,
+    deletePreset,
   } = useDeviceScenarios(deviceId, loadDevice);
 
   const points = useMemo(() => config?.points ?? [], [config]);
@@ -273,6 +274,7 @@ function DeviceScenariosContent({
                         canActivate={isActive}
                         busy={busyPresetId === preset.id}
                         onActivate={activatePreset}
+                        onDelete={deletePreset}
                       />
                     ))}
                   </div>
