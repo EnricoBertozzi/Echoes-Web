@@ -2,7 +2,9 @@ import type {
   CompleteRegistrationRequest,
   CreateUserRequest,
   Page,
+  PendingInvitation,
   PendingUser,
+  UpdateCurrentUserRequest,
   UpdateUserRequest,
   User,
   UserRole,
@@ -45,6 +47,11 @@ export async function findUser(role: UserRole, id: string): Promise<User> {
   return response.data;
 }
 
+export async function findUserEmail(id: string): Promise<string> {
+  const response = await api.get<{ email: string }>(`/api/v1/users/${id}/email`);
+  return response.data.email;
+}
+
 export async function findUsersByName(
   role: UserRole, 
   name: string,
@@ -75,4 +82,24 @@ export async function deleteUser(role: UserRole, id: string): Promise<void> {
 export async function fetchCurrentUser() {
   const response = await api.get<User>("/api/v1/users/me");
   return response;
+}
+
+export async function updateCurrentUser(
+  data: UpdateCurrentUserRequest,
+): Promise<User> {
+  const response = await api.patch<User>("/api/v1/users/me", data);
+  return response.data;
+}
+
+export async function deleteCurrentUser(): Promise<void> {
+  await api.delete<void>("/api/v1/users/me");
+}
+
+export async function findPendingInvitations(
+  institutionId?: string,
+): Promise<PendingInvitation[]> {
+  const response = await api.get<PendingInvitation[]>("/api/v1/users/pending", {
+    params: institutionId ? { institutionId } : undefined,
+  });
+  return response.data;
 }

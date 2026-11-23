@@ -7,36 +7,96 @@ import { ModalTitle } from "../atoms/modal/ModalTitle";
 import { ModalFormButtons } from "../molecules/ModalFormButtons";
 import { Modal } from "../atoms/modal/Modal";
 import { ModalForm } from "../atoms/modal/ModalForm";
+import { useForm } from "react-hook-form";
+import { ControlledTextField } from "../molecules/controlled/ControlledTextField";
+import { Button } from "../atoms/Button";
+import { useCreateAnimal } from "~/hooks/animals/useCreateAnimal";
+import { Alert } from "../atoms/page/Alert";
 
 interface AnimalAddModalProps {
-  isOpen: boolean
+  isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: AnimalDataRequest) => void;
+  onSuccess: () => void;
 }
 
-export function AnimalAddModal({ isOpen, onClose, onSubmit }: AnimalAddModalProps) {
-  const [name, setName] = useState("");
-  const [model, setModel] = useState("");
-  const [description, setDescription] = useState("");
+export function AnimalAddModal({ isOpen, onClose, onSuccess }: AnimalAddModalProps) {
+  const { handleSubmit, control } = useForm<AnimalDataRequest>({
+    defaultValues: {
+      name: "",
+      description: "",
+      model: "",
+    },
+  });
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    onSubmit({ name, description, model });
-  }
+  const { loading, error, success, handleCreateAnimalSubmit } =
+    useCreateAnimal();
 
   return (
-    <Modal 
-    isOpen={isOpen} onClose={onClose}  >
-      <ModalTitle title={"Novo Animal"} description="Informe os dados do novo animal" />
+    <Modal isOpen={isOpen} onClose={onClose}>
+      {success ? (
+        <>
+          <ModalTitle
+            title={"Animal Cadastrado"}
+            description={"Animal cadastrado com sucesso"}
+          />
 
-      <ModalForm onSubmit={handleSubmit} >
-        <ModalTextField id="animal-name" label="Nome" onChange={setName} value={name} required={true}/>          
-        <ModalTextField id="animal-model" label="Modelo" onChange={setModel} value={model} required={true}/>
-        <ModalLongTextField id="animal-description" label="Descrição" onChange={setDescription} value={description} required={true}/>
-        <ModalFormButtons confirmLabel={"Novo"} onClose={onClose} />
-      </ModalForm>
-      
+          <div className="flex flex-row justify-end">
+            <div className="w-32">
+              <Button label={"Fechar"} variant={"muted"} onClick={() => {
+                onSuccess()
+                onClose()
+              }} />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <ModalTitle
+            title={"Novo Animal"}
+            description="Informe os dados do novo animal"
+          />
+
+          <ModalForm onSubmit={handleSubmit(handleCreateAnimalSubmit)}>
+            <ControlledTextField
+              id="name"
+              name="name"
+              label="Nome"
+              placeholder="Digite o nome"
+              control={control}
+              rules={{
+                required: "Nome é obrigatório",
+              }}
+            />
+            <ControlledTextField
+              id="modelo"
+              name="model"
+              label="Modelo"
+              placeholder="Digite o modelo"
+              control={control}
+              rules={{
+                required: "Modelo é obrigatório",
+              }}
+            />
+            <ControlledTextField
+              id="description"
+              name="description"
+              label="Descrição"
+              placeholder="Digite a descrição"
+              control={control}
+              rules={{
+                required: "Descrição é obrigatório",
+              }}
+            />
+
+            {error && <Alert message={error} type={"error"} />}
+
+            <div className="mt-3 flex gap-3 justify-end">
+              <Button label="Cancelar" onClick={onClose} variant={"muted"} />
+              <Button label="Cadastrar" variant="primary" disabled={loading} />
+            </div>
+          </ModalForm>
+        </>
+      )}
     </Modal>
   );
 }

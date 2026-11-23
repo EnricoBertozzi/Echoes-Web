@@ -10,7 +10,6 @@ export interface CodeFieldProps {
     value: string,
     length: number,
     error?: string,
-    onSubmit: (code: string) => void,
     onChange: (value: string) => void
 }
 
@@ -21,14 +20,13 @@ export function CodeField({
     value,
     error,
     length,
-    onSubmit,
     onChange
 }: CodeFieldProps) {
   return (
     <div className="flex flex-col gap-2">
       <Label id={id} name={name} label={label} />
       <div className="flex w-full justify-center">
-        <CodeInput length={length} error={error} value={value} onSubmit={onSubmit} onChange={onChange} />
+        <CodeInput length={length} error={error} value={value} onChange={onChange} />
       </div>
     </div>
   );

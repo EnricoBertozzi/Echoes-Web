@@ -6,7 +6,7 @@ import type { User } from "~/types/user";
 
 export function useUpdateUser(user: User, onUpdated?: () => void) {
   const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
+  const [surname, setSurname] = useState(user.surname ?? "");
   const [submitting, setSubmitting] = useState(false);
   const [succeeded, setSucceeded] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -14,7 +14,7 @@ export function useUpdateUser(user: User, onUpdated?: () => void) {
 
   function reset() {
     setName(user.name);
-    setEmail(user.email);
+    setSurname(user.surname ?? "");
     setSubmitting(false);
     setSucceeded(false);
     setFieldErrors({});
@@ -33,7 +33,7 @@ export function useUpdateUser(user: User, onUpdated?: () => void) {
     setGeneralError(null);
 
     try {
-      await updateUser(roleToUserRole(user.role), user.id, { name, email });
+      await updateUser(roleToUserRole(user.role), user.id, { name, surname });
       setSucceeded(true);
       onUpdated?.();
     } catch (error) {
@@ -46,8 +46,8 @@ export function useUpdateUser(user: User, onUpdated?: () => void) {
   return {
     name,
     setName,
-    email,
-    setEmail,
+    surname,
+    setSurname,
     submitting,
     succeeded,
     fieldErrors,

@@ -1,0 +1,203 @@
+import type { ClassroomMaterial, ClassroomMaterialUpdate } from "~/types/ClassroomMaterial";
+import type { AxiosProgressEvent } from "axios";
+import type {
+  Classroom,
+  ClassroomCodeResponse,
+  ClassroomJoinRequest,
+  ClassroomMember,
+  ClassroomRequest,
+} from "~/types/Classroom";
+import type { Page } from "~/types/user";
+import { api } from "./axios";
+
+const BASE = "/api/v1/classrooms";
+
+// institutionId só vale para ADMIN; para o gestor o backend usa a própria instituição.
+// Para TEACHER e STUDENT o backend devolve apenas as turmas em que a pessoa é membro.
+export async function findClassrooms(params: {
+  name?: string;
+  page: number;
+  size: number;
+  institutionId?: string;
+}): Promise<Page<Classroom>> {
+  const response = await api.get<Page<Classroom>>(BASE, {
+    params: {
+      name: params.name ?? "",
+      page: params.page,
+      size: params.size,
+      ...(params.institutionId ? { institutionId: params.institutionId } : {}),
+    },
+  });
+  return response.data;
+}
+
+export async function findClassroomById(id: string): Promise<Classroom> {
+  const response = await api.get<Classroom>(`${BASE}/${id}`);
+  return response.data;
+}
+
+export async function createClassroom(
+  data: ClassroomRequest,
+): Promise<Classroom> {
+  const response = await api.post<Classroom>(BASE, data);
+  return response.data;
+}
+
+export async function updateClassroom(
+  id: string,
+  data: ClassroomRequest,
+): Promise<Classroom> {
+  const response = await api.put<Classroom>(`${BASE}/${id}`, data);
+  return response.data;
+}
+
+export async function deleteClassroom(id: string): Promise<void> {
+  await api.delete<void>(`${BASE}/${id}`);
+}
+
+export async function archiveClassroom(id: string): Promise<void> {
+  await api.patch<void>(`${BASE}/${id}/archive`);
+}
+
+export async function unarchiveClassroom(id: string): Promise<void> {
+  await api.patch<void>(`${BASE}/${id}/unarchive`);
+}
+
+export async function findClassroomMembers(
+  id: string,
+  page: number,
+  size: number,
+): Promise<Page<ClassroomMember>> {
+  const response = await api.get<Page<ClassroomMember>>(
+    `${BASE}/${id}/members`,
+    { params: { page, size } },
+  );
+  return response.data;
+}
+
+// percorre todas as páginas; usado na aba Pessoas e na exportação da lista
+export async function findAllClassroomMembers(
+  id: string,
+): Promise<ClassroomMember[]> {
+  const PAGE_SIZE = 100;
+  const members: ClassroomMember[] = [];
+
+  let page = 0;
+  let totalPages = 1;
+
+  while (page < totalPages) {
+    const result = await findClassroomMembers(id, page, PAGE_SIZE);
+    members.push(...result.content);
+    totalPages = result.totalPages;
+    page += 1;
+  }
+
+  return members;
+}
+
+export async function addClassroomMember(
+  id: string,
+  userId: string,
+): Promise<void> {
+  await api.post<void>(`${BASE}/${id}/members/${userId}`);
+}
+
+// somente MANAGER (o backend não libera para TEACHER)
+export async function removeClassroomMember(
+  id: string,
+  userId: string,
+): Promise<void> {
+  await api.delete<void>(`${BASE}/${id}/members/${userId}`);
+}
+
+// remove todos os alunos de uma vez (virada de semestre)
+export async function clearClassroomStudents(id: string): Promise<void> {
+  await api.delete<void>(`${BASE}/${id}/students`);
+}
+
+// TEACHER da turma. Só gera depois que o código anterior expirou (15 min).
+export async function generateClassroomCode(
+  id: string,
+): Promise<ClassroomCodeResponse> {
+  const response = await api.post<ClassroomCodeResponse>(`${BASE}/${id}/code`);
+  return response.data;
+}
+
+// STUDENT. Aceita o código em maiúsculo ou minúsculo.
+export async function joinClassroom(
+  data: ClassroomJoinRequest,
+): Promise<Classroom> {
+  const response = await api.post<Classroom>(`${BASE}/join`, data);
+  return response.data;
+}
+
+// STUDENT ou TEACHER sai da própria turma
+export async function leaveClassroom(id: string): Promise<void> {
+  await api.delete<void>(`${BASE}/${id}/leave`);
+}
+
+// BEGIN CLASSROOM MATERIALS API
+const materialsPath = (classroomId: string) => `${BASE}/${classroomId}/materials`;
+
+export async function findClassroomMaterials(classroomId: string): Promise<ClassroomMaterial[]> {
+  const response = await api.get<ClassroomMaterial[]>(materialsPath(classroomId));
+  return response.data;
+}
+
+function onUploadProgress(callback?: (percent: number | null) => void) {
+  return (event: AxiosProgressEvent) => {
+    if (event.total && event.total > 0) {
+      callback?.(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+    } else {
+      callback?.(null);
+    }
+  };
+}
+
+export async function createClassroomMaterial(
+  classroomId: string, title: string, description: string, file: File,
+  progress?: (percent: number | null) => void,
+): Promise<ClassroomMaterial> {
+  const data = new FormData();
+  data.append("title", title);
+  data.append("description", description);
+  data.append("file", file);
+  const response = await api.post<ClassroomMaterial>(materialsPath(classroomId), data, {
+    onUploadProgress: onUploadProgress(progress),
+  });
+  return response.data;
+}
+
+export async function updateClassroomMaterial(
+  classroomId: string, materialId: string, data: ClassroomMaterialUpdate,
+): Promise<ClassroomMaterial> {
+  const response = await api.patch<ClassroomMaterial>(`${materialsPath(classroomId)}/${materialId}`, data);
+  return response.data;
+}
+
+export async function replaceClassroomMaterialFile(
+  classroomId: string, materialId: string, file: File,
+  progress?: (percent: number | null) => void,
+): Promise<ClassroomMaterial> {
+  const data = new FormData();
+  data.append("file", file);
+  const response = await api.patch<ClassroomMaterial>(`${materialsPath(classroomId)}/${materialId}/file`, data, {
+    onUploadProgress: onUploadProgress(progress),
+  });
+  return response.data;
+}
+
+export async function deleteClassroomMaterial(classroomId: string, materialId: string): Promise<void> {
+  await api.delete(`${materialsPath(classroomId)}/${materialId}`);
+}
+
+export async function downloadClassroomMaterial(
+  classroomId: string, materialId: string, inline = false,
+): Promise<Blob> {
+  const response = await api.get<Blob>(`${materialsPath(classroomId)}/${materialId}/download`, {
+    params: { inline },
+    responseType: "blob",
+  });
+  return response.data;
+}
+// END CLASSROOM MATERIALS API

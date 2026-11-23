@@ -3,6 +3,7 @@ export interface Scenario {
   name: string;
   description: string;
   audioPath: string;
+  active: boolean;
 }
 
 export interface ScenarioRegisterRequest {
@@ -17,6 +18,7 @@ export type ScenarioRegisterForm = Omit<ScenarioRegisterRequest, "file"> & {
 };
 
 export interface ScenarioUpdateRequest {
+  id: string;
   name: string;
   description: string;
 }

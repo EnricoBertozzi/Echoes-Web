@@ -1,21 +1,31 @@
 import { FiEye } from "react-icons/fi";
-import type { TermResponseDTO, TermStatus } from "~/types/terms";
-import { formatTermTimestamp, termStatusLabels, termTypeLabels } from "~/types/terms";
+import { TermStatusBadge } from "~/components/atoms/terms/TermStatusBadge";
+import type { TermResponseDTO } from "~/types/terms";
+import { formatTermTimestamp, termTypeLabels } from "~/types/terms";
+
+import { TermListItem } from "./terms/TermListItem";
 
 export interface TermTableRowProps {
   term: TermResponseDTO;
+  mobile?: boolean;
   onView: (term: TermResponseDTO) => void;
 }
 
-const statusBadgeStyles: Record<TermStatus, string> = {
-  PUBLISHED: 'text-emerald-800',
-  APPROVED: 'text-lime-800',
-  IN_REVIEW: 'text-yellow-700',
-  DRAFT: 'text-main/80',
-  ARCHIVED: 'text-main/70',
-};
+export function TermTableRow({ term, onView, mobile = false }: TermTableRowProps) {
+  const viewAction = (
+    <button
+      type="button"
+      className="inline-flex min-h-11 items-center gap-2 rounded-md px-2 text-main transition-colors hover:text-main/70 lg:min-h-0 lg:px-0"
+      aria-label={`Visualizar ${termTypeLabels[term.type]}`}
+      onClick={() => onView(term)}
+    >
+      <FiEye size={24} aria-hidden="true" />
+      <span className="lg:hidden">Visualizar</span>
+    </button>
+  );
 
-export function TermTableRow({ term, onView }: TermTableRowProps) {
+  if (mobile) return <TermListItem term={term}>{viewAction}</TermListItem>;
+
   return (
     <tr className='text-black border-t border-b border-gray-800/20'>
       <td className='w-1/3 px-4 py-2'>
@@ -27,9 +37,7 @@ export function TermTableRow({ term, onView }: TermTableRowProps) {
       </td>
 
       <td className='w-1/6 px-4 py-2 border-l border-gray-800/20'>
-        <span className={`rounded px-2 py-0.5 text-xs font-medium ${statusBadgeStyles[term.status]}`}>
-          {termStatusLabels[term.status]}
-        </span>
+        <TermStatusBadge status={term.status} />
       </td>
 
       <td className='w-1/4 px-4 py-2 border-l border-gray-800/20'>
@@ -38,16 +46,7 @@ export function TermTableRow({ term, onView }: TermTableRowProps) {
 
       <td className='w-1/12 px-4 py-2 border-l border-gray-800/20'>
         <div className='flex w-full flex-col justify-center items-center'>
-          <button
-            className='cursor-pointer'
-            aria-label={`Visualizar ${termTypeLabels[term.type]}`}
-            onClick={() => onView(term)}
-          >
-            <FiEye
-              size={24}
-              className='text-main hover:text-main/50 transition-all'
-            />
-          </button>
+          {viewAction}
         </div>
       </td>
     </tr>

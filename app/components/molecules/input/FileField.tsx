@@ -6,7 +6,7 @@ export interface FileFieldProps {
   id: string;
   name: string;
   label: string;
-  value: string;
+  value?: File | null;
   error?: string;
   ref?: Ref<HTMLInputElement>;
   readOnly?: boolean;

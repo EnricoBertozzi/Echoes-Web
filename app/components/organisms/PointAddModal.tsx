@@ -18,9 +18,15 @@ interface PointAddModalProps {
   isOpen: boolean;
   animal?: Animal;
   onClose: () => void;
+  onReload: () => void;
 }
 
-export function PointAddModal({ animal, isOpen, onClose }: PointAddModalProps) {
+export function PointAddModal({
+  animal,
+  isOpen,
+  onClose,
+  onReload,
+}: PointAddModalProps) {
   if (!animal?.id) {
     onClose();
   }
@@ -32,10 +38,17 @@ export function PointAddModal({ animal, isOpen, onClose }: PointAddModalProps) {
         position: "",
       },
     });
+
   const { handlePointAddSubmit, loading, error, success } = useCreatePoint();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        onReload();
+      }}
+    >
       {success ? (
         <>
           <ModalTitle
@@ -45,7 +58,14 @@ export function PointAddModal({ animal, isOpen, onClose }: PointAddModalProps) {
 
           <div className="flex justify-end">
             <div className="w-36">
-              <Button label={"Fechar"} variant={"muted"} onClick={onClose} />
+              <Button
+                label={"Fechar"}
+                variant={"muted"}
+                onClick={() => {
+                  onClose();
+                  onReload();
+                }}
+              />
             </div>
           </div>
         </>

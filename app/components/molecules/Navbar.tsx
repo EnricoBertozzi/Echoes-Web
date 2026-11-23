@@ -1,21 +1,34 @@
 import clsx from "clsx";
 import { FaDog, FaSchool } from "react-icons/fa";
+
 import {
   FiBarChart2,
+  FiBookOpen,
   FiFileText,
   FiSearch,
-  FiSliders,
   FiUser,
 } from "react-icons/fi";
+
 import { NavbarButton } from "../atoms/NavbarButton";
 import { useAuth } from "~/context/AuthContext";
+import { HiChip } from "react-icons/hi";
 
 export interface NavbarProps {
   collapsed: boolean;
 }
 
-export function Navbar({ collapsed }: NavbarProps) {
+export function Navbar({
+  collapsed,
+}: NavbarProps) {
   const { user } = useAuth();
+
+  const isStaff =
+    user?.role === "ADMIN" ||
+    user?.role === "MANAGER";
+
+  const isClassroomMember =
+    user?.role === "TEACHER" ||
+    user?.role === "STUDENT";
 
   return (
     <ul
@@ -25,7 +38,7 @@ export function Navbar({ collapsed }: NavbarProps) {
         collapsed ? "pl-0" : "pl-10",
       )}
     >
-      {(user?.role == "ADMIN" || user?.role == "MANAGER") && (
+      {isStaff && (
         <NavbarButton
           to="/dashboard"
           label="Painel"
@@ -33,26 +46,33 @@ export function Navbar({ collapsed }: NavbarProps) {
           icon={FiBarChart2}
         />
       )}
-      {/* <NavbarButton
-          to='/devices'
-          label='Dispositivos'
+
+      {isClassroomMember && (
+        <NavbarButton
+          to="/classrooms"
+          label="Turmas"
           collapse={collapsed}
-          icon={FaDog}
-          end
-        /> */}
+          icon={FiBookOpen}
+        />
+      )}
+
       <NavbarButton
         to="/terms"
         label="Termos"
         collapse={collapsed}
         icon={FiFileText}
       />
-      {/* <NavbarButton
-          to='/audit'
-          label='Auditoria'
+
+      {isStaff && (
+        <NavbarButton
+          to="/audit"
+          label="Auditoria"
           collapse={collapsed}
           icon={FiSearch}
-        /> */}
-      {user?.role == "ADMIN" && (
+        />
+      )}
+
+      {user?.role === "ADMIN" && (
         <NavbarButton
           to="/institutions"
           label="Instituições"
@@ -61,16 +81,17 @@ export function Navbar({ collapsed }: NavbarProps) {
         />
       )}
 
-      {user?.role == "MANAGER" && (
+      {user?.role === "MANAGER" && (
         <NavbarButton
-          to={`/institutions/${user?.institutionId}`}
+          to={`/institutions/${user.institutionId}`}
           label="Instituição"
           collapse={collapsed}
           icon={FaSchool}
+          end
         />
       )}
 
-      {user?.role == "MANAGER" && (
+      {user?.role === "MANAGER" && (
         <NavbarButton
           to={`/institutions/${user.institutionId}/users`}
           label="Membros"
@@ -79,7 +100,16 @@ export function Navbar({ collapsed }: NavbarProps) {
         />
       )}
 
-      {user?.role == "ADMIN" && (
+      {user?.role === "MANAGER" && (
+        <NavbarButton
+          to={`/institutions/${user.institutionId}/classrooms`}
+          label="Turmas"
+          collapse={collapsed}
+          icon={FiBookOpen}
+        />
+      )}
+
+      {user?.role === "ADMIN" && (
         <NavbarButton
           to="/users/admins"
           label="Administradores"
@@ -88,12 +118,21 @@ export function Navbar({ collapsed }: NavbarProps) {
         />
       )}
 
-      {user?.role == "ADMIN" && (
+      {user?.role === "ADMIN" && (
         <NavbarButton
           to="/animals"
           label="Animais"
           collapse={collapsed}
           icon={FaDog}
+        />
+      )}
+
+      {isStaff && (
+        <NavbarButton
+          to="/devices"
+          label="Dispositivos"
+          collapse={collapsed}
+          icon={HiChip}
         />
       )}
     </ul>

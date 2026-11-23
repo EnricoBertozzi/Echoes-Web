@@ -6,19 +6,26 @@ export type ApiRole = "ADMIN" | "MANAGER" | "TEACHER" | "STUDENT"; // uppercase 
 export interface User {
   id: string;
   name: string;
+  surname?: string;
   email: string;
   institutionId: string | null;
   role: ApiRole;
 }
 
+export function fullName(u: { name: string; surname?: string | null }): string {
+  return [u.name, u.surname].filter(Boolean).join(" ");
+}
+
 export interface CreateUserRequest {
   name: string;
+  surname: string;
   email: string;
   institutionId?: string;
 }
 
 export interface CreateInstitutionalUserRequest {
   name: string;
+  surname: string;
   email: string;
   role: "manager" | "teacher" | "student";
   institutionId?: string;
@@ -26,8 +33,13 @@ export interface CreateInstitutionalUserRequest {
 
 export interface UpdateUserRequest {
   name?: string;
-  email?: string;
+  surname?: string;
   institutionId?: string | null;
+}
+
+export interface UpdateCurrentUserRequest {
+  name?: string;
+  surname?: string;
 }
 
 export interface CompleteRegistrationRequest {
@@ -40,6 +52,7 @@ export interface CompleteRegistrationRequest {
 export interface PendingUser {
   // 202 response
   name: string;
+  surname?: string;
   email: string;
   role: ApiRole;
   institutionId: string | null;
@@ -74,4 +87,15 @@ const apiRoleToUserRole: Record<ApiRole, UserRole> = {
 
 export function roleToUserRole(apiRole: ApiRole): UserRole {
   return apiRoleToUserRole[apiRole];
+}
+
+// Convite de cadastro ainda válido (GET /api/v1/users/pending)
+export interface PendingInvitation {
+  name: string;
+  surname?: string;
+  email: string;
+  role: ApiRole;
+  institutionId: string | null;
+  invitedAt: string;
+  expiresAt: string;
 }

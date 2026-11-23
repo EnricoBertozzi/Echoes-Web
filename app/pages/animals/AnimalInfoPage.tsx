@@ -4,14 +4,18 @@ import { useNavigate, useParams } from "react-router";
 import { findAnimalById } from "~/api/animals";
 
 import {
+  activatePoint,
   createPoint,
+  deactivatePoint,
   deletePoint,
   findAllPointsByAnimalId,
   updatePoint,
 } from "~/api/points";
 
 import {
+  activateScenario,
   createScenario,
+  deactivateScenario,
   deleteScenario,
   findScenariosByPointId,
   updateScenario,
@@ -120,17 +124,53 @@ export default function AnimalInfoPage() {
     setPointModal(null);
   }
 
-
   async function handlePointDeleteSubmit() {
     if (pointModal?.type !== "delete") {
       return;
     }
 
-    await deletePoint(pointModal.point.id);
+    try {
+      await deletePoint(pointModal.point.id);
+      await loadPoints();
+    } catch {
+      // o interceptor do axios já mostrou o motivo (ex.: associado a dispositivo)
+    } finally {
+      setPointModal(null);
+    }
+  }
 
-    await loadPoints();
+  async function handlePointToggleActive(point: AuscultationPoint) {
+    try {
+      const updated = point.active
+        ? await deactivatePoint(point.id)
+        : await activatePoint(point.id);
 
-    setPointModal(null);
+      setPoints((current) =>
+        current.map((item) => (item.id === updated.id ? updated : item)),
+      );
+    } catch {
+      // o interceptor do axios já mostrou o erro
+    }
+  }
+
+  async function handleScenarioToggleActive(
+    scenario: Scenario,
+    pointId: string,
+  ) {
+    try {
+      const updated = scenario.active
+        ? await deactivateScenario(scenario.id)
+        : await activateScenario(scenario.id);
+
+      setScenarios((current) => ({
+        ...current,
+        [pointId]: (current[pointId] ?? []).map((item) =>
+          item.id === updated.id ? updated : item,
+        ),
+      }));
+    } catch {
+      // o interceptor do axios já mostrou o erro
+    }
   }
 
   async function loadScenarios(pointId: string) {
@@ -142,110 +182,108 @@ export default function AnimalInfoPage() {
     }));
   }
 
-  async function handleScenarioEditSubmit(data: ScenarioUpdateRequest) {
-    if (scenarioModal?.type !== "edit") {
-      return;
-    }
-
-    await updateScenario(scenarioModal.scenario.id, data);
-
-    await loadScenarios(scenarioModal.pointId);
-
-    setScenarioModal(null);
-  }
-
   async function handleScenarioDeleteSubmit() {
     if (scenarioModal?.type !== "delete") {
       return;
     }
 
-    await deleteScenario(scenarioModal.scenario.id);
-
-    await loadScenarios(scenarioModal.pointId);
-
-    setScenarioModal(null);
+    try {
+      await deleteScenario(scenarioModal.scenario.id);
+      await loadScenarios(scenarioModal.pointId);
+    } catch {
+      // o interceptor do axios já mostrou o motivo (ex.: associado a dispositivo)
+    } finally {
+      setScenarioModal(null);
+    }
   }
 
   return (
     <Main>
-        <PageTitle
-          title={`${animal?.name}`}
-          description={`${animal?.description}`}
-          backPath="/animals"
+      <PageTitle
+        title={`${animal?.name}`}
+        description={`${animal?.description}`}
+        backPath="/animals"
+      />
+
+      <div className="w-full sm:w-36">
+        <Button
+          onClick={() => setPointModal({ type: "create" })}
+          label="Novo Ponto"
+          variant="primary"
         />
+      </div>
 
-        <div className="w-36">
-          <Button
-            onClick={() => setPointModal({type: "create"})}
-            label="Novo Ponto"
-            variant="primary"
-          />
-        </div>
-
-        <div className="min-h-0 flex-1">
-          <ul className="flex w-full flex-col gap-8">
-            {points.map((point) => (
-              <li key={point.id} className="w-full">
-                <PointCard
-                  position={point.position}
-                  scenarios={scenarios[point.id] ?? []}
-                  onPointEdit={() =>
-                    setPointModal({
-                      type: "edit",
-                      point,
-                    })
-                  }
-                  onPointDelete={() =>
-                    setPointModal({
-                      type: "delete",
-                      point,
-                    })
-                  }
-                  onScenarioAdd={() =>
-                    setScenarioModal({
-                      type: "create",
-                      pointId: point.id,
-                    })
-                  }
-                  onScenarioEdit={(scenario) =>
-                    setScenarioModal({
-                      type: "edit",
-                      scenario,
-                      pointId: point.id,
-                    })
-                  }
-                  onScenarioDelete={(scenario) =>
-                    setScenarioModal({
-                      type: "delete",
-                      scenario,
-                      pointId: point.id,
-                    })
-                  }
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="min-h-0 flex-1">
+        <ul className="flex w-full flex-col gap-8">
+          {points.map((point) => (
+            <li key={point.id} className="w-full">
+              <PointCard
+                position={point.position}
+                active={point.active}
+                scenarios={scenarios[point.id] ?? []}
+                onPointToggleActive={() => void handlePointToggleActive(point)}
+                onScenarioToggleActive={(scenario) =>
+                  void handleScenarioToggleActive(scenario, point.id)
+                }
+                onPointEdit={() =>
+                  setPointModal({
+                    type: "edit",
+                    point,
+                  })
+                }
+                onPointDelete={() =>
+                  setPointModal({
+                    type: "delete",
+                    point,
+                  })
+                }
+                onScenarioAdd={() =>
+                  setScenarioModal({
+                    type: "create",
+                    pointId: point.id,
+                  })
+                }
+                onScenarioEdit={(scenario) =>
+                  setScenarioModal({
+                    type: "edit",
+                    scenario,
+                    pointId: point.id,
+                  })
+                }
+                onScenarioDelete={(scenario) =>
+                  setScenarioModal({
+                    type: "delete",
+                    scenario,
+                    pointId: point.id,
+                  })
+                }
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {pointModal?.type === "create" && (
         <PointAddModal
-          isOpen={pointModal?.type === "create"}
+          isOpen
           animal={animal}
           onClose={() => setPointModal(null)}
+          onReload={loadPoints}
         />
       )}
 
       {pointModal?.type === "edit" && (
         <PointEditModal
-          isOpen={pointModal?.type === "edit"}
+          isOpen
           point={pointModal.point}
           onClose={() => setPointModal(null)}
+          onReload={loadPoints}
         />
       )}
 
       {pointModal?.type === "delete" && (
         <PointDeleteModal
-          isOpen={pointModal?.type === "delete"}
+          isOpen
           onConfirm={handlePointDeleteSubmit}
           point={pointModal.point}
           onClose={() => setPointModal(null)}
@@ -254,24 +292,26 @@ export default function AnimalInfoPage() {
 
       {scenarioModal?.type === "create" && (
         <ScenarioAddModal
-          isOpen={scenarioModal?.type === "create"}
+          isOpen
           pointId={scenarioModal.pointId}
           onClose={() => setScenarioModal(null)}
+          onReload={(id) => loadScenarios(id)}
         />
       )}
 
       {scenarioModal?.type === "edit" && (
         <ScenarioEditModal
-          isOpen={scenarioModal?.type === "edit"}
+          isOpen
           scenario={scenarioModal.scenario}
           onClose={() => setScenarioModal(null)}
-          onSubmit={handleScenarioEditSubmit}
+          onReload={(id) => loadScenarios(id)}
+          pointId={scenarioModal.pointId}
         />
       )}
 
       {scenarioModal?.type === "delete" && (
         <ScenarioDeleteModal
-          isOpen={scenarioModal?.type === "delete"}
+          isOpen
           scenario={scenarioModal.scenario}
           onClose={() => setScenarioModal(null)}
           onConfirm={handleScenarioDeleteSubmit}

@@ -1,17 +1,21 @@
 import { Link, useSearchParams } from "react-router";
 import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import { Button } from "~/components/atoms/Button";
-import { TextInput } from "~/components/atoms/input/TextInput";
 import { useRegister } from "~/hooks/useRegister";
 import type { Route } from "./+types/index";
-import { PasswordField } from "~/components/molecules/input/PasswordField";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { useForm } from "react-hook-form";
-import { useTerms } from "~/hooks/useTerms";
+import { useTerms } from "~/hooks/terms/useTerms";
 import type { TermResponseDTO } from "~/types/terms";
 import { useState } from "react";
 import { TermViewModal } from "~/components/organisms/TermViewModal";
 import { ControlledPasswordField } from "~/components/molecules/controlled/ControlledPasswordField";
+import {
+  EMAIL_MAX_LENGTH,
+  VERIFICATION_CODE_PATTERN,
+  newPasswordRules,
+  validatePasswordConfirmation,
+} from "~/utils/authInputValidation";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -41,7 +45,8 @@ export default function Register() {
     setAcceptedTerms,
   } = useRegister(code, urlEmail);
 
-  const hasValidParams = code.trim() !== "" && urlEmail.trim() !== "";
+  const hasValidParams = VERIFICATION_CODE_PATTERN.test(code)
+    && urlEmail.trim() !== "" && urlEmail.length <= EMAIL_MAX_LENGTH;
 
   const { handleSubmit, control, watch, register } = useForm<FormData>({
     defaultValues: {
@@ -72,8 +77,8 @@ export default function Register() {
 
   if (!hasValidParams) {
     return (
-      <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
-        <div className="bg-white px-8 py-5 rounded shadow flex flex-col gap-6 w-full max-w-md items-center text-center">
+      <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
+        <div className="my-auto flex w-full max-w-md shrink-0 flex-col items-center gap-6 rounded bg-white px-4 py-5 text-center shadow wrap-anywhere sm:px-8">
           <FiAlertCircle size={48} className="text-main" />
           <h1 className="text-lg text-black font-semibold">Link inválido</h1>
           <p className="text-sm text-gray-600">
@@ -90,8 +95,8 @@ export default function Register() {
 
   if (registeredUser) {
     return (
-      <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
-        <div className="bg-white px-8 py-5 rounded shadow flex flex-col gap-6 w-full max-w-md items-center text-center">
+      <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
+        <div className="my-auto flex w-full max-w-md shrink-0 flex-col items-center gap-6 rounded bg-white px-4 py-5 text-center shadow wrap-anywhere sm:px-8">
           <FiCheckCircle size={48} className="text-green-600" />
           <h1 className="text-lg text-black font-semibold">
             Conta ativada com sucesso!
@@ -109,9 +114,9 @@ export default function Register() {
   }
 
   return (
-    <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
+    <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
       <form
-        className="bg-white p-8 rounded shadow flex flex-col gap-8 w-104"
+        className="my-auto flex w-full max-w-104 shrink-0 flex-col gap-6 rounded bg-white p-4 shadow wrap-anywhere sm:gap-8 sm:p-8"
         onSubmit={handleSubmit(handleRegisterSubmit)}
       >
         <PageTitle
@@ -129,17 +134,7 @@ export default function Register() {
             label="Senha"
             placeholder="Digite sua senha"
             control={control}
-            rules={{
-              minLength: {
-                value: 8,
-                message: "A senha deve ter no mínimo 8 caracteres",
-              },
-              pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
-                message:
-                  "A senha deve conter maiúscula, minúscula, número e caractere especial",
-              },
-            }}
+            rules={newPasswordRules}
           />
         </div>
 
@@ -151,8 +146,8 @@ export default function Register() {
             placeholder="Confirme sua senha"
             control={control}
             rules={{
-              validate: (value) =>
-                value === password || "As senhas não são iguais",
+              required: "Confirmação de senha obrigatória",
+              validate: (value) => validatePasswordConfirmation(value, password),
             }}
           />
 
@@ -222,6 +217,7 @@ export default function Register() {
 
       {selectedTerm && (
         <TermViewModal
+          isOpen
           term={selectedTerm}
           onClose={() => setSelectedTerm(null)}
         />

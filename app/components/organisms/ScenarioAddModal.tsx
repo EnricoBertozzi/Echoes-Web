@@ -1,12 +1,9 @@
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-import type {
-  ScenarioRegisterForm,
-  ScenarioRegisterRequest,
-} from "~/types/Scenario";
+import type { ScenarioRegisterForm } from "~/types/Scenario";
+import { validateUploadSize, WEB_UPLOAD_LIMIT_MB } from "~/utils/uploadValidation";
 
 import { ModalForm } from "../atoms/modal/ModalForm";
-import { ModalFormButtons } from "../molecules/ModalFormButtons";
 import { Modal } from "../atoms/modal/Modal";
 import { ModalTitle } from "../atoms/modal/ModalTitle";
 
@@ -20,12 +17,23 @@ interface ScenarioAddModalProps {
   isOpen: boolean;
   pointId: string;
   onClose: () => void;
+  onReload: (id: string) => void;
+}
+
+
+// Os aparelhos só tocam MP3 (decodificador do firmware), então o cenário aceita só esse formato.
+const MP3_MIME_TYPES = ["audio/mpeg", "audio/mp3"];
+
+function isMp3(file: File): boolean {
+  if (!file.name.toLowerCase().endsWith(".mp3")) return false;
+  return file.type === "" || MP3_MIME_TYPES.includes(file.type);
 }
 
 export function ScenarioAddModal({
   isOpen,
   pointId,
   onClose,
+  onReload,
 }: ScenarioAddModalProps) {
   const { control, handleSubmit } = useForm<ScenarioRegisterForm>({
     defaultValues: {
@@ -40,16 +48,30 @@ export function ScenarioAddModal({
     useCreateScenario();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        if (loading) return;
+        onClose();
+        onReload(pointId);
+      }}
+    >
       {success ? (
         <>
           <ModalTitle
-            title="Novo Cenário"
-            description="Informe os dados do cenário"
+            title="Cenário Cadastrado"
+            description="Cenário cadastrado com sucesso"
           />
           <div className="flex flex-row justify-end">
             <div className="w-32">
-              <Button label={"Fechar"} variant={"muted"} />
+              <Button
+                label={"Fechar"}
+                variant={"muted"}
+                onClick={() => {
+                  onClose();
+                  onReload(pointId);
+                }}
+              />
             </div>
           </div>
         </>
@@ -84,24 +106,26 @@ export function ScenarioAddModal({
             <ControlledFileField
               id="scenario-file"
               name="file"
-              label="Arquivo de áudio"
+              label={`Arquivo MP3 (até ${WEB_UPLOAD_LIMIT_MB} MB)`}
               control={control}
-              accept="audio/*"
+              accept=".mp3,audio/mpeg,audio/mp3"
+              disabled={loading}
               rules={{
                 required: "O arquivo de áudio é obrigatório.",
                 validate: {
+                  size: validateUploadSize,
                   type: (file) =>
                     !file ||
-                    file.type.startsWith("audio/") ||
-                    "Selecione um arquivo de áudio.",
+                    isMp3(file) ||
+                    "Envie um arquivo de áudio no formato MP3.",
                 },
               }}
             />
             {error && <Alert message={error} type={"error"} />}
 
             <div className="mt-3 flex gap-3 justify-end">
-              <Button label={"Cancelar"} onClick={onClose} variant={"muted"} />
-              <Button label={"Cadastrar"} variant="primary" />
+              <Button type="button" label="Cancelar" onClick={onClose} variant="muted" disabled={loading} />
+              <Button type="submit" label={loading ? "Enviando..." : "Cadastrar"} disabled={loading} />
             </div>
           </ModalForm>
         </>

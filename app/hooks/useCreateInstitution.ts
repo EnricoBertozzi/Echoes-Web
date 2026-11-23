@@ -7,7 +7,7 @@ import { createInstitution } from "~/api/institutions";
 import type { CnpjData } from "~/types/Cnpj";
 import type {
   Institution,
-  InstitutionRegisterRequest,
+  InstitutionCreateForm,
 } from "~/types/Institution";
 
 import { formatCnpjAddress, unmaskCnpj } from "~/utils/cnpj";
@@ -27,6 +27,23 @@ function describeCnpjError(error: unknown): string {
   }
 
   return "Erro ao consultar CNPJ";
+}
+
+// O back valida o corpo aninhado e devolve chaves como "institution.cnpj" e
+// "manager.email"; a tela usa os nomes planos dos campos do formulário.
+function normalizeFieldErrors(
+  errors: Record<string, string>,
+): Record<string, string> {
+  const result: Record<string, string> = {};
+
+  for (const [key, message] of Object.entries(errors)) {
+    if (key === "manager.name") result.managerName = message;
+    else if (key === "manager.surname") result.managerSurname = message;
+    else if (key === "manager.email") result.managerEmail = message;
+    else result[key.replace(/^institution\./, "")] = message;
+  }
+
+  return result;
 }
 
 export function useCreateInstitution(
@@ -105,7 +122,7 @@ export function useCreateInstitution(
 
   const isReady = cnpjData !== null || isFallbackMode;
 
-  const submitInstitution = async (data: InstitutionRegisterRequest) => {
+  const submitInstitution = async (data: InstitutionCreateForm) => {
     if (submitting || !isReady || lookingUp) return;
 
     setSubmitting(true);
@@ -114,21 +131,28 @@ export function useCreateInstitution(
 
     try {
       const institution = await createInstitution({
-        name: cnpjData ? cnpjData.razaoSocial : data.name,
+        institution: {
+          name: cnpjData ? cnpjData.razaoSocial : data.name,
 
-        acronym: data.acronym,
-        cnpj: unmaskCnpj(data.cnpj),
-        email: data.email,
-        phone: data.phone.trim(),
+          acronym: data.acronym,
+          cnpj: unmaskCnpj(data.cnpj),
+          email: data.email,
+          phone: data.phone.trim(),
 
-        address: cnpjData ? formatCnpjAddress(cnpjData) : data.address,
+          address: cnpjData ? formatCnpjAddress(cnpjData) : data.address,
+        },
+        manager: {
+          name: data.managerName.trim(),
+          surname: data.managerSurname.trim(),
+          email: data.managerEmail.trim(),
+        },
       });
 
       onCreated?.(institution);
     } catch (error) {
       if (error instanceof ApiRequestError) {
         if (error.fieldErrors) {
-          setFieldErrors(error.fieldErrors);
+          setFieldErrors(normalizeFieldErrors(error.fieldErrors));
         } else {
           setGeneralError(error.message);
         }

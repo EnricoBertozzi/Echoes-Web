@@ -10,6 +10,7 @@ export interface SelectInputProps {
   ref?: Ref<HTMLSelectElement>;
   onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
   onBlur?: () => void;
+  disablePlaceholder?: boolean;
 }
 
 export function SelectInput({
@@ -22,9 +23,10 @@ export function SelectInput({
   value,
   onChange,
   onBlur,
+  disablePlaceholder = true,
 }: SelectInputProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex min-w-0 flex-col gap-2">
       <select
         id={id}
         name={name}
@@ -33,7 +35,7 @@ export function SelectInput({
         value={value}
         onChange={onChange}
         className={`
-          w-full px-4 py-3 rounded-lg border
+          min-w-0 w-full px-4 py-3 rounded-lg border
           text-slate-900 bg-transparent appearance-none
           focus:outline-none transition-colors cursor-pointer
           ${
@@ -43,12 +45,12 @@ export function SelectInput({
           }
         `}
       >
-        <option disabled value="">
+        <option disabled={disablePlaceholder} value="">
           {placeholder}
         </option>
 
         {Array.from(options.entries()).map(([optionValue, label]) => (
-          <option key={label} value={optionValue}>
+          <option key={optionValue} value={optionValue}>
             {label}
           </option>
         ))}

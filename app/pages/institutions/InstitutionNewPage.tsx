@@ -1,19 +1,31 @@
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router";
-import { Button } from "~/components/atoms/Button";
 
+import {
+  FiAlertTriangle,
+  FiCheckCircle,
+  FiFileText,
+  FiHome,
+  FiInfo,
+  FiLock,
+  FiMail,
+  FiUser,
+} from "react-icons/fi";
+
+import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { Alert } from "~/components/atoms/page/Alert";
 import { Main } from "~/components/atoms/page/Main";
+
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 
 import { useCreateInstitution } from "~/hooks/useCreateInstitution";
 
-import type { InstitutionRegisterRequest } from "~/types/Institution";
+import type { InstitutionCreateForm } from "~/types/Institution";
 
 import { formatCnpjAddress, maskCnpjInput, unmaskCnpj } from "~/utils/cnpj";
+import { SectionCard as InstitutionFormSection } from "~/components/molecules/SectionCard";
 
 const LOOKUP_DEBOUNCE_MS = 500;
 
@@ -29,7 +41,7 @@ export default function NewInstitution() {
     handleSubmit,
     setValue,
     formState: { isSubmitting },
-  } = useForm<InstitutionRegisterRequest>({
+  } = useForm<InstitutionCreateForm>({
     mode: "onChange",
     defaultValues: {
       cnpj: "",
@@ -38,16 +50,17 @@ export default function NewInstitution() {
       acronym: "",
       email: "",
       phone: "",
+      managerName: "",
+      managerSurname: "",
+      managerEmail: "",
     },
   });
 
-  // Monitora o CNPJ do formulário.
   const cnpj = useWatch({
     control,
     name: "cnpj",
   });
 
-  // Aplica a máscara no campo CNPJ.
   useEffect(() => {
     const masked = maskCnpjInput(cnpj ?? "");
 
@@ -58,14 +71,11 @@ export default function NewInstitution() {
     }
   }, [cnpj, setValue]);
 
-  // Consulta automaticamente o CNPJ com debounce.
   useEffect(() => {
     const digits = unmaskCnpj(cnpj ?? "");
 
-    // Invalida consultas anteriores.
     form.resetLookup();
 
-    // Limpa os campos vindos da consulta anterior.
     setValue("name", "");
     setValue("address", "");
 
@@ -82,7 +92,6 @@ export default function NewInstitution() {
     };
   }, [cnpj, form.lookupCnpj, form.resetLookup, setValue]);
 
-  // Preenche automaticamente os dados retornados.
   useEffect(() => {
     if (!form.cnpjData) return;
 
@@ -97,190 +106,279 @@ export default function NewInstitution() {
 
   const isReadOnly = form.cnpjData !== null && !form.isFallbackMode;
 
+  const submitting = isSubmitting || form.submitting;
+
   return (
     <Main>
       <PageTitle
         title="Nova instituição"
-        description="Informe o CNPJ para buscar os dados automaticamente na Receita Federal."
+        description="Cadastre uma instituição e seu gestor responsável."
         backPath="/institutions"
       />
 
       <form
-        className="flex flex-col"
+        className="flex w-full flex-col gap-6"
         onSubmit={handleSubmit(form.submitInstitution)}
       >
-        <div className="flex flex-col gap-2">
-          <ControlledTextField
-            id="cnpj"
-            name="cnpj"
-            label="CNPJ"
-            placeholder="00.000.000/0000-00"
-            control={control}
-            rules={{
-              required: "O CNPJ é obrigatório.",
-              validate: (value) =>
-                unmaskCnpj(value).length === 14 ||
-                "O CNPJ deve conter 14 dígitos.",
-            }}
-          />
+        <InstitutionFormSection
+          title="Identificação da instituição"
+          description="Informe o CNPJ para consultar os dados cadastrais automaticamente."
+          icon={FiFileText}
+        >
+          <div className="flex flex-col gap-4">
+            <div className="w-full max-w-md">
+              <ControlledTextField
+                id="cnpj"
+                name="cnpj"
+                label="CNPJ"
+                placeholder="00.000.000/0000-00"
+                control={control}
+                rules={{
+                  required: "O CNPJ é obrigatório.",
+                  validate: (value) =>
+                    unmaskCnpj(value).length === 14 ||
+                    "O CNPJ deve conter 14 dígitos.",
+                }}
+              />
+            </div>
 
-          {form.lookingUp && (
-            <Alert message="Consultando CNPJ…" type={"muted"} />
-          )}
+            {form.lookingUp && (
+              <Alert message="Consultando CNPJ..." type="muted" />
+            )}
 
-          {form.lookupError && !form.isFallbackMode && (
-            <Alert message={form.lookupError} type={"error"} />
-          )}
+            {form.lookupError && !form.isFallbackMode && (
+              <Alert message={form.lookupError} type="error" />
+            )}
 
-          {form.fieldErrors.cnpj && (
-            <Alert message={form.fieldErrors.cnpj} type={"error"} />
-          )}
-        </div>
+
+
+            {isReadOnly && !form.lookingUp && (
+              <div className="flex items-center gap-2 text-sm font-medium text-green-700">
+                <FiCheckCircle size={18} className="shrink-0" />
+                Dados cadastrais encontrados.
+              </div>
+            )}
+
+            {!form.isReady && !form.lookingUp && !form.lookupError && (
+              <div className="flex items-start gap-2 text-sm text-slate-500">
+                <FiInfo size={18} className="mt-0.5 shrink-0" />
+
+                <p>
+                  Após a consulta, os campos necessários para o cadastro serão
+                  disponibilizados.
+                </p>
+              </div>
+            )}
+          </div>
+        </InstitutionFormSection>
 
         {form.isFallbackMode && (
-          <div className="mt-6 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
+          <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4">
             <FiAlertTriangle
-              size={22}
+              size={24}
               className="mt-0.5 shrink-0 text-amber-600"
             />
 
-            <div className="text-sm text-amber-900">
-              <p className="font-semibold">
-                Não foi possível consultar a Receita Federal.
-              </p>
+            <div className="flex flex-col gap-1 text-sm text-amber-900">
+              <p className="font-semibold">Consulta indisponível</p>
 
-              <p>Preencha os dados manualmente abaixo.</p>
+              <p>
+                Não foi possível consultar a Receita Federal. Preencha os dados
+                da instituição manualmente.
+              </p>
             </div>
           </div>
         )}
 
         {form.isReady && (
-          <div className="mt-6 flex flex-col gap-6">
-            <div>
-              <ControlledTextField
-                id="name"
-                name="name"
-                label="Razão social"
-                placeholder="Digite a razão social"
-                control={control}
-                readOnly={isReadOnly}
-                rules={{
-                  required: "A razão social é obrigatória.",
-                }}
-              />
+          <>
 
-              {form.fieldErrors.name && (
-                <FieldError message={form.fieldErrors.name} />
-              )}
-            </div>
+            <InstitutionFormSection
+              title="Dados institucionais"
+              description="Informações gerais e de contato da instituição."
+              icon={FiHome}
+            >
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="flex flex-col gap-1 md:col-span-2">
+                  <ControlledTextField
+                    id="name"
+                    name="name"
+                    label="Razão social"
+                    placeholder="Digite a razão social"
+                    control={control}
+                    readOnly={isReadOnly}
+                    rules={{
+                      required: "A razão social é obrigatória.",
+                    }}
+                  />
 
-            <div>
-              <ControlledTextField
-                id="address"
-                name="address"
-                label="Endereço"
-                placeholder="Digite o endereço"
-                control={control}
-                readOnly={isReadOnly}
-                rules={{
-                  required: "O endereço é obrigatório.",
-                }}
-              />
+]                </div>
 
-              {form.fieldErrors.address && (
-                <FieldError message={form.fieldErrors.address} />
-              )}
-            </div>
+                <div className="flex flex-col gap-1">
+                  <ControlledTextField
+                    id="acronym"
+                    name="acronym"
+                    label="Sigla"
+                    placeholder="Digite a sigla"
+                    control={control}
+                    rules={{
+                      required: "A sigla é obrigatória.",
+                    }}
+                  />
 
-            {isReadOnly && (
-              <span className="text-xs text-slate-500">
-                Razão social e endereço preenchidos automaticamente a partir do
-                CNPJ.
-              </span>
-            )}
+]                </div>
 
-            <div>
-              <ControlledTextField
-                id="acronym"
-                name="acronym"
-                label="Sigla"
-                placeholder="Digite a sigla"
-                control={control}
-                rules={{
-                  required: "A sigla é obrigatória.",
-                }}
-              />
+                <div className="flex flex-col gap-2 md:col-span-3">
+                  <ControlledTextField
+                    id="address"
+                    name="address"
+                    label="Endereço"
+                    placeholder="Digite o endereço"
+                    control={control}
+                    readOnly={isReadOnly}
+                    rules={{
+                      required: "O endereço é obrigatório.",
+                    }}
+                  />
 
-              {form.fieldErrors.acronym && (
-                <FieldError message={form.fieldErrors.acronym} />
-              )}
-            </div>
+]
+                  {isReadOnly && (
+                    <div className="flex items-start gap-2 text-xs text-slate-500">
+                      <FiLock size={14} className="shrink-0" />
 
-            <div>
-              <ControlledTextField
-                id="email"
-                name="email"
-                label="E-mail"
-                placeholder="Digite o e-mail"
-                control={control}
-                rules={{
-                  required: "O e-mail é obrigatório.",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Informe um e-mail válido.",
-                  },
-                }}
-              />
+                      <span>
+                        Razão social e endereço preenchidos automaticamente a
+                        partir do CNPJ.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-              {form.fieldErrors.email && (
-                <FieldError message={form.fieldErrors.email} />
-              )}
-            </div>
+              <hr className="border-slate-200" />
 
-            <div>
-              <ControlledTextField
-                id="phone"
-                name="phone"
-                label="Telefone"
-                placeholder="Digite o telefone"
-                control={control}
-                rules={{}}
-              />
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="flex flex-col gap-1">
+                  <ControlledTextField
+                    id="email"
+                    name="email"
+                    label="E-mail"
+                    placeholder="Digite o e-mail"
+                    control={control}
+                    rules={{
+                      required: "O e-mail é obrigatório.",
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "Informe um e-mail válido.",
+                      },
+                    }}
+                  />
 
-              {form.fieldErrors.phone && (
-                <FieldError message={form.fieldErrors.phone} />
-              )}
-            </div>
-          </div>
+]                </div>
+
+                <div className="flex flex-col gap-1">
+                  <ControlledTextField
+                    id="phone"
+                    name="phone"
+                    label="Telefone"
+                    placeholder="Digite o telefone"
+                    control={control}
+                    rules={{}}
+                  />
+
+]                </div>
+              </div>
+            </InstitutionFormSection>
+
+            <InstitutionFormSection
+              title="Gestor responsável"
+              description="Informe os dados do primeiro gestor da instituição."
+              icon={FiUser}
+            >
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="flex flex-col gap-1">
+                  <ControlledTextField
+                    id="managerName"
+                    name="managerName"
+                    label="Nome do gestor"
+                    placeholder="Digite o nome"
+                    control={control}
+                    rules={{
+                      required: "O nome do gestor é obrigatório.",
+                    }}
+                  />
+
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <ControlledTextField
+                    id="managerSurname"
+                    name="managerSurname"
+                    label="Sobrenome do gestor"
+                    placeholder="Digite o sobrenome"
+                    control={control}
+                    rules={{
+                      required: "O sobrenome do gestor é obrigatório.",
+                    }}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <ControlledTextField
+                    id="managerEmail"
+                    name="managerEmail"
+                    label="E-mail do gestor"
+                    placeholder="Digite o e-mail"
+                    control={control}
+                    rules={{
+                      required: "O e-mail do gestor é obrigatório.",
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "Informe um e-mail válido.",
+                      },
+                    }}
+                  />
+
+]                </div>
+              </div>
+
+      
+            </InstitutionFormSection>
+          </>
         )}
 
+        {/* Erro geral */}
         {form.generalError && (
-          <p className="mt-4 text-sm text-red-500">{form.generalError}</p>
+          <Alert message={form.generalError} type="error" />
         )}
 
-        <div className="mt-2 flex justify-end gap-2">
-          <Button
-            variant="muted"
-            label={"Cancelar"}
-            onClick={() => navigate("/institutions")}
-          />
+       
+        
+          <span className="text-sm text-slate-500">
+            {!form.isReady
+              ? "Informe o CNPJ para continuar."
+              : "Revise os dados antes de cadastrar."}
+          </span>
 
-          <Button
-            variant="primary"
-            disabled={
-              !form.isReady || form.lookingUp || form.submitting || isSubmitting
-            }
-            label={"Cadastrar"}
-            onClick={() => navigate("/institutions")}
-          />
-        </div>
+          <div className="mt-3 flex flex-col justify-end gap-3 sm:flex-row">
+            <Button
+              variant="muted"
+              label="Cancelar"
+              type="button"
+              className="w-full sm:w-32"
+              disabled={submitting}
+              onClick={() => navigate("/institutions")}
+            />
+
+            <Button
+              variant="primary"
+              type="submit"
+              className="w-full sm:w-52"
+              disabled={!form.isReady || form.lookingUp || submitting}
+              label={submitting ? "Cadastrando..." : "Cadastrar instituição"}
+            />
+          </div>
       </form>
     </Main>
   );
-}
-
-function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-
-  return <span className="text-sm text-red-500">{message}</span>;
 }

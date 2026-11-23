@@ -5,7 +5,6 @@ import {
   type Path,
   type RegisterOptions,
 } from "react-hook-form";
-import { TextField } from "../input/TextField";
 import { CodeField } from "../input/CodeField";
 
 export interface ControlledCodeFieldProps<T extends FieldValues> {
@@ -15,7 +14,6 @@ export interface ControlledCodeFieldProps<T extends FieldValues> {
   control: Control<T>;
   length: number,
   rules?: RegisterOptions<T, Path<T>>;
-  onSubmit: () => void
 }
 
 export function ControlledCodeField<T extends FieldValues>({
@@ -25,13 +23,17 @@ export function ControlledCodeField<T extends FieldValues>({
   length,
   control,
   rules,
-  onSubmit
 }: ControlledCodeFieldProps<T>) {
   return (
     <Controller
       name={name}
       control={control}
       rules={{
+        required: "Código obrigatório",
+        pattern: {
+          value: new RegExp(`^[0-9]{${length}}$`),
+          message: `Informe um código de ${length} dígitos`,
+        },
         ...rules,
       }}
       render={({ field, fieldState: { error } }) => (
@@ -43,7 +45,6 @@ export function ControlledCodeField<T extends FieldValues>({
           onChange={field.onChange}
           length={length}
           error={error?.message}
-          onSubmit={() => onSubmit()}
         />
       )}
     />

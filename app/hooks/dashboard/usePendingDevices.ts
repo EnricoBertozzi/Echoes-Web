@@ -23,7 +23,7 @@ export function usePendingDevices(enabled: boolean, onChanged?: () => void) {
 
     findDevices({ page: 0, size: 50, status: "PENDING" })
       .then((result) => {
-        if (active) setDevices(result);
+        if (active) setDevices(result.content);
       })
       .catch((err: unknown) => {
         if (active)

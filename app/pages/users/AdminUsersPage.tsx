@@ -3,14 +3,17 @@ import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { SearchBar } from "~/components/atoms/SearchBar";
 import { AddAdminModal } from "~/components/molecules/users/AddAdminModal";
+import { PendingInvitationsList } from "~/components/molecules/users/PendingInvitationsList";
 import { useFetchUsers } from "~/hooks/users/useFetchUsers";
 import { UserCard } from "~/components/molecules/users/UserCard";
 import { Main } from "~/components/atoms/page/Main";
 import { Alert } from "~/components/atoms/page/Alert";
 import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
+import { fullName } from "~/types/user";
 
 export default function AdminPageUsers() {
   const [modal, setModal] = useState(false);
+  const [pendingKey, setPendingKey] = useState(0);
   const [search, setSearch] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
 
@@ -43,31 +46,31 @@ export default function AdminPageUsers() {
         description="Consulte o cadastro dos admistradores do sistema"
       />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-        <form className="w-96" onSubmit={handleSearch}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <form className="w-full sm:w-96 sm:max-w-full" onSubmit={handleSearch}>
           <SearchBar value={search} onChange={setSearch} />
         </form>
 
-        <div className="w-36">
+        <div className="w-full sm:w-36">
           <Button label="Novo Usuário" onClick={() => setModal(true)} />
         </div>
       </div>
 
+      <PendingInvitationsList roles={["ADMIN"]} refreshKey={pendingKey} />
+
       {error && <Alert message={error} type="error" />}
 
-      <div className="min-w-0 w-full h-full">
+      <div className="w-full min-w-0">
         {loading && (
           <p
-            className="w-full h-full rounded-xl 
-              flex justify-center items-center text-xl 
-            bg-stone-300 text-stone-500"
+            className="flex min-h-40 w-full items-center justify-center rounded-xl bg-stone-300 p-4 text-center text-xl text-stone-500"
           >
             Carregando Usuários...
           </p>
         )}
 
         {users.length != 0 ? (
-          <div className="w-full h-full overflow-scroll">
+          <div className="flex w-full min-w-0 flex-col gap-4">
             <div className="flex justify-center">
               <PaginationSelector
                 label={"Usuários"}
@@ -87,8 +90,8 @@ export default function AdminPageUsers() {
               {users?.map((user) => (
                 <UserCard
                   key={user.id}
-                  name={user.name}
-                  email={user.email}
+                  id={user.id}
+                  name={fullName(user)}
                   role={user.role}
                 />
               ))}
@@ -99,7 +102,13 @@ export default function AdminPageUsers() {
         )}
       </div>
 
-      <AddAdminModal isOpen={modal} onClose={() => setModal(false)} />
+      <AddAdminModal
+        isOpen={modal}
+        onClose={() => {
+          setModal(false);
+          setPendingKey((key) => key + 1);
+        }}
+      />
     </Main>
   )
 }

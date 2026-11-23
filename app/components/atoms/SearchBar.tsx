@@ -18,9 +18,9 @@ export function SearchBar({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="w-full bg-transparent text-lg text-slate-700 outline-none placeholder:text-slate-500"
+        className="min-w-0 flex-1 bg-transparent text-lg text-slate-700 outline-none placeholder:text-slate-500"
       />
-      <button type="submit">
+      <button type="submit" aria-label="Buscar" className="shrink-0">
         <FaSearch size={24} className="text-slate-500" />
       </button>
     </div>

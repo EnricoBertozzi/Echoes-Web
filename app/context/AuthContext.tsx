@@ -8,12 +8,14 @@ import {
 
 import type { User } from "~/types/user";
 import { fetchCurrentUser } from "~/api/users";
+import { hasSessionHint, setSessionHint } from "~/utils/session";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (user: User) => void;
   logout: () => void;
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -26,9 +28,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     let active = true;
 
     async function restoreSession() {
-      const token = localStorage.getItem("jwt_token");
-
-      if (!token) {
+      // sem marcador de sessão não há o que restaurar
+      if (!hasSessionHint()) {
         if (active) setLoading(false);
         return;
       }
@@ -42,7 +43,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       } catch {
         if (active) {
           setUser(null);
-          localStorage.removeItem("jwt_token");
+          setSessionHint(false);
         }
       } finally {
         if (active) {
@@ -63,12 +64,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   const logout = () => {
-    localStorage.removeItem("jwt_token");
+    setSessionHint(false);
     setUser(null);
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, logout, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

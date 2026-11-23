@@ -22,12 +22,14 @@ interface PointEditModalProps {
   isOpen: boolean;
   point: AuscultationPoint;
   onClose: () => void;
+  onReload: () => void;
 }
 
 export function PointEditModal({
   isOpen,
   point,
   onClose,
+  onReload,
 }: PointEditModalProps) {
   const { control, handleSubmit, register } =
     useForm<AuscultationPointUpdateRequest>({
@@ -40,7 +42,13 @@ export function PointEditModal({
   const { loading, error, success, handlePointEditSubmit } = useEditPoint();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        onReload();
+      }}
+    >
       {success ? (
         <>
           <ModalTitle
@@ -50,7 +58,14 @@ export function PointEditModal({
 
           <div className="flex justify-end">
             <div className="w-36">
-              <Button label={"Fechar"} variant={"muted"} onClick={onClose} />
+              <Button
+                label={"Fechar"}
+                variant={"muted"}
+                onClick={() => {
+                  onClose();
+                  onReload();
+                }}
+              />
             </div>
           </div>
         </>

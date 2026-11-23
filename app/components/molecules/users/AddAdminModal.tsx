@@ -20,6 +20,7 @@ export interface AddAdminModalProps {
 
 interface FormData {
   name: string;
+  surname: string;
   email: string;
 }
 
@@ -65,6 +66,17 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
               control={control}
               rules={{
                 required: "Nome obrigatório",
+              }}
+            />
+
+            <ControlledTextField
+              id="surname"
+              name="surname"
+              label="Sobrenome"
+              placeholder="Digite o sobrenome"
+              control={control}
+              rules={{
+                required: "Sobrenome obrigatório",
               }}
             />
 

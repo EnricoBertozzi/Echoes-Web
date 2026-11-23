@@ -17,11 +17,11 @@ const toneStyles = {
 
 export function KpiCard({ label, value, detail, tone = "default" }: KpiCardProps) {
   return (
-    <div className="flex min-w-0 flex-col gap-1 rounded-2xl bg-white p-6 shadow-sm">
+    <div className="flex min-w-0 flex-col gap-1 rounded-2xl bg-white p-4 shadow-sm wrap-anywhere lg:p-6">
       <span className="text-sm font-semibold uppercase tracking-wide text-slate-500">
         {label}
       </span>
-      <span className="text-4xl font-bold tabular-nums text-slate-900">
+      <span className="text-3xl font-bold tabular-nums text-slate-900 lg:text-4xl">
         {value}
       </span>
       {detail != null && (

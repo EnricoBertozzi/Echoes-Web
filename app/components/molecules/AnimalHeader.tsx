@@ -1,34 +1,65 @@
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { AnimalIcon } from "../atoms/AnimalIcon";
 import { ButtonIcon } from "../atoms/ButtonIcon";
+import { InactiveBadge } from "../atoms/InactiveBadge";
+import { ToggleActiveButton } from "./ToggleActiveButton";
 
 export interface AnimalHeaderProps {
   name: string;
   model: string;
-  onEdit: () => any;
-  onDelete: () => any;
+  active: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+  onToggleActive: () => void;
 }
 
-export function AnimalHeader({name = "Animal", model="Modelo", onEdit, onDelete}: AnimalHeaderProps) {
+export function AnimalHeader({
+  name = "Animal",
+  model = "Modelo",
+  active,
+  onEdit,
+  onDelete,
+  onToggleActive,
+}: AnimalHeaderProps) {
   return (
-    <div className="flex gap-8 w-full">
-      <AnimalIcon />
-      
-      <div className="flex flex-col gap-1 w-2xs max-w-56">
-        <h3 className="wrap-break-word font-bold text-slate-900 text-2xl line-clamp-2">
-          {name}
-        </h3>
-        <p className="text-slate-500 text-xl line-clamp-1">{model}</p>
+    <header className="flex w-full min-w-0 items-start gap-3">
+      <div className="flex min-w-0 flex-1 flex-wrap items-start gap-4">
+        <AnimalIcon />
+
+        <div className="flex min-w-0 flex-[1_1_8rem] flex-col items-start gap-1 text-left">
+          <h3
+            className="w-full line-clamp-2 wrap-anywhere text-2xl font-bold text-slate-900"
+            title={name}
+          >
+            {name}
+          </h3>
+
+          <p
+            className="w-full line-clamp-1 wrap-anywhere text-xl text-slate-500"
+            title={model}
+          >
+            {model}
+          </p>
+
+          {!active && <InactiveBadge />}
+        </div>
       </div>
 
-      <div className="flex gap-8">
-        <ButtonIcon onClick={onEdit}>
-          <FiEdit size={32} className="text-slate-900" />
+      <div className="flex shrink-0 gap-1">
+        <ButtonIcon label={`Editar animal ${name}`} onClick={onEdit}>
+          <FiEdit size={22} className="text-slate-900" aria-hidden="true" />
         </ButtonIcon>
-        <ButtonIcon onClick={onDelete}>
-          <FiTrash2 size={32} className="text-red-900" />
+
+        <ToggleActiveButton
+          active={active}
+          subject={`animal ${name}`}
+          onToggle={onToggleActive}
+        />
+
+        <ButtonIcon label={`Excluir animal ${name}`} onClick={onDelete}>
+          <FiTrash2 size={22} className="text-red-900" aria-hidden="true" />
         </ButtonIcon>
       </div>
-    </div>
+    </header>
   );
 }

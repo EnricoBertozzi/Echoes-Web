@@ -11,7 +11,7 @@ export function useValidatePasswordCode() {
     const response = await validatePasswordCode(data);
     if (response.status == 200) {
       sessionStorage.setItem("reset_token", response.data.token);
-      navigation(`/password/reset?email=${data.email}`);
+      navigation(`/password/reset?email=${encodeURIComponent(data.email)}`);
     }
   }
 

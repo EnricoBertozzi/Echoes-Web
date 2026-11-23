@@ -10,8 +10,9 @@ export interface MfaRequest {
   code: string;
 }
 
-export interface LoginResponse {
-  token: string;
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export async function login(payload: LoginRequest) {
@@ -20,7 +21,7 @@ export async function login(payload: LoginRequest) {
 }
 
 export async function validMfa(payload: MfaRequest) {
-  const response = await api.post<LoginResponse>("/api/v1/auth/mfa", payload);
+  const response = await api.post<void>("/api/v1/auth/mfa", payload);
   return response;
 }
 
@@ -28,4 +29,9 @@ export async function logout() {
   const response = await api.post<void>("/api/v1/auth/logout");
   return response;
 }
-// TODO adicionar para auth gerenciar o token e não localStorage
+
+export async function changePassword(
+  payload: ChangePasswordRequest,
+): Promise<void> {
+  await api.patch<void>("/api/v1/auth/password/change", payload);
+}

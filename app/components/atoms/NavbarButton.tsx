@@ -16,6 +16,7 @@ export function NavbarButton(props: NavbarButtonProps) {
     <NavLink
       end={props.end}
       to={props.to}
+      aria-label={props.collapse ? props.label : undefined}
       className={({ isActive }) => clsx(
         'relative gap-3 flex flex-row transition-[border-radius]',
         !props.collapse ?

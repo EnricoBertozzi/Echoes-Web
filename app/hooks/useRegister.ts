@@ -1,14 +1,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { completeRegistration } from "~/api/users";
-import type { TermType } from "~/types/terms";
 import type { CompleteRegistrationRequest, User } from "~/types/user";
-
-const REQUIRED_TERMS: TermType[] = [
-  "TERMS_OF_USE",
-  "PRIVACY_POLICY",
-  "COOKIES_POLICY",
-];
+import { requiredTermTypes } from "~/types/terms";
 
 export function useRegister(code: string, urlEmail: string) {
   const [submitting, setSubmitting] = useState(false);
@@ -34,7 +28,7 @@ export function useRegister(code: string, urlEmail: string) {
     try {
       const user = await completeRegistration({
         ...data,
-        acceptedTerms: REQUIRED_TERMS,
+        acceptedTerms: requiredTermTypes,
       });
       setRegisteredUser(user);
     } catch (error) {

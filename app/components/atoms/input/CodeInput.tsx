@@ -5,7 +5,6 @@ export interface CodeInputProps {
   value: string;
   error?: string;
   onChange: (value: string) => void;
-  onSubmit: (code: string) => void;
 }
 
 export function CodeInput({
@@ -13,21 +12,16 @@ export function CodeInput({
   value,
   error,
   onChange,
-  onSubmit,
 }: CodeInputProps) {
   const [code, setCode] = useState<string[]>(
-    value ? value.split("") : new Array(length).fill(""),
+    () => Array.from({ length }, (_, index) => value?.[index] ?? ""),
   );
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (value !== undefined) {
-      setCode(
-        value
-          .split("")
-          .concat(new Array(Math.max(0, length - value.length)).fill("")),
-      );
+      setCode(Array.from({ length }, (_, index) => value[index] ?? ""));
     }
   }, [value, length]);
 
@@ -42,13 +36,7 @@ export function CodeInput({
       inputRefs.current[index + 1]?.focus();
     }
 
-    const fullCode = newCode.join("");
-
-    onChange?.(fullCode);
-
-    if (fullCode.length === length) {
-      onSubmit(fullCode);
-    }
+    onChange?.(newCode.join(""));
   };
 
   const handleKeyDown = (
@@ -98,11 +86,6 @@ export function CodeInput({
 
     const nextIndex = Math.min(digits.length, length - 1);
     inputRefs.current[nextIndex]?.focus();
-
-    const fullCode = newCode.join("");
-    if (fullCode.length === length) {
-      onSubmit(fullCode);
-    }
   };
 
   useEffect(() => {
@@ -112,8 +95,8 @@ export function CodeInput({
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-2">
+    <div className="flex min-w-0 max-w-full flex-col gap-2">
+      <div className="flex gap-1 sm:gap-2">
         {code.map((val, index) => {
           return (
             <input
@@ -127,7 +110,7 @@ export function CodeInput({
               onKeyDown={(e) => handleKeyDown(e, index)}
               onClick={() => handleClick(index)}
               onPaste={handlePaste}
-              className={`size-12 text-center text-lg border text-slate-700 border-black rounded 
+              className={`size-12 min-w-0 text-center text-lg border text-slate-700 border-black rounded
                         ${error ? "border-red-500 focus:border-red-600" : "border-slate-300 focus:border-slate-500"}`}
             />
           );
