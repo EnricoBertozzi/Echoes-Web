@@ -25,7 +25,7 @@ export default function MfaPage() {
   }, [email, navigate]);
 
   const { handleMfaSubmit } = useValidMfa();
-  const { handleSubmit, control, register } = useForm<FormData>({
+  const { handleSubmit, control, register, formState: { isSubmitting } } = useForm<FormData>({
     defaultValues: {
       email: email!,
       code: "",
@@ -64,7 +64,11 @@ export default function MfaPage() {
         </div>
 
         <div className="w-full pt-4">
-          <Button label="Enviar" />
+          <Button
+            type="submit"
+            label={isSubmitting ? "Verificando..." : "Enviar"}
+            disabled={isSubmitting}
+          />
         </div>
       </form>
     </main>
