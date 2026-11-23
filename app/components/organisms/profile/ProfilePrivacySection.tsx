@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useConfirmation } from "~/context/ConfirmationContext";
 
-import { exportMyData, revokeMyConsent } from "~/api/privacy";
-import { logout as endServerSession } from "~/api/auth";
+import { exportMyData } from "~/api/privacy";
+import { revokeMyConsent } from "~/api/terms";
 import { Button } from "~/components/atoms/Button";
 import { SectionCard } from "~/components/molecules/SectionCard";
 import { useAuth } from "~/context/AuthContext";
@@ -34,11 +34,11 @@ export function ProfilePrivacySection() {
     setBusy(true);
     try {
       await revokeMyConsent();
-      // encerra a sessão no servidor (cookie é apagado na resposta)
-      await endServerSession().catch(() => undefined);
+      logout();
+    } catch {
+      // O interceptor já exibe o erro da requisição.
     } finally {
       setBusy(false);
-      logout();
     }
   }
 

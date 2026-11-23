@@ -14,7 +14,3 @@ export async function exportMyData(): Promise<void> {
   link.remove();
   URL.revokeObjectURL(url);
 }
-
-export async function revokeMyConsent(): Promise<void> {
-  await api.post("/terms/revoke");
-}
