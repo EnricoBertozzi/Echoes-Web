@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { ControlledEmailField } from "~/components/molecules/controlled/ControlledEmailField";
 import { useForgotPassword } from "~/hooks/auth/password/useForgotPassword";
+import { emailMaxLengthRule } from "~/utils/authInputValidation";
 
 interface FormData {
   email: string;
@@ -34,6 +34,7 @@ export default function PasswordForgotPage() {
           placeholder="Digite seu e-mail"
           rules={{
             required: "E-mail obrigatório",
+            maxLength: emailMaxLengthRule,
           }}
         />
 
