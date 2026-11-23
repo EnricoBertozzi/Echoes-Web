@@ -66,6 +66,10 @@ export default [
     ]),
 
     layout("layouts/AdminLayout.tsx", [
+      route("audit/restorations", "pages/audit/Restorations.tsx"),
+
+      route("audit/restorations/:type/:id", "pages/audit/RestorationDetails.tsx"),
+
       route("institutions", "pages/institutions/InstitutionsPage.tsx"),
 
       route("institutions/new", "pages/institutions/InstitutionNewPage.tsx"),

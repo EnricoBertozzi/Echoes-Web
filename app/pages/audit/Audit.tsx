@@ -1,5 +1,6 @@
 
 import { useMemo, useState } from "react";
+import { Link } from "react-router";
 
 import { Card } from "~/components/atoms/card/Card";
 import { PageTitle } from "~/components/atoms/PageTitle";
@@ -71,6 +72,13 @@ export default function Audit() {
             : "Consulte os eventos de auditoria vinculados à sua instituição."
         }
       />
+
+      {isAdmin && (
+        <Link to="/audit/restorations"
+          className="w-fit rounded-md bg-main px-4 py-2 font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main">
+          Restaurações
+        </Link>
+      )}
 
       <Card>
         <h2 className="text-xl font-semibold text-slate-900">
