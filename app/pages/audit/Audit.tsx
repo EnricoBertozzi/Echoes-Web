@@ -1,5 +1,6 @@
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { Link } from "react-router";
 
 import { Card } from "~/components/atoms/card/Card";
 import { PageTitle } from "~/components/atoms/PageTitle";
@@ -23,17 +24,6 @@ export default function Audit() {
   const isAdmin = user?.role === "ADMIN";
 
   const institutions = useInstitutionOptions(isAdmin);
-
-  const institutionNames = useMemo(
-    () =>
-      new Map(
-        institutions.map((institution) => [
-          institution.id,
-          institution.name,
-        ]),
-      ),
-    [institutions],
-  );
 
   const [selectedLog, setSelectedLog] =
     useState<AuditLog | null>(null);
@@ -72,6 +62,13 @@ export default function Audit() {
         }
       />
 
+      {isAdmin && (
+        <Link to="/audit/restorations"
+          className="w-fit rounded-md bg-main px-4 py-2 font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main">
+          Restaurações
+        </Link>
+      )}
+
       <Card>
         <h2 className="text-xl font-semibold text-slate-900">
           Filtros
@@ -108,11 +105,24 @@ export default function Audit() {
             type="button"
             onClick={refetch}
             disabled={loading}
-            className="cursor-pointer rounded-lg bg-main px-4 py-2 text-sm font-medium text-white hover:bg-main/80 disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-11 w-full cursor-pointer rounded-lg bg-main px-4 py-2 text-sm font-medium text-white hover:bg-main/80 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             Atualizar
           </button>
         </header>
+
+        {!loading && !error && totalPages > 0 && (
+          <PaginationSelector
+            label="Por página"
+            page={page}
+            totalPages={totalPages}
+            size={size}
+            sizeOptions={[10, 20, 50, 100]}
+            prevPage={() => setPage(page - 1)}
+            nextPage={() => setPage(page + 1)}
+            onChange={(value) => setSize(Number(value))}
+          />
+        )}
 
         {error && (
           <Alert
@@ -137,23 +147,7 @@ export default function Audit() {
           <AuditLogTable
             logs={logs}
             isAdmin={isAdmin}
-            institutionNames={institutionNames}
             onView={setSelectedLog}
-          />
-        )}
-
-        {!loading && !error && totalPages > 0 && (
-          <PaginationSelector
-            label="Por página"
-            page={page}
-            totalPages={totalPages}
-            size={size}
-            sizeOptions={[10, 20, 50, 100]}
-            prevPage={() => setPage(page - 1)}
-            nextPage={() => setPage(page + 1)}
-            onChange={(value) =>
-              setSize(Number(value))
-            }
           />
         )}
       </Card>
@@ -161,13 +155,6 @@ export default function Audit() {
       <AuditDetailsModal
         log={selectedLog}
         isAdmin={isAdmin}
-        institutionName={
-          selectedLog?.institutionId
-            ? institutionNames.get(
-                selectedLog.institutionId,
-              ) ?? null
-            : null
-        }
         onClose={() => setSelectedLog(null)}
       />
     </Main>

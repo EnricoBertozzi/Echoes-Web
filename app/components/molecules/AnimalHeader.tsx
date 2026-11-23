@@ -1,26 +1,32 @@
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { AnimalIcon } from "../atoms/AnimalIcon";
 import { ButtonIcon } from "../atoms/ButtonIcon";
+import { InactiveBadge } from "../atoms/InactiveBadge";
+import { ToggleActiveButton } from "./ToggleActiveButton";
 
 export interface AnimalHeaderProps {
   name: string;
   model: string;
+  active: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleActive: () => void;
 }
 
 export function AnimalHeader({
   name = "Animal",
   model = "Modelo",
+  active,
   onEdit,
   onDelete,
+  onToggleActive,
 }: AnimalHeaderProps) {
   return (
-    <header className="flex w-full min-w-0 flex-wrap items-start justify-between gap-4">
-      <div className="flex min-w-0 flex-[1_1_12rem] items-start gap-4">
+    <header className="flex w-full min-w-0 items-start gap-3">
+      <div className="flex min-w-0 flex-1 flex-wrap items-start gap-4">
         <AnimalIcon />
 
-        <div className="flex min-w-0 flex-1 flex-col items-start gap-1 text-left">
+        <div className="flex min-w-0 flex-[1_1_8rem] flex-col items-start gap-1 text-left">
           <h3
             className="w-full line-clamp-2 wrap-anywhere text-2xl font-bold text-slate-900"
             title={name}
@@ -34,16 +40,24 @@ export function AnimalHeader({
           >
             {model}
           </p>
+
+          {!active && <InactiveBadge />}
         </div>
       </div>
 
-      <div className="ml-auto flex max-w-full shrink-0 flex-wrap items-center gap-8">
-        <ButtonIcon onClick={onEdit}>
-          <FiEdit size={32} className="text-slate-900" />
+      <div className="flex shrink-0 gap-1">
+        <ButtonIcon label={`Editar animal ${name}`} onClick={onEdit}>
+          <FiEdit size={22} className="text-slate-900" aria-hidden="true" />
         </ButtonIcon>
 
-        <ButtonIcon onClick={onDelete}>
-          <FiTrash2 size={32} className="text-red-900" />
+        <ToggleActiveButton
+          active={active}
+          subject={`animal ${name}`}
+          onToggle={onToggleActive}
+        />
+
+        <ButtonIcon label={`Excluir animal ${name}`} onClick={onDelete}>
+          <FiTrash2 size={22} className="text-red-900" aria-hidden="true" />
         </ButtonIcon>
       </div>
     </header>

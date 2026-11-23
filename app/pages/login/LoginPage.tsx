@@ -1,14 +1,12 @@
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import { PageTitle } from "~/components/atoms/PageTitle";
-import { PasswordField } from "~/components/molecules/input/PasswordField";
-import { TextField } from "~/components/molecules/input/TextField";
 import { useLogin } from "~/hooks/auth/useLogin";
 import type { Route } from "./+types/LoginPage";
 import { Button } from "~/components/atoms/Button";
-import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 import { ControlledPasswordField } from "~/components/molecules/controlled/ControlledPasswordField";
 import { ControlledEmailField } from "~/components/molecules/controlled/ControlledEmailField";
+import { emailMaxLengthRule, validatePasswordSize } from "~/utils/authInputValidation";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -33,9 +31,9 @@ export default function LoginPage() {
   });
 
   return (
-    <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
+    <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
       <form
-        className="bg-white p-8 rounded shadow flex flex-col gap-8 w-104"
+        className="my-auto flex w-full max-w-104 shrink-0 flex-col gap-6 rounded bg-white p-4 shadow sm:gap-8 sm:p-8"
         onSubmit={handleSubmit(handleLogin)}
       >
         <PageTitle title="Echoes" description="Seja bem-vindo" />
@@ -49,6 +47,7 @@ export default function LoginPage() {
             control={control}
             rules={{
               required: "E-mail obrigatório",
+              maxLength: emailMaxLengthRule,
             }}
           />
 
@@ -61,14 +60,13 @@ export default function LoginPage() {
               control={control}
               rules={{
                 required: "Senha é obrigatória",
+                validate: validatePasswordSize,
               }}
             />
 
             <p>
               <Link
-                className="w-fit cursor-pointer  
-                          hover:underline text-sm underline-offset-1 
-                        decoration-slate-500  text-slate-500"
+                className="inline-flex min-h-11 items-center text-sm text-slate-500 decoration-slate-500 underline-offset-1 hover:underline lg:min-h-0"
                 to={"/password/forgot"}
               >
                 Esqueceu a senha?

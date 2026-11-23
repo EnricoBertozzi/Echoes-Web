@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { FaDog } from "react-icons/fa";
 import { Navigate, useParams, useSearchParams } from "react-router";
 
 import { findClassroomDevices } from "~/api/classroomDesvices";
@@ -15,6 +16,7 @@ import { useAuth } from "~/context/AuthContext";
 import { useDeviceScenarios } from "~/hooks/devices/useDeviceScenarios";
 import { LoadingPage } from "~/pages/LoadingPage";
 import type { DeviceInfo } from "~/types/device";
+import type { Scenario } from "~/types/Scenario";
 import { deviceStatusLabels, deviceStatusTextStyles } from "~/utils/deviceUi";
 
 export default function DeviceScenariosPage() {
@@ -88,15 +90,38 @@ function DeviceScenariosContent({
     selectScenario,
     createPreset,
     activatePreset,
+    deletePreset,
   } = useDeviceScenarios(deviceId, loadDevice);
 
-  const points = config?.points ?? [];
+  const points = useMemo(() => config?.points ?? [], [config]);
   const isActive = device?.status === "ACTIVE";
-  const anyPointWithoutScenarios = points.some(
-    (point) => (scenariosByPoint.get(point.pointId) ?? []).length === 0,
+
+  // itens desativados no catálogo não entram em novas escolhas
+  const activePoints = useMemo(
+    () => points.filter((point) => point.active !== false),
+    [points],
+  );
+  const activeScenariosByPoint = useMemo(() => {
+    const active = new Map<string, Scenario[]>();
+
+    for (const [pointId, scenarios] of scenariosByPoint) {
+      active.set(
+        pointId,
+        scenarios.filter((scenario) => scenario.active !== false),
+      );
+    }
+
+    return active;
+  }, [scenariosByPoint]);
+
+  const anyPointWithoutScenarios = activePoints.some(
+    (point) => (activeScenariosByPoint.get(point.pointId) ?? []).length === 0,
   );
   const canCreatePreset =
-    isActive && points.length > 0 && !anyPointWithoutScenarios && !creating;
+    isActive &&
+    activePoints.length > 0 &&
+    !anyPointWithoutScenarios &&
+    !creating;
 
   const createReason = !isActive
     ? "O dispositivo precisa estar ativo."
@@ -127,26 +152,42 @@ function DeviceScenariosContent({
         />
       ) : (
         <>
-          <Card>
-            <h2 className="text-2xl font-bold text-slate-900">Dispositivo</h2>
+          <Card className="sm:p-6">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-4 lg:grid-cols-[auto_minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-6">
+              <div className="grid size-14 place-items-center rounded-2xl bg-main sm:size-16">
+                <FaDog size={28} className="text-white" aria-hidden="true" />
+              </div>
 
-            <div className="flex flex-wrap gap-x-8 gap-y-2 text-lg text-slate-600">
-              <p className="font-mono text-sm text-slate-500">
-                {device.hardwareId}
-              </p>
-              <p>
-                Status:{" "}
-                <span className={deviceStatusTextStyles[device.status]}>
-                  {deviceStatusLabels[device.status]}
-                </span>
-              </p>
-              <p>Animal: {device.animalName || "Sem animal"}</p>
-              <p>
-                Turma: {device.classroomId ? "Turma vinculada" : "Sem turma"}
-              </p>
+              <div className="min-w-0">
+                <h2 className="text-2xl font-bold text-slate-900 wrap-anywhere">
+                  {device.name?.trim() || "Dispositivo"}
+                </h2>
+                <p className="mt-1 font-mono text-sm text-slate-500 wrap-anywhere">
+                  {device.hardwareId}
+                </p>
+              </div>
+
+              <dl className="col-span-2 grid grid-cols-2 gap-x-4 gap-y-3 wrap-anywhere sm:grid-cols-3 lg:col-span-1">
+                <div>
+                  <dt className="text-sm text-slate-500">Status</dt>
+                  <dd className={deviceStatusTextStyles[device.status]}>
+                    {deviceStatusLabels[device.status]}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-sm text-slate-500">Animal</dt>
+                  <dd className="text-slate-900">{device.animalName || "Sem animal"}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm text-slate-500">Turma</dt>
+                  <dd className="text-slate-900">
+                    {device.classroomId ? "Turma vinculada" : "Sem turma"}
+                  </dd>
+                </div>
+              </dl>
             </div>
 
-            <div aria-live="polite" className="flex flex-col gap-3">
+            <div aria-live="polite" className="flex flex-col gap-3 empty:hidden">
               {!device.animalId && (
                 <Alert
                   type="muted"
@@ -157,7 +198,7 @@ function DeviceScenariosContent({
               {device.animalId && device.status !== "ACTIVE" && (
                 <Alert
                   type="muted"
-                  message="Dispositivo inativo ou pendente: você pode escolher cenários, mas ele só toca áudio quando estiver ativo. Casos clínicos exigem dispositivo ativo."
+                  message="Dispositivo inativo ou pendente: você pode escolher cenários, mas ele só toca áudio quando estiver ativo. Cenários clínicos exigem dispositivo ativo."
                 />
               )}
 
@@ -182,7 +223,9 @@ function DeviceScenariosContent({
                     <PointScenarioCard
                       key={point.pointId}
                       point={point}
-                      scenarios={scenariosByPoint.get(point.pointId) ?? []}
+                      scenarios={
+                        activeScenariosByPoint.get(point.pointId) ?? []
+                      }
                       busy={busyPointId === point.pointId}
                       onApply={(scenarioId) =>
                         selectScenario(point.pointId, scenarioId)
@@ -195,10 +238,10 @@ function DeviceScenariosContent({
               <Card>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <h2 className="text-2xl font-bold text-slate-900">
-                    Casos clínicos
+                    Cenários clínicos
                   </h2>
 
-                  <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
                     {createReason && (
                       <span className="text-sm text-slate-500">
                         {createReason}
@@ -208,7 +251,7 @@ function DeviceScenariosContent({
                     <div className="w-full sm:w-56">
                       <Button
                         type="button"
-                        label="Novo caso clínico"
+                        label="Novo cenário clínico"
                         disabled={!canCreatePreset}
                         onClick={() => setShowModal(true)}
                       />
@@ -218,7 +261,7 @@ function DeviceScenariosContent({
 
                 {presets.length === 0 ? (
                   <p className="py-8 text-center text-slate-500">
-                    Nenhum caso clínico cadastrado para este animal.
+                    Nenhum cenário clínico cadastrado para este animal.
                   </p>
                 ) : (
                   <div className="flex flex-col gap-4">
@@ -231,6 +274,7 @@ function DeviceScenariosContent({
                         canActivate={isActive}
                         busy={busyPresetId === preset.id}
                         onActivate={activatePreset}
+                        onDelete={deletePreset}
                       />
                     ))}
                   </div>
@@ -243,8 +287,8 @@ function DeviceScenariosContent({
 
       <ClinicalPresetModal
         isOpen={showModal}
-        points={points}
-        scenariosByPoint={scenariosByPoint}
+        points={activePoints}
+        scenariosByPoint={activeScenariosByPoint}
         busy={creating}
         onClose={() => setShowModal(false)}
         onSubmit={createPreset}

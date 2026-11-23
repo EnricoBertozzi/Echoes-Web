@@ -39,6 +39,12 @@ export async function acceptTerm(
   return response.data;
 }
 
+export async function revokeMyConsent(): Promise<void> {
+  await api.post(`${BASE}/revoke`, undefined, {
+    validateStatus: (status) => status === 204,
+  });
+}
+
 /**
  * POST /terms — cria um termo (ROLE_ADMIN).
  */

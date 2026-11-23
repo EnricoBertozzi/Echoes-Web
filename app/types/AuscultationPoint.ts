@@ -2,6 +2,7 @@ export interface AuscultationPoint {
   id: string;
   position: string;
   animalId: string;
+  active: boolean;
 }
 
 export interface AuscultationPointRegisterRequest {

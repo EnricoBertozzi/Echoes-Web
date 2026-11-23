@@ -1,22 +1,32 @@
 import { FiEdit, FiMapPin, FiTrash2 } from "react-icons/fi";
 
 import { ButtonIcon } from "../atoms/ButtonIcon";
+import { InactiveBadge } from "../atoms/InactiveBadge";
+import { ToggleActiveButton } from "./ToggleActiveButton";
 
 export interface PointHeaderProps {
   position: string;
+  active: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleActive: () => void;
 }
 
-export function PointHeader({ position, onEdit, onDelete }: PointHeaderProps) {
+export function PointHeader({
+  position,
+  active,
+  onEdit,
+  onDelete,
+  onToggleActive,
+}: PointHeaderProps) {
   return (
-    <header className="flex w-full min-w-0 flex-wrap items-start justify-between gap-4">
-      <div className="flex min-w-0 flex-[1_1_12rem] items-start gap-4">
+    <header className="flex w-full min-w-0 items-start gap-3">
+      <div className="flex min-w-0 flex-1 flex-wrap items-start gap-4">
         <div className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-main">
           <FiMapPin size={32} className="text-white" />
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col items-start gap-1 text-left">
+        <div className="flex min-w-0 flex-[1_1_8rem] flex-col items-start gap-1 text-left">
           <span className="text-sm text-slate-500">Ponto de ausculta</span>
 
           <h2
@@ -25,16 +35,24 @@ export function PointHeader({ position, onEdit, onDelete }: PointHeaderProps) {
           >
             {position}
           </h2>
+
+          {!active && <InactiveBadge />}
         </div>
       </div>
 
-      <div className="ml-auto flex max-w-full shrink-0 flex-wrap items-center gap-8">
-        <ButtonIcon onClick={onEdit}>
-          <FiEdit size={28} className="text-slate-900" />
+      <div className="flex shrink-0 gap-1">
+        <ButtonIcon label={`Editar ponto ${position}`} onClick={onEdit}>
+          <FiEdit size={22} className="text-slate-900" aria-hidden="true" />
         </ButtonIcon>
 
-        <ButtonIcon onClick={onDelete}>
-          <FiTrash2 size={28} className="text-red-900" />
+        <ToggleActiveButton
+          active={active}
+          subject={`ponto ${position}`}
+          onToggle={onToggleActive}
+        />
+
+        <ButtonIcon label={`Excluir ponto ${position}`} onClick={onDelete}>
+          <FiTrash2 size={22} className="text-red-900" aria-hidden="true" />
         </ButtonIcon>
       </div>
     </header>

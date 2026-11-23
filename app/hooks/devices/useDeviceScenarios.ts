@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import {
   activatePreset as activatePresetRequest,
+  deletePreset as deletePresetRequest,
   createPreset as createPresetRequest,
   findDeviceConfig,
   findPresets,
@@ -140,7 +141,7 @@ export function useDeviceScenarios(
       try {
         await createPresetRequest(deviceId, data);
 
-        toast.success("Caso clínico salvo", {
+        toast.success("Cenário clínico salvo", {
           position: "bottom-right",
         });
 
@@ -165,6 +166,34 @@ export function useDeviceScenarios(
     [creating, deviceId],
   );
 
+  const deletePreset = useCallback(
+    async (presetId: string): Promise<boolean> => {
+      if (busyPresetId !== null) return false;
+
+      setBusyPresetId(presetId);
+
+      try {
+        await deletePresetRequest(deviceId, presetId);
+
+        toast.success("Cenário clínico excluído", {
+          position: "bottom-right",
+        });
+
+        setPresets((current) =>
+          current.filter((preset) => preset.id !== presetId),
+        );
+
+        return true;
+      } catch {
+        // O interceptor do Axios já exibe o erro.
+        return false;
+      } finally {
+        setBusyPresetId(null);
+      }
+    },
+    [busyPresetId, deviceId],
+  );
+
   const activatePreset = useCallback(
     async (presetId: string): Promise<boolean> => {
       if (busyPresetId !== null) return false;
@@ -175,7 +204,7 @@ export function useDeviceScenarios(
       try {
         await activatePresetRequest(deviceId, presetId);
 
-        toast.success("Caso clínico ativado", {
+        toast.success("Cenário clínico ativado", {
           position: "bottom-right",
         });
 
@@ -213,6 +242,7 @@ export function useDeviceScenarios(
     selectScenario,
     createPreset,
     activatePreset,
+    deletePreset,
     refetch,
   };
 }

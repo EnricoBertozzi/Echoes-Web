@@ -69,8 +69,9 @@ export default function Devices() {
     }
   }
 
+  // animal desativado não pode ser associado; o já associado entra pelo laço dos dispositivos
   for (const animal of animals) {
-    animalOptions.set(animal.id, animal.name);
+    if (animal.active !== false) animalOptions.set(animal.id, animal.name);
   }
 
   for (const device of devices) {
@@ -160,13 +161,13 @@ export default function Devices() {
 
       <div className="w-full min-w-0">
         {loading ? (
-          <p className="flex h-40 w-full items-center justify-center rounded-xl bg-stone-300 text-xl text-stone-500">
+          <p className="flex min-h-40 w-full items-center justify-center rounded-xl px-4 text-center bg-stone-300 text-xl text-stone-500">
             Carregando dispositivos...
           </p>
         ) : error ? null : devices.length === 0 ? (
           <Alert message="Nenhum dispositivo encontrado." type="muted" />
         ) : (
-          <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 2xl:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 2xl:grid-cols-3">
             {devices.map((device) => (
               <li key={device.id} className="flex min-w-0">
                 <DeviceCard

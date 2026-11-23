@@ -27,7 +27,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 
             <p className="flex min-w-0 items-center gap-2 text-slate-500">
               <FiMail size={18} className="shrink-0" />
-              <span className="truncate" title={user.email}>
+              <span className="min-w-0 wrap-anywhere sm:truncate" title={user.email}>
                 {user.email}
               </span>
             </p>

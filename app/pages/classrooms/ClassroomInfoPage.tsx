@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useConfirmation } from "~/context/ConfirmationContext";
 import { Link, useParams } from "react-router";
 import {
   addClassroomMember,
@@ -24,6 +25,7 @@ import type { User } from "~/types/user";
  * o administrador só consulta os membros.
  */
 export default function ClassroomInfoPage() {
+  const confirmAction = useConfirmation();
   const { institutionId, classroomId } = useParams();
   const { user } = useAuth();
   const isManager = user?.role === "MANAGER";
@@ -90,15 +92,27 @@ export default function ClassroomInfoPage() {
     });
   }
 
-  function handleRemove(member: ClassroomMember) {
+  async function handleRemove(member: ClassroomMember) {
     if (!classroomId) return;
-    if (!window.confirm(`Remover ${member.name} da turma?`)) return;
+    const confirmed = await confirmAction({
+      title: "Remover membro",
+      description: `Remover ${member.name} da turma?`,
+      confirmLabel: "Remover",
+      variant: "danger",
+    });
+    if (!confirmed) return;
     run(() => removeClassroomMember(classroomId, member.userId));
   }
 
-  function handleClearStudents() {
+  async function handleClearStudents() {
     if (!classroomId) return;
-    if (!window.confirm("Remover todos os alunos da turma?")) return;
+    const confirmed = await confirmAction({
+      title: "Remover alunos",
+      description: "Remover todos os alunos da turma?",
+      confirmLabel: "Remover todos",
+      variant: "danger",
+    });
+    if (!confirmed) return;
     run(() => clearClassroomStudents(classroomId));
   }
 
@@ -145,7 +159,7 @@ export default function ClassroomInfoPage() {
 
       {isManager && (
         <div className="flex flex-wrap items-center gap-4">
-          <div className="w-72">
+          <div className="w-full sm:w-72">
             <SelectInput
               id="teacher"
               name="teacher"
@@ -156,7 +170,7 @@ export default function ClassroomInfoPage() {
             />
           </div>
 
-          <div className="w-56">
+          <div className="w-full sm:w-56">
             <Button
               label="Adicionar professor"
               disabled={!teacherId}
@@ -164,7 +178,7 @@ export default function ClassroomInfoPage() {
             />
           </div>
 
-          <div className="w-56">
+          <div className="w-full sm:w-56">
             <Button
               label="Remover todos os alunos"
               variant="danger"
@@ -199,7 +213,7 @@ export default function ClassroomInfoPage() {
           <div className="flex justify-end">
             <Link
               to={`/institutions/${institutionId}/devices?classroomId=${classroom.id}`}
-              className="text-main underline-offset-2 hover:underline"
+              className="inline-flex min-h-11 items-center text-main underline-offset-2 hover:underline"
             >
               Gerenciar vínculos de dispositivos
             </Link>

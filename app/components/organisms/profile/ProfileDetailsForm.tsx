@@ -92,7 +92,6 @@ export function ProfileDetailsForm() {
             }}
           />
 
-          {/* S11: o e-mail é definido no cadastro e não pode ser alterado */}
           <div className="flex flex-col gap-2">
             <label htmlFor="profile-email" className="text-sm font-medium text-slate-700">
               E-mail

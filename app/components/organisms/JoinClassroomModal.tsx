@@ -38,7 +38,11 @@ export function JoinClassroomModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      className="w-150 max-w-[calc(100%_-_2rem)] max-h-[calc(100dvh_-_2rem)] overflow-y-auto overscroll-contain max-sm:px-4"
+    >
       <ModalTitle
         title="Entrar em turma"
         description="Digite o código de 6 caracteres que seu professor compartilhou"
@@ -59,7 +63,7 @@ export function JoinClassroomModal({
           }}
         />
 
-        <div className="mt-3 flex justify-end gap-3">
+        <div className="mt-3 flex flex-col justify-end gap-3 sm:flex-row">
           <Button
             label="Cancelar"
             variant="muted"

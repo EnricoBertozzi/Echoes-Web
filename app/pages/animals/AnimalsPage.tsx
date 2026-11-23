@@ -10,7 +10,9 @@ import { AnimalEditModal } from "~/components/organisms/AnimalEditModal";
 import { AnimalDeleteModal } from "~/components/organisms/AnimalDeleteModal";
 
 import {
+  activateAnimal,
   createAnimal,
+  deactivateAnimal,
   deleteAnimal,
   findAllAnimals,
   findAnimalsByName,
@@ -69,11 +71,28 @@ export default function Animals() {
       return;
     }
 
-    await deleteAnimal(modal.animal.id);
+    try {
+      await deleteAnimal(modal.animal.id);
+      await loadAnimals();
+    } catch {
+      // o interceptor do axios já mostrou o motivo (ex.: associado a dispositivo)
+    } finally {
+      setModal(null);
+    }
+  }
 
-    await loadAnimals();
+  async function handleToggleActive(animal: Animal) {
+    try {
+      const updated = animal.active
+        ? await deactivateAnimal(animal.id)
+        : await activateAnimal(animal.id);
 
-    setModal(null);
+      setAnimals((current) =>
+        current.map((item) => (item.id === updated.id ? updated : item)),
+      );
+    } catch {
+      // o interceptor do axios já mostrou o erro
+    }
   }
 
   return (
@@ -83,12 +102,12 @@ export default function Animals() {
         description="Modelos de animais representados pelos simuladores."
       />
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4">
-        <form className="w-96">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <form className="w-full sm:w-96 sm:max-w-full">
           <SearchBar value={search} onChange={handleSearch} />
         </form>
 
-        <div className="w-36">
+        <div className="w-full sm:w-36">
           <Button
             label="Novo Animal"
             onClick={() => setModal({ type: "create" })}
@@ -97,13 +116,15 @@ export default function Animals() {
         </div>
       </div>
 
-      <ul className="grid grid-cols-2 gap-8">
+      <ul className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {animals.map((animal) => (
           <li key={animal.id}>
             <AnimalCard
               name={animal.name}
               model={animal.model}
               description={animal.description}
+              active={animal.active}
+              onToggleActive={() => void handleToggleActive(animal)}
               onEdit={() =>
                 setModal({
                   type: "edit",
@@ -143,10 +164,7 @@ export default function Animals() {
         <AnimalDeleteModal
           animal={modal.animal}
           onClose={() => setModal(null)}
-          onConfirm={() => {
-            handleDelete(),
-            loadAnimals()
-          }}
+          onConfirm={() => void handleDelete()}
         />
       )}
     </Main>

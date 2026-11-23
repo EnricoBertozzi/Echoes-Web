@@ -5,8 +5,23 @@ import { Modal } from "~/components/atoms/modal/Modal";
 import { ModalTitle } from "~/components/atoms/modal/ModalTitle";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { ControlledPasswordField } from "~/components/molecules/controlled/ControlledPasswordField";
-import { PasswordField } from "~/components/molecules/input/PasswordField";
 import { useResetPassword } from "~/hooks/auth/password/useResetPassword";
+import {
+  EMAIL_MAX_LENGTH,
+  newPasswordRules,
+  validatePasswordConfirmation,
+} from "~/utils/authInputValidation";
+import type { Route } from "./+types/PasswordResetPage";
+
+export function clientLoader() {
+  return { token: sessionStorage.getItem("reset_token") };
+}
+
+clientLoader.hydrate = true as const;
+
+export function HydrateFallback() {
+  return null;
+}
 
 interface FormData {
   email: string;
@@ -15,11 +30,9 @@ interface FormData {
   confirmPassword: string;
 }
 
-export default function PasswordResetPage() {
+export default function PasswordResetPage({ loaderData: { token } }: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
-
-  const token = sessionStorage.getItem("reset_token");
 
   const navigate = useNavigate();
 
@@ -27,8 +40,8 @@ export default function PasswordResetPage() {
 
   const { handleSubmit, control, register, watch } = useForm<FormData>({
     defaultValues: {
-      email: email!,
-      token: token!,
+      email: email ?? "",
+      token: token ?? "",
       newPassword: "",
       confirmPassword: "",
     },
@@ -37,15 +50,15 @@ export default function PasswordResetPage() {
   const newPassword = watch("newPassword");
 
   if (!isSuccess && !isError) {
-    if (email == null || token == null) {
+    if (!email || email.length > EMAIL_MAX_LENGTH || !token) {
       return <Navigate to="/" replace />;
     }
   }
 
   return (
-    <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
+    <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
       <form
-        className="bg-white p-8 rounded shadow flex flex-col gap-8 w-104"
+        className="my-auto flex w-full max-w-104 shrink-0 flex-col gap-6 rounded bg-white p-4 shadow sm:gap-8 sm:p-8"
         onSubmit={handleSubmit(handleResetPassword)}
       >
         <PageTitle
@@ -64,18 +77,7 @@ export default function PasswordResetPage() {
             label="Nova senha"
             placeholder="Digite sua nova senha"
             control={control}
-            rules={{
-              required: "Senha obrigatória",
-              minLength: {
-                value: 8,
-                message: "A senha deve ter no mínimo 8 caracteres",
-              },
-              pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
-                message:
-                  "A senha deve conter maiúscula, minúscula, número e caractere especial",
-              },
-            }}
+            rules={newPasswordRules}
           />
 
           <ControlledPasswordField
@@ -86,8 +88,7 @@ export default function PasswordResetPage() {
             control={control}
             rules={{
               required: "Confirmação de senha obrigatória",
-              validate: (value) =>
-                value === newPassword || "As senhas não são iguais",
+              validate: (value) => validatePasswordConfirmation(value, newPassword),
             }}
           />
         </div>
@@ -97,25 +98,25 @@ export default function PasswordResetPage() {
         </div>
       </form>
 
-      <Modal isOpen={isSuccess} onClose={() => navigate("/")}>
+      <Modal
+        isOpen={isSuccess || isError}
+        onClose={() => navigate("/")}
+        className="w-150 max-w-[calc(100%_-_2rem)] max-h-[calc(100dvh_-_2rem)] overflow-y-auto overscroll-contain"
+      >
         <ModalTitle
-          title="Senha alterada com sucesso!"
-          description="Clique no botão para retornar ao login"
+          title={
+            isSuccess
+              ? "Senha alterada com sucesso!"
+              : "Não foi possível alterar a senha"
+          }
+          description={
+            isSuccess
+              ? "Clique no botão para retornar ao login"
+              : "Tente novamente mais tarde..."
+          }
         />
-        <div className="w-full flex flex-row justify-end">
-          <div className="w-32">
-            <Button label="Voltar" onClick={() => navigate("/")} />
-          </div>
-        </div>
-      </Modal>
-
-      <Modal isOpen={isError} onClose={() => navigate("/")}>
-        <ModalTitle
-          title="Não foi possível alterar a senha"
-          description="Tente novamente mais tarde..."
-        />
-        <div className="w-full flex flex-row justify-end">
-          <div className="w-32">
+        <div className="flex justify-end">
+          <div className="w-full sm:w-32">
             <Button label="Voltar" onClick={() => navigate("/")} />
           </div>
         </div>

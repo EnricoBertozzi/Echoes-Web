@@ -15,7 +15,6 @@ export function useValidMfa() {
     submitting.current = true;
 
     try {
-      // o cookie de sessão é gravado pelo servidor nesta resposta (S10)
       await validMfa(data);
       setSessionHint(true);
 

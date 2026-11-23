@@ -12,7 +12,6 @@ const usesDirectLocalApi =
 
 export const api = axios.create({
   baseURL,
-  // S10: a sessão viaja no cookie HttpOnly da API
   withCredentials: true,
 });
 

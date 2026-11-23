@@ -125,9 +125,9 @@ export function TermsAdminPanel() {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-wrap items-end gap-4">
-          <div className="w-60">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
+          <div className="w-full sm:w-60">
             <SelectField
               id="term-type-filter"
               name="type"
@@ -140,7 +140,7 @@ export function TermsAdminPanel() {
             />
           </div>
 
-          <div className="w-60">
+          <div className="w-full sm:w-60">
             <SelectField
               id="term-status-filter"
               name="status"
@@ -154,7 +154,7 @@ export function TermsAdminPanel() {
           </div>
         </div>
 
-        <div className="w-44">
+        <div className="w-full sm:w-44">
           <Button label="Novo termo" onClick={() => setCreateOpen(true)} />
         </div>
       </div>
@@ -166,7 +166,7 @@ export function TermsAdminPanel() {
       ) : error ? (
         <div className="flex flex-col gap-3">
           <Alert message={error} type="error" />
-          <div className="w-40">
+          <div className="w-full sm:w-40">
             <Button label="Tentar novamente" variant="muted" onClick={refetch} />
           </div>
         </div>
@@ -177,7 +177,20 @@ export function TermsAdminPanel() {
         />
       ) : (
         <div className="min-w-0">
-          <table className="w-full table-fixed">
+          <ul className="grid gap-4 lg:hidden">
+            {filteredTerms.map((term) => (
+              <TermAdminRow
+                key={term.id}
+                term={term}
+                mobile
+                onView={setViewTerm}
+                onEdit={setContentTerm}
+                onChangeStatus={setStatusTerm}
+              />
+            ))}
+          </ul>
+
+          <table className="hidden w-full table-fixed lg:table">
             <thead className="bg-main text-white">
               <tr>
                 <TableHeadColumn className="w-[26%] rounded-tl-md">

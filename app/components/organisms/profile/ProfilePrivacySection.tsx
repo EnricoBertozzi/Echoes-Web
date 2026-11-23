@@ -1,16 +1,14 @@
 import { useState } from "react";
+import { useConfirmation } from "~/context/ConfirmationContext";
 
-import { exportMyData, revokeMyConsent } from "~/api/privacy";
-import { logout as endServerSession } from "~/api/auth";
+import { exportMyData } from "~/api/privacy";
+import { revokeMyConsent } from "~/api/terms";
 import { Button } from "~/components/atoms/Button";
 import { SectionCard } from "~/components/molecules/SectionCard";
 import { useAuth } from "~/context/AuthContext";
 
-/**
- * Direitos do titular: exportação dos dados (RF18) e revogação do
- * consentimento (RF17). A revogação encerra a sessão.
- */
 export function ProfilePrivacySection() {
+  const confirmAction = useConfirmation();
   const { logout } = useAuth();
   const [busy, setBusy] = useState(false);
 
@@ -24,19 +22,23 @@ export function ProfilePrivacySection() {
   }
 
   async function handleRevoke() {
-    const confirmed = window.confirm(
-      "Revogar o consentimento encerra sua sessão. Para voltar a usar o Echoes, você precisará aceitar novamente os termos. Deseja continuar?",
-    );
+    const confirmed = await confirmAction({
+      title: "Revogar consentimento",
+      description:
+        "Revogar o consentimento encerra sua sessão. Para voltar a usar o Echoes, você precisará aceitar novamente os termos. Deseja continuar?",
+      confirmLabel: "Revogar",
+      variant: "danger",
+    });
     if (!confirmed) return;
 
     setBusy(true);
     try {
       await revokeMyConsent();
-      // encerra a sessão no servidor (cookie é apagado na resposta)
-      await endServerSession().catch(() => undefined);
+      logout();
+    } catch {
+      // O interceptor já exibe o erro da requisição.
     } finally {
       setBusy(false);
-      logout();
     }
   }
 
@@ -51,13 +53,14 @@ export function ProfilePrivacySection() {
         conta.
       </p>
 
-      <div className="flex w-full flex-col gap-3 sm:w-80">
+      <div className="flex w-full flex-col gap-3 sm:flex-row">
         <Button
           type="button"
           label={busy ? "Aguarde..." : "Baixar meus dados"}
           variant="primary"
           disabled={busy}
           onClick={handleExport}
+          className="sm:w-56"
         />
 
         <Button
@@ -66,6 +69,7 @@ export function ProfilePrivacySection() {
           variant="danger"
           disabled={busy}
           onClick={handleRevoke}
+          className="sm:w-56"
         />
       </div>
     </SectionCard>

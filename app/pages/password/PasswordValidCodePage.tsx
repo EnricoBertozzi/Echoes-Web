@@ -1,9 +1,10 @@
 import { useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router";
+import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { ControlledCodeField } from "~/components/molecules/controlled/ControlledCodeField";
 import { useValidatePasswordCode } from "~/hooks/auth/password/useValidatePasswordCode";
+import { EMAIL_MAX_LENGTH, VERIFICATION_CODE_LENGTH } from "~/utils/authInputValidation";
 
 interface FormData {
   email: string;
@@ -15,30 +16,28 @@ export default function PasswordValidCodePage() {
   const email = searchParams.get("email");
   const navigate = useNavigate();
 
-  if (email == null) {
-    navigate("/");
-  }
-
   const { handleValidatePasswordCode } = useValidatePasswordCode();
 
   const { handleSubmit, control, register } = useForm<FormData>({
     defaultValues: {
-      email: email!,
+      email: email ?? "",
       code: "",
     },
   });
 
+  if (!email || email.length > EMAIL_MAX_LENGTH) return <Navigate to="/" replace />;
+
   return (
-    <main className="bg-zinc-200 w-full h-full flex justify-center items-center">
+    <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
       <form
-        className="bg-white p-8 rounded shadow flex flex-col gap-8 w-104"
+        className="my-auto flex w-full max-w-104 shrink-0 flex-col gap-6 rounded bg-white p-4 shadow sm:gap-8 sm:p-8"
         onSubmit={handleSubmit(handleValidatePasswordCode)}
       >
         <div className="flex flex-col gap-2">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="cursor-pointer text-left text-sm text-slate-500 hover:underline"
+            className="min-h-11 cursor-pointer text-left text-sm text-slate-500 hover:underline lg:min-h-0"
           >
             Voltar
           </button>
@@ -55,14 +54,7 @@ export default function PasswordValidCodePage() {
           id="code"
           name="code"
           label={"Código"}
-          length={6}
-          rules={{
-            required: "Código Obrigatório",
-            minLength: {
-              value: 6,
-              message: "Código Inválido"
-            }
-          }}
+          length={VERIFICATION_CODE_LENGTH}
         />
 
         <div className="w-full pt-2">

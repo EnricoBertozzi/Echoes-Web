@@ -26,7 +26,7 @@ export function ModalButton({
     <button
       {...props}
       type={type}
-      className={`cursor-pointer rounded px-4 py-2
+      className={`min-h-11 cursor-pointer rounded px-4 py-2 sm:min-h-0
         ${variants[variant]}
         ${disabled ? "cursor-not-allowed opacity-50" : ""}
         ${className}`}

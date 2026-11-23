@@ -7,7 +7,7 @@ export interface MarkdownProps {
 
 export function Markdown({ content }: MarkdownProps) {
   return (
-    <div className='text-slate-700 text-base leading-relaxed'>
+    <div className='min-w-0 text-base leading-relaxed text-slate-700 wrap-anywhere [&_pre]:overflow-x-auto'>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{

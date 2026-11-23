@@ -56,3 +56,15 @@ export async function updateAnimal(data: AnimalUpdateRequest) {
 export async function deleteAnimal(id: string) {
   await api.delete(`${BASE}/${id}`);
 }
+
+export async function deactivateAnimal(id: string): Promise<Animal> {
+  const response = await api.patch<Animal>(`${BASE}/${id}/deactivate`);
+
+  return response.data;
+}
+
+export async function activateAnimal(id: string): Promise<Animal> {
+  const response = await api.patch<Animal>(`${BASE}/${id}/activate`);
+
+  return response.data;
+}

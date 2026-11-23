@@ -11,6 +11,7 @@ export interface PointConfig {
   position: string;
   sensorIndex: number | null;
   scenario: ScenarioRef | null;
+  active: boolean;
 }
 
 export interface DeviceConfig {

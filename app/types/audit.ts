@@ -17,6 +17,7 @@ export interface AuditLog {
   ip: string | null;
   entityId: string | null;
   institutionId: string | null;
+  institutionName?: string | null;
   timestamp: string;
 }
 
@@ -40,6 +41,7 @@ export const AUDIT_ENTITY_LABELS: Readonly<Record<string, string>> = {
   Device: "Dispositivo",
   DeviceScenario: "Cenário do dispositivo",
   Classroom: "Turma",
+  DeletionRecovery: "Restauração",
   ClassroomDevice: "Vínculo Turma-Dispositivo",
   Teacher: "Professor",
   Student: "Estudante",
@@ -53,6 +55,9 @@ export const AUDIT_ACTION_LABELS: Readonly<Record<string, string>> = {
   CREATE: "Criação",
   UPDATE: "Atualização",
   DELETE: "Exclusão",
+  DELETION_RESTORE_REQUESTED: "Solicitação de restauração",
+  DELETION_RESTORE_APPROVED: "Aprovação de restauração",
+  DELETION_RESTORED: "Restauração concluída",
   APPROVE: "Aprovação",
   CHANGE_INSTITUTION: "Alteração de instituição",
   ACTIVATE: "Ativação",

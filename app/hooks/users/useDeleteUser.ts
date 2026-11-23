@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { deleteUser } from "~/api/users";
+import { useConfirmation } from "~/context/ConfirmationContext";
 import { roleToUserRole } from "~/types/user";
 import type { User } from "~/types/user";
 
 export function useDeleteUser(user: User, onDeleted?: () => void) {
+  const confirmAction = useConfirmation();
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   async function handleDelete() {
     setDeleteError(null);
 
-    const confirmed = window.confirm(`Excluir o usuário ${user.name}?`);
+    const confirmed = await confirmAction({
+      title: "Excluir usuário",
+      description: `Excluir o usuário ${user.name}?`,
+      confirmLabel: "Excluir",
+      variant: "danger",
+    });
     if (!confirmed) {
       return;
     }

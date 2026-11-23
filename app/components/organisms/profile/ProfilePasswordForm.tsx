@@ -7,6 +7,11 @@ import { Alert } from "~/components/atoms/page/Alert";
 import { SectionCard } from "~/components/molecules/SectionCard";
 import { ControlledPasswordField } from "~/components/molecules/controlled/ControlledPasswordField";
 import { useChangePassword } from "~/hooks/profile/useChangePassword";
+import {
+  existingPasswordMaxLengthRule,
+  newPasswordRules,
+  validatePasswordConfirmation,
+} from "~/utils/authInputValidation";
 
 interface PasswordFormValues {
   currentPassword: string;
@@ -91,6 +96,7 @@ export function ProfilePasswordForm() {
           control={control}
           rules={{
             required: "A senha atual é obrigatória.",
+            maxLength: existingPasswordMaxLengthRule,
           }}
         />
 
@@ -102,16 +108,8 @@ export function ProfilePasswordForm() {
             placeholder="Digite a nova senha"
             control={control}
             rules={{
+              ...newPasswordRules,
               required: "A nova senha é obrigatória.",
-              minLength: {
-                value: 8,
-                message: "A senha deve ter no mínimo 8 caracteres",
-              },
-              pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
-                message:
-                  "A senha deve conter maiúscula, minúscula, número e caractere especial",
-              },
             }}
           />
 
@@ -123,8 +121,7 @@ export function ProfilePasswordForm() {
             control={control}
             rules={{
               required: "A confirmação de senha é obrigatória.",
-              validate: (value) =>
-                value === newPassword || "As senhas não são iguais",
+              validate: (value) => validatePasswordConfirmation(value, newPassword),
             }}
           />
         </div>

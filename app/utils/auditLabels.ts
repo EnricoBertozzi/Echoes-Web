@@ -19,6 +19,9 @@ export const actionLabels: Record<string, string> = {
   CREATE: "Criação",
   DEACTIVATE: "Inativação",
   DELETE: "Exclusão",
+  DELETION_RESTORE_REQUESTED: "Solicitação de restauração",
+  DELETION_RESTORE_APPROVED: "Aprovação de restauração",
+  DELETION_RESTORED: "Restauração concluída",
   DOWNLOAD: "Download",
   GENERATED: "Código gerado",
   GENERATE_CODE: "Código da turma gerado",
@@ -59,6 +62,9 @@ export const actionPhrases: Record<string, string> = {
   CHANGE_INSTITUTION: "trocou a instituição do dispositivo",
   CLEAR_STUDENTS: "removeu todos os alunos da turma",
   COMPLETE_REGISTRATION: "finalizou o cadastro",
+  DELETION_RESTORE_REQUESTED: "solicitou a restauração",
+  DELETION_RESTORE_APPROVED: "aprovou a restauração",
+  DELETION_RESTORED: "concluiu a restauração",
   DOWNLOAD: "baixou o arquivo",
   GENERATED: "gerou um código de verificação",
   GENERATE_CODE: "gerou o código de acesso da turma",
@@ -88,6 +94,7 @@ export const entityLabels: Record<string, EntityLabel> = {
   },
   Animal: { label: "Animal", article: "o", noun: "animal" },
   Classroom: { label: "Turma", article: "a", noun: "turma" },
+  DeletionRecovery: { label: "Restauração", article: "a", noun: "restauração" },
   ClassroomMaterial: {
     label: "Material da turma",
     article: "o",
@@ -196,4 +203,11 @@ export function describeActor(log: AuditLog): string {
 
 export function describeAuditLog(log: AuditLog): string {
   return `${describeActor(log)} ${describePhrase(log)}`;
+}
+
+export function auditInstitutionLabel(log: AuditLog): string {
+  return log.institutionName
+    ?? (log.institutionId || log.entity === "Institution" || log.entity === "DeletionRecovery"
+      ? "Instituição não identificada"
+      : "Global");
 }

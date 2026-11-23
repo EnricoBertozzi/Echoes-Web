@@ -6,6 +6,7 @@ import { ModalTitle } from "~/components/atoms/modal/ModalTitle";
 import { ControlledFileField } from "~/components/molecules/controlled/ControlledFileFIeld";
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 import type { ClassroomMaterial } from "~/types/ClassroomMaterial";
+import { validateUploadSize, WEB_UPLOAD_LIMIT_MB } from "~/utils/uploadValidation";
 
 type Mode = "create" | "edit" | "replace";
 type Values = { title: string; description: string; file: File | null };
@@ -42,9 +43,16 @@ export function ClassroomMaterialModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => { if (!busy) onClose(); }} className="w-[min(94vw,38rem)] max-h-[90vh] overflow-y-auto">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => { if (!busy) onClose(); }}
+      className="w-[min(94vw,38rem)] max-h-[90dvh] overflow-y-auto overscroll-contain max-sm:px-4"
+    >
       <ModalTitle title={names[mode]} description={mode === "replace" ? "O arquivo anterior será substituído após salvar." : "Materiais compartilhados com a turma."} />
-      <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-4">
+      <form
+        onSubmit={handleSubmit(submit)}
+        className="flex flex-col gap-4 max-sm:[&_input]:min-w-0"
+      >
         {mode !== "replace" && (
           <>
             <ControlledTextField<Values>
@@ -64,10 +72,9 @@ export function ClassroomMaterialModal({
         )}
         {mode !== "edit" && (
           <ControlledFileField<Values, "file">
-            id="material-file" name="file" label="Arquivo (até 18 MB)" control={control}
+            id="material-file" name="file" label={`Arquivo (até ${WEB_UPLOAD_LIMIT_MB} MB)`} control={control}
             accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.docx,.pptx,.xlsx,.txt,.csv,.md"
-            rules={{ required: "Selecione um arquivo.", validate: (file) =>
-              !file || file.size <= 18 * 1024 * 1024 || "O limite é de 18 MB." }}
+            rules={{ required: "Selecione um arquivo.", validate: validateUploadSize }}
             disabled={busy}
           />
         )}
@@ -77,9 +84,9 @@ export function ClassroomMaterialModal({
             <progress className="w-full" max={100} value={progress} />
           </div>
         )}
-        <div className="mt-3 flex gap-3 justify-end">
-          <div className="min-w-28"><Button type="button" label="Cancelar" variant="muted" disabled={busy} onClick={onClose} /></div>
-          <div className="min-w-28"><Button type="submit" label={busy ? "Salvando..." : "Salvar"} disabled={busy} /></div>
+        <div className="mt-3 flex flex-col justify-end gap-3 sm:flex-row">
+          <div className="sm:min-w-28"><Button type="button" label="Cancelar" variant="muted" disabled={busy} onClick={onClose} /></div>
+          <div className="sm:min-w-28"><Button type="submit" label={busy ? "Salvando..." : "Salvar"} disabled={busy} /></div>
         </div>
       </form>
     </Modal>

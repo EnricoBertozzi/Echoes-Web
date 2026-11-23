@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createScenario } from "~/api/scenario";
+import { ApiRequestError } from "~/api/errors";
 
 import type {
   ScenarioRegisterRequest,
@@ -30,8 +31,8 @@ export function useCreateScenario() {
       await createScenario(request, request.file);
 
       setSuccess(true);
-    } catch {
-      setError("Dados inválidos");
+    } catch (error) {
+      setError(error instanceof ApiRequestError ? error.message : "Não foi possível enviar o cenário.");
     } finally {
       setLoading(false);
     }

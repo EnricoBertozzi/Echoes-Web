@@ -32,7 +32,7 @@ export function MarkdownEditor({
     <div className="flex flex-col gap-2">
       <Label id={id} name={name} label={label} />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-2">
           <textarea
             id={id}
@@ -58,10 +58,10 @@ export function MarkdownEditor({
           {error && <span className="text-sm text-red-500">{error}</span>}
         </div>
 
-        <div className="flex min-h-80 flex-col gap-2">
+        <div className="flex min-w-0 flex-col gap-2 lg:min-h-80">
           <span className="text-sm font-medium text-slate-500">Pré-visualização</span>
 
-          <div className="min-h-80 flex-1 overflow-y-auto rounded-lg border border-slate-200 bg-zinc-50 px-6 py-4">
+          <div className="min-h-48 min-w-0 flex-1 rounded-lg border border-slate-200 bg-zinc-50 px-3 py-4 sm:px-6 lg:min-h-80 lg:overflow-y-auto">
             {value.trim() ? (
               <Markdown content={value} />
             ) : (

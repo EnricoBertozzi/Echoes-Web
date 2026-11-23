@@ -31,7 +31,6 @@ export function useUpdateUser(user: User, onUpdated?: () => void) {
     setGeneralError(null);
 
     try {
-      // S11: e-mail não é editável por ninguém; só o nome
       await updateUser(roleToUserRole(user.role), user.id, { name });
       setSucceeded(true);
       onUpdated?.();

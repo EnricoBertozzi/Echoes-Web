@@ -45,83 +45,69 @@ function PublishedTerms() {
         }
       />
 
-      <div className='w-full max-w-5xl mt-4'>
+      <div className='mt-4 w-full min-w-0 max-w-5xl'>
         {/* Aviso quando alguns termos falharam, mas outros carregaram */}
         {error && terms.length > 0 && (
-          <div className='mb-4 flex flex-row justify-between items-center rounded border border-amber-300  px-4 py-3'>
+          <div className='mb-4 flex flex-col gap-3 rounded border border-amber-300 px-4 py-3 sm:flex-row sm:items-center sm:justify-between'>
             <span className='text-sm text-amber-800'>
               Alguns termos não puderam ser carregados: {error}
             </span>
             <button
               onClick={refetch}
-              className='rounded bg-amber-600 px-3 py-1 text-white text-sm cursor-pointer'
+              className='min-h-11 shrink-0 cursor-pointer rounded bg-amber-600 px-3 py-1 text-sm text-white'
             >
               Tentar novamente
             </button>
           </div>
         )}
 
-        {/* Header */}
-        <table className='w-full table-fixed'>
-          <thead className='bg-main text-white'>
-            <tr>
-              <TableHeadColumn className='w-1/3 rounded-tl-md'>
-                Termo
-              </TableHeadColumn>
+        {loading ? (
+          <p role="status" className="p-4 text-center text-black">
+            Carregando termos...
+          </p>
+        ) : terms.length === 0 && error ? (
+          <div className="flex flex-col items-center gap-2 p-4 text-center">
+            <span className="text-sm text-red-500">{error}</span>
+            <button
+              type="button"
+              onClick={refetch}
+              className="min-h-11 cursor-pointer rounded bg-main px-4 py-1.5 text-sm text-white"
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : terms.length === 0 ? (
+          <p className="p-4 text-center text-black">
+            Nenhum termo publicado encontrado
+          </p>
+        ) : (
+          <>
+            <ul className="grid gap-4 lg:hidden">
+              {terms.map((term) => (
+                <TermTableRow key={term.type} term={term} mobile onView={setSelectedTerm} />
+              ))}
+            </ul>
 
-              <TableHeadColumn className='w-1/6'>
-                Versão
-              </TableHeadColumn>
-
-              <TableHeadColumn className='w-1/6'>
-                Status
-              </TableHeadColumn>
-
-              <TableHeadColumn className='w-1/4'>
-                Atualizado em
-              </TableHeadColumn>
-
-              <TableHeadColumn className='w-1/12 rounded-tr-md'>
-                Ações
-              </TableHeadColumn>
-            </tr>
-          </thead>
-        </table>
-
-        {/* Body */}
-        <div className='max-h-96 overflow-y-auto scrollbar-thin rounded-b-md border border-t-0 border-main/50'>
-          {loading ? (
-            <div className='flex justify-center items-center h-24 text-black'>
-              Carregando termos...
+            <div className="hidden max-h-96 overflow-y-auto rounded-md border border-main/50 lg:block">
+              <table className="w-full table-fixed">
+                <thead className="sticky top-0 bg-main text-white">
+                  <tr>
+                    <TableHeadColumn className="w-1/3">Termo</TableHeadColumn>
+                    <TableHeadColumn className="w-1/6">Versão</TableHeadColumn>
+                    <TableHeadColumn className="w-1/6">Status</TableHeadColumn>
+                    <TableHeadColumn className="w-1/4">Atualizado em</TableHeadColumn>
+                    <TableHeadColumn className="w-1/12 px-2">Ações</TableHeadColumn>
+                  </tr>
+                </thead>
+                <tbody>
+                  {terms.map((term) => (
+                    <TermTableRow key={term.type} term={term} onView={setSelectedTerm} />
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ) : terms.length === 0 && error ? (
-            <div className='flex flex-col justify-center items-center h-24 gap-2'>
-              <span className='text-sm text-red-500'>{error}</span>
-              <button
-                onClick={refetch}
-                className='rounded bg-main px-4 py-1.5 text-white text-sm cursor-pointer'
-              >
-                Tentar novamente
-              </button>
-            </div>
-          ) : terms.length === 0 ? (
-            <div className='flex justify-center items-center h-24 text-black'>
-              Nenhum termo publicado encontrado
-            </div>
-          ) : (
-            <table className='w-full table-fixed'>
-              <tbody>
-                {terms.map((term) => (
-                  <TermTableRow
-                    key={term.type}
-                    term={term}
-                    onView={setSelectedTerm}
-                  />
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+          </>
+        )}
 
         <p className='mt-3 text-sm text-slate-500'>
           {terms.length} termo(s) publicado(s)
