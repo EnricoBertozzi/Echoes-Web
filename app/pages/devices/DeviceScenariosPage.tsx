@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FaDog } from "react-icons/fa";
 import { Navigate, useParams, useSearchParams } from "react-router";
 
@@ -16,6 +16,7 @@ import { useAuth } from "~/context/AuthContext";
 import { useDeviceScenarios } from "~/hooks/devices/useDeviceScenarios";
 import { LoadingPage } from "~/pages/LoadingPage";
 import type { DeviceInfo } from "~/types/device";
+import type { Scenario } from "~/types/Scenario";
 import { deviceStatusLabels, deviceStatusTextStyles } from "~/utils/deviceUi";
 
 export default function DeviceScenariosPage() {
@@ -91,13 +92,35 @@ function DeviceScenariosContent({
     activatePreset,
   } = useDeviceScenarios(deviceId, loadDevice);
 
-  const points = config?.points ?? [];
+  const points = useMemo(() => config?.points ?? [], [config]);
   const isActive = device?.status === "ACTIVE";
-  const anyPointWithoutScenarios = points.some(
-    (point) => (scenariosByPoint.get(point.pointId) ?? []).length === 0,
+
+  // itens desativados no catálogo não entram em novas escolhas
+  const activePoints = useMemo(
+    () => points.filter((point) => point.active !== false),
+    [points],
+  );
+  const activeScenariosByPoint = useMemo(() => {
+    const active = new Map<string, Scenario[]>();
+
+    for (const [pointId, scenarios] of scenariosByPoint) {
+      active.set(
+        pointId,
+        scenarios.filter((scenario) => scenario.active !== false),
+      );
+    }
+
+    return active;
+  }, [scenariosByPoint]);
+
+  const anyPointWithoutScenarios = activePoints.some(
+    (point) => (activeScenariosByPoint.get(point.pointId) ?? []).length === 0,
   );
   const canCreatePreset =
-    isActive && points.length > 0 && !anyPointWithoutScenarios && !creating;
+    isActive &&
+    activePoints.length > 0 &&
+    !anyPointWithoutScenarios &&
+    !creating;
 
   const createReason = !isActive
     ? "O dispositivo precisa estar ativo."
@@ -199,7 +222,9 @@ function DeviceScenariosContent({
                     <PointScenarioCard
                       key={point.pointId}
                       point={point}
-                      scenarios={scenariosByPoint.get(point.pointId) ?? []}
+                      scenarios={
+                        activeScenariosByPoint.get(point.pointId) ?? []
+                      }
                       busy={busyPointId === point.pointId}
                       onApply={(scenarioId) =>
                         selectScenario(point.pointId, scenarioId)
@@ -260,8 +285,8 @@ function DeviceScenariosContent({
 
       <ClinicalPresetModal
         isOpen={showModal}
-        points={points}
-        scenariosByPoint={scenariosByPoint}
+        points={activePoints}
+        scenariosByPoint={activeScenariosByPoint}
         busy={creating}
         onClose={() => setShowModal(false)}
         onSubmit={createPreset}

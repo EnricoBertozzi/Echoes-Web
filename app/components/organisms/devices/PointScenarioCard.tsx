@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "~/components/atoms/Button";
+import { InactiveBadge } from "~/components/atoms/InactiveBadge";
 import { SelectInput } from "~/components/atoms/input/SelectInput";
 import type { Scenario } from "~/types/Scenario";
 import type { PointConfig } from "~/types/deviceScenario";
@@ -38,6 +39,8 @@ export function PointScenarioCard({
           Ponto: {point.position}
         </h3>
 
+        {point.active === false && <InactiveBadge />}
+
         {point.sensorIndex !== null && (
           <span className="rounded-full bg-slate-200 px-2 py-0.5 text-sm font-semibold text-slate-700">
             Sensor {point.sensorIndex}
@@ -66,9 +69,13 @@ export function PointScenarioCard({
         )}
       </div>
 
-      {scenarios.length === 0 ? (
+      {point.active === false ? (
         <p className="text-slate-500">
-          Nenhum cenário cadastrado para este ponto.
+          Ponto de ausculta desativado: não aceita novas escolhas de cenário.
+        </p>
+      ) : scenarios.length === 0 ? (
+        <p className="text-slate-500">
+          Nenhum cenário ativo cadastrado para este ponto.
         </p>
       ) : (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">

@@ -1,4 +1,5 @@
 import type { AuscultationPoint } from "~/types/AuscultationPoint";
+import { ModalText } from "~/components/atoms/modal/ModalText";
 import { DeleteConfirmationModal } from "./modal/DeleteConfirmationModal";
 
 interface PointDeleteModalProps {
@@ -22,6 +23,8 @@ export function PointDeleteModal({
       confirmLabel="Remover"
       onClose={onClose}
       onConfirm={onConfirm}
-    />
+    >
+      <ModalText text="Essa ação não poderá ser desfeita. Se o ponto estiver associado a algum dispositivo, a remoção será recusada: nesse caso, desative-o." />
+    </DeleteConfirmationModal>
   );
 }

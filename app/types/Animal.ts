@@ -2,7 +2,8 @@ export interface Animal {
   id: string;
   name: string;
   description: string;
-  model: string
+  model: string;
+  active: boolean;
 }
 
 export interface AnimalDataRequest {

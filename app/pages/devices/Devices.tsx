@@ -69,8 +69,9 @@ export default function Devices() {
     }
   }
 
+  // animal desativado não pode ser associado; o já associado entra pelo laço dos dispositivos
   for (const animal of animals) {
-    animalOptions.set(animal.id, animal.name);
+    if (animal.active !== false) animalOptions.set(animal.id, animal.name);
   }
 
   for (const device of devices) {

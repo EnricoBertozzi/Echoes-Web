@@ -7,8 +7,10 @@ export interface AnimalCardProps {
   name: string;
   model: string;
   description: string;
+  active: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleActive: () => void;
   onOpen: () => void;
 }
 
@@ -16,8 +18,10 @@ export function AnimalCard({
   name,
   model,
   description,
+  active,
   onEdit,
   onDelete,
+  onToggleActive,
   onOpen,
 }: AnimalCardProps) {
   return (
@@ -26,8 +30,10 @@ export function AnimalCard({
         <AnimalHeader
           onEdit={onEdit}
           onDelete={onDelete}
+          onToggleActive={onToggleActive}
           name={name}
           model={model}
+          active={active}
         />
 
         <div className="min-w-0 wrap-anywhere">

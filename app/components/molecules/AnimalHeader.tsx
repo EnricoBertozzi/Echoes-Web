@@ -1,19 +1,25 @@
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { AnimalIcon } from "../atoms/AnimalIcon";
 import { ButtonIcon } from "../atoms/ButtonIcon";
+import { InactiveBadge } from "../atoms/InactiveBadge";
+import { ToggleActiveButton } from "./ToggleActiveButton";
 
 export interface AnimalHeaderProps {
   name: string;
   model: string;
+  active: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleActive: () => void;
 }
 
 export function AnimalHeader({
   name = "Animal",
   model = "Modelo",
+  active,
   onEdit,
   onDelete,
+  onToggleActive,
 }: AnimalHeaderProps) {
   return (
     <header className="flex w-full min-w-0 items-start gap-3">
@@ -34,6 +40,8 @@ export function AnimalHeader({
           >
             {model}
           </p>
+
+          {!active && <InactiveBadge />}
         </div>
       </div>
 
@@ -41,6 +49,12 @@ export function AnimalHeader({
         <ButtonIcon label={`Editar animal ${name}`} onClick={onEdit}>
           <FiEdit size={22} className="text-slate-900" aria-hidden="true" />
         </ButtonIcon>
+
+        <ToggleActiveButton
+          active={active}
+          subject={`animal ${name}`}
+          onToggle={onToggleActive}
+        />
 
         <ButtonIcon label={`Excluir animal ${name}`} onClick={onDelete}>
           <FiTrash2 size={22} className="text-red-900" aria-hidden="true" />

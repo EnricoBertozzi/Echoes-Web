@@ -1,4 +1,5 @@
 import type { Scenario } from "~/types/Scenario";
+import { ModalText } from "~/components/atoms/modal/ModalText";
 import { DeleteConfirmationModal } from "./modal/DeleteConfirmationModal";
 
 interface ScenarioDeleteModalProps {
@@ -22,6 +23,8 @@ export function ScenarioDeleteModal({
       confirmLabel="Remover"
       onClose={onClose}
       onConfirm={onConfirm}
-    />
+    >
+      <ModalText text="Essa ação não poderá ser desfeita. Se o cenário estiver associado a algum dispositivo, a remoção será recusada: nesse caso, desative-o." />
+    </DeleteConfirmationModal>
   );
 }

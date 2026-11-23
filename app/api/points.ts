@@ -30,3 +30,15 @@ export async function updatePoint(point: AuscultationPointUpdateRequest) {
 export async function deletePoint(id: string) {
   await api.delete<void>(`${BASE}/${id}`)
 }
+
+export async function deactivatePoint(id: string): Promise<AuscultationPoint> {
+  const response = await api.patch<AuscultationPoint>(`${BASE}/${id}/deactivate`);
+
+  return response.data;
+}
+
+export async function activatePoint(id: string): Promise<AuscultationPoint> {
+  const response = await api.patch<AuscultationPoint>(`${BASE}/${id}/activate`);
+
+  return response.data;
+}

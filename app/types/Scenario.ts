@@ -3,6 +3,7 @@ export interface Scenario {
   name: string;
   description: string;
   audioPath: string;
+  active: boolean;
 }
 
 export interface ScenarioRegisterRequest {

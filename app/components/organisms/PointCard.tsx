@@ -8,22 +8,28 @@ import { Accordion } from "../atoms/Accordion";
 
 export interface PointCardProps {
   position: string;
+  active: boolean;
   scenarios: Scenario[];
   onPointEdit: () => void;
   onPointDelete: () => void;
+  onPointToggleActive: () => void;
   onScenarioAdd: () => void;
   onScenarioDelete: (scenario: Scenario) => void;
   onScenarioEdit: (scenario: Scenario) => void;
+  onScenarioToggleActive: (scenario: Scenario) => void;
 }
 
 export function PointCard({
   position,
+  active,
   scenarios,
   onPointEdit,
   onPointDelete,
+  onPointToggleActive,
   onScenarioAdd,
   onScenarioDelete,
   onScenarioEdit,
+  onScenarioToggleActive,
 }: PointCardProps) {
   return (
     <Card>
@@ -31,7 +37,9 @@ export function PointCard({
         <PointHeader
           onEdit={onPointEdit}
           onDelete={onPointDelete}
+          onToggleActive={onPointToggleActive}
           position={position}
+          active={active}
         />
 
         <hr className="border-slate-200" />
@@ -58,6 +66,7 @@ export function PointCard({
                       scenario={scenario}
                       onEdit={() => onScenarioEdit(scenario)}
                       onDelete={() => onScenarioDelete(scenario)}
+                      onToggleActive={() => onScenarioToggleActive(scenario)}
                     />
                   </li>
                 ))}

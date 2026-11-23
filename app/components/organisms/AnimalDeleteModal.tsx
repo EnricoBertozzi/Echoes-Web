@@ -1,4 +1,5 @@
 import type { Animal } from "~/types/Animal";
+import { ModalText } from "~/components/atoms/modal/ModalText";
 import { DeleteConfirmationModal } from "./modal/DeleteConfirmationModal";
 
 interface AnimalDeleteModalProps {
@@ -19,6 +20,8 @@ export function AnimalDeleteModal({
       confirmLabel="Remover"
       onClose={onClose}
       onConfirm={onConfirm}
-    />
+    >
+      <ModalText text="Essa ação não poderá ser desfeita. Se o animal estiver associado a algum dispositivo, a remoção será recusada: nesse caso, desative-o." />
+    </DeleteConfirmationModal>
   );
 }

@@ -6,12 +6,14 @@ export interface ScenarioCardProps {
   scenario: Scenario;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleActive: () => void;
 }
 
 export function ScenarioCard({
   scenario,
   onEdit,
   onDelete,
+  onToggleActive,
 }: ScenarioCardProps) {
   return (
     <article className="flex w-full min-w-0 flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-slate-300 sm:p-6">
@@ -19,8 +21,10 @@ export function ScenarioCard({
         name={scenario.name}
         description={scenario.description}
         audioUrl={scenario.audioPath}
+        active={scenario.active}
         onEdit={onEdit}
         onDelete={onDelete}
+        onToggleActive={onToggleActive}
       />
     </article>
   );

@@ -4,14 +4,18 @@ import { useNavigate, useParams } from "react-router";
 import { findAnimalById } from "~/api/animals";
 
 import {
+  activatePoint,
   createPoint,
+  deactivatePoint,
   deletePoint,
   findAllPointsByAnimalId,
   updatePoint,
 } from "~/api/points";
 
 import {
+  activateScenario,
   createScenario,
+  deactivateScenario,
   deleteScenario,
   findScenariosByPointId,
   updateScenario,
@@ -125,11 +129,48 @@ export default function AnimalInfoPage() {
       return;
     }
 
-    await deletePoint(pointModal.point.id);
+    try {
+      await deletePoint(pointModal.point.id);
+      await loadPoints();
+    } catch {
+      // o interceptor do axios já mostrou o motivo (ex.: associado a dispositivo)
+    } finally {
+      setPointModal(null);
+    }
+  }
 
-    await loadPoints();
+  async function handlePointToggleActive(point: AuscultationPoint) {
+    try {
+      const updated = point.active
+        ? await deactivatePoint(point.id)
+        : await activatePoint(point.id);
 
-    setPointModal(null);
+      setPoints((current) =>
+        current.map((item) => (item.id === updated.id ? updated : item)),
+      );
+    } catch {
+      // o interceptor do axios já mostrou o erro
+    }
+  }
+
+  async function handleScenarioToggleActive(
+    scenario: Scenario,
+    pointId: string,
+  ) {
+    try {
+      const updated = scenario.active
+        ? await deactivateScenario(scenario.id)
+        : await activateScenario(scenario.id);
+
+      setScenarios((current) => ({
+        ...current,
+        [pointId]: (current[pointId] ?? []).map((item) =>
+          item.id === updated.id ? updated : item,
+        ),
+      }));
+    } catch {
+      // o interceptor do axios já mostrou o erro
+    }
   }
 
   async function loadScenarios(pointId: string) {
@@ -146,11 +187,14 @@ export default function AnimalInfoPage() {
       return;
     }
 
-    await deleteScenario(scenarioModal.scenario.id);
-
-    await loadScenarios(scenarioModal.pointId);
-
-    setScenarioModal(null);
+    try {
+      await deleteScenario(scenarioModal.scenario.id);
+      await loadScenarios(scenarioModal.pointId);
+    } catch {
+      // o interceptor do axios já mostrou o motivo (ex.: associado a dispositivo)
+    } finally {
+      setScenarioModal(null);
+    }
   }
 
   return (
@@ -175,7 +219,12 @@ export default function AnimalInfoPage() {
             <li key={point.id} className="w-full">
               <PointCard
                 position={point.position}
+                active={point.active}
                 scenarios={scenarios[point.id] ?? []}
+                onPointToggleActive={() => void handlePointToggleActive(point)}
+                onScenarioToggleActive={(scenario) =>
+                  void handleScenarioToggleActive(scenario, point.id)
+                }
                 onPointEdit={() =>
                   setPointModal({
                     type: "edit",

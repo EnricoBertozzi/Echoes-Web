@@ -10,7 +10,9 @@ import { AnimalEditModal } from "~/components/organisms/AnimalEditModal";
 import { AnimalDeleteModal } from "~/components/organisms/AnimalDeleteModal";
 
 import {
+  activateAnimal,
   createAnimal,
+  deactivateAnimal,
   deleteAnimal,
   findAllAnimals,
   findAnimalsByName,
@@ -69,11 +71,28 @@ export default function Animals() {
       return;
     }
 
-    await deleteAnimal(modal.animal.id);
+    try {
+      await deleteAnimal(modal.animal.id);
+      await loadAnimals();
+    } catch {
+      // o interceptor do axios já mostrou o motivo (ex.: associado a dispositivo)
+    } finally {
+      setModal(null);
+    }
+  }
 
-    await loadAnimals();
+  async function handleToggleActive(animal: Animal) {
+    try {
+      const updated = animal.active
+        ? await deactivateAnimal(animal.id)
+        : await activateAnimal(animal.id);
 
-    setModal(null);
+      setAnimals((current) =>
+        current.map((item) => (item.id === updated.id ? updated : item)),
+      );
+    } catch {
+      // o interceptor do axios já mostrou o erro
+    }
   }
 
   return (
@@ -104,6 +123,8 @@ export default function Animals() {
               name={animal.name}
               model={animal.model}
               description={animal.description}
+              active={animal.active}
+              onToggleActive={() => void handleToggleActive(animal)}
               onEdit={() =>
                 setModal({
                   type: "edit",
@@ -143,10 +164,7 @@ export default function Animals() {
         <AnimalDeleteModal
           animal={modal.animal}
           onClose={() => setModal(null)}
-          onConfirm={() => {
-            handleDelete(),
-            loadAnimals()
-          }}
+          onConfirm={() => void handleDelete()}
         />
       )}
     </Main>
