@@ -62,6 +62,19 @@ export function EditUserModal({ user, onUpdated }: EditUserModalProps) {
               )}
             </div>
 
+            <div className="flex flex-col gap-2">
+              <p>Sobrenome</p>
+              <TextInput
+                placeholder='Digite o sobrenome'
+                value={form.surname}
+                onChange={(event) => form.setSurname(event)} id={""} name={""} type={""}              />
+              {form.fieldErrors.surname && (
+                <span className="text-sm text-red-500">
+                  {form.fieldErrors.surname}
+                </span>
+              )}
+            </div>
+
             {form.generalError && (
               <p className="text-sm text-red-500">{form.generalError}</p>
             )}

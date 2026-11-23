@@ -22,6 +22,7 @@ import { AddInstitutionalUserModal } from "~/components/molecules/users/AddInsti
 import { PendingInvitationsList } from "~/components/molecules/users/PendingInvitationsList";
 import { deleteUser } from "~/api/users";
 import { roleToUserRole, type User } from "~/types/user";
+import { fullName } from "~/types/user";
 
 type RoleFilter = "all" | "manager" | "teacher" | "student";
 
@@ -93,7 +94,7 @@ export default function InstitutionUsersPage() {
   async function handleDelete(member: User) {
     const confirmed = await confirmAction({
       title: "Excluir usuário",
-      description: `Excluir o usuário ${member.name}?`,
+      description: `Excluir o usuário ${fullName(member)}?`,
       confirmLabel: "Excluir",
       variant: "danger",
     });
@@ -111,7 +112,7 @@ export default function InstitutionUsersPage() {
   const query = appliedSearch.toLowerCase();
   const visibleUsers =
     roleFilter !== "all" && query
-      ? users.filter((u) => u.name.toLowerCase().includes(query))
+      ? users.filter((u) => fullName(u).toLowerCase().includes(query))
       : users;
 
   const isManager = user?.role === "MANAGER";
@@ -204,7 +205,7 @@ export default function InstitutionUsersPage() {
                 <UserCard
                   key={member.id}
                   id={member.id}
-                  name={member.name}
+                  name={fullName(member)}
                   role={member.role}
                   onDelete={
                     isManager && member.id !== user?.id

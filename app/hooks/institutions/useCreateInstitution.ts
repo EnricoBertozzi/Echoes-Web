@@ -38,6 +38,7 @@ function normalizeFieldErrors(
 
   for (const [key, message] of Object.entries(errors)) {
     if (key === "manager.name") result.managerName = message;
+    else if (key === "manager.surname") result.managerSurname = message;
     else if (key === "manager.email") result.managerEmail = message;
     else result[key.replace(/^institution\./, "")] = message;
   }
@@ -142,6 +143,7 @@ export function useCreateInstitution(
         },
         manager: {
           name: data.managerName.trim(),
+          surname: data.managerSurname.trim(),
           email: data.managerEmail.trim(),
         },
       });

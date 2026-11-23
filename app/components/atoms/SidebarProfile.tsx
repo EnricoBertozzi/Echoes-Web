@@ -4,7 +4,7 @@ import { NavLink } from "react-router";
 
 import { UserAvatar } from "~/components/atoms/users/UserAvatar";
 import { useAuth } from "~/context/AuthContext";
-import { roleToUserRole, userRoleLabels } from "~/types/user";
+import { fullName, roleToUserRole, userRoleLabels } from "~/types/user";
 
 interface SidebarProfileProps {
   collapsed: boolean;
@@ -20,8 +20,8 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
   return (
     <NavLink
       to="/profile"
-      aria-label={`Abrir perfil de ${user.name}, ${roleLabel}`}
-      title={collapsed ? `Abrir perfil de ${user.name}` : undefined}
+      aria-label={`Abrir perfil de ${fullName(user)}, ${roleLabel}`}
+      title={collapsed ? `Abrir perfil de ${fullName(user)}` : undefined}
       className={({ isActive }) =>
         clsx(
           "flex h-14 w-full items-center gap-3 rounded-lg transition-all duration-300",
@@ -32,7 +32,7 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
       }
     >
       <UserAvatar
-        name={user.name}
+        name={fullName(user)}
         size={collapsed ? "sm" : "md"}
         variant="outline"
       />
@@ -41,7 +41,7 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
         <>
           <div className="flex min-w-0 flex-1 flex-col">
             <span className="truncate text-sm font-semibold text-white">
-              {user.name}
+              {fullName(user)}
             </span>
 
             <span className="truncate text-xs text-white/70">{roleLabel}</span>

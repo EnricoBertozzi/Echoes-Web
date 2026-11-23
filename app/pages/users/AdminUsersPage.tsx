@@ -9,6 +9,7 @@ import { UserCard } from "~/components/molecules/users/UserCard";
 import { Main } from "~/components/atoms/page/Main";
 import { Alert } from "~/components/atoms/page/Alert";
 import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
+import { fullName } from "~/types/user";
 
 export default function AdminPageUsers() {
   const [modal, setModal] = useState(false);
@@ -90,7 +91,7 @@ export default function AdminPageUsers() {
                 <UserCard
                   key={user.id}
                   id={user.id}
-                  name={user.name}
+                  name={fullName(user)}
                   role={user.role}
                 />
               ))}
