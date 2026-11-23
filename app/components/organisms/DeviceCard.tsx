@@ -15,6 +15,7 @@ import { useAuth } from "~/context/AuthContext";
 import type { ClassroomLabel } from "~/types/Classroom";
 import { deviceStatusLabels, deviceStatusTextStyles } from "~/utils/deviceUi";
 import { DeviceDeleteModal } from "./DeviceDeleteModal";
+import { DeviceLogsModal } from "./devices/DeviceLogsModal";
 
 interface DeviceCardProps {
   device: DeviceInfo;
@@ -43,6 +44,7 @@ export function DeviceCard({
 }: DeviceCardProps) {
   const [editing, setEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLogs, setShowLogs] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [approvalInstitutionId, setApprovalInstitutionId] = useState("");
   const [institutionId, setInstitutionId] = useState("");
@@ -318,6 +320,15 @@ export function DeviceCard({
                   </Link>
                 )}
 
+                {device.status !== "PENDING" && (
+                  <Button
+                    type="button"
+                    label="Logs"
+                    variant="muted"
+                    onClick={() => setShowLogs(true)}
+                  />
+                )}
+
                 {isAdmin && device.status === "PENDING" && (
                   <>
                     <SelectInput
@@ -357,6 +368,15 @@ export function DeviceCard({
                 )}
               </div>
             )}
+
+          {showLogs && (
+            <DeviceLogsModal
+              deviceId={device.id}
+              deviceName={device.name || device.hardwareId}
+              isOpen={showLogs}
+              onClose={() => setShowLogs(false)}
+            />
+          )}
 
           {isAdmin && showDeleteModal && (
             <DeviceDeleteModal
