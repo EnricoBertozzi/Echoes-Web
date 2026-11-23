@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import { Button } from "~/components/atoms/Button";
 import { Card } from "~/components/atoms/card/Card";
 import { Alert } from "~/components/atoms/page/Alert";
+import { DeviceLogsModal } from "~/components/organisms/devices/DeviceLogsModal";
 import { useClassroomDeviceList } from "~/hooks/classrooms/useClassroomDeviceList";
 import { deviceStatusLabels, deviceStatusTextStyles } from "~/utils/deviceUi";
 
@@ -25,6 +27,11 @@ export function ClassroomDevicesTab({
     classroomId,
     true,
   );
+
+  const [logsDevice, setLogsDevice] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   function scenariosPath(deviceId: string) {
     return isTeacher
@@ -111,18 +118,38 @@ export function ClassroomDevicesTab({
               </div>
 
               {device.status !== "PENDING" && (
-                <div className="w-full sm:w-36">
+                <div className="flex w-full flex-col gap-2 sm:w-36">
                   <Link
                     to={scenariosPath(device.id)}
                     className="flex w-full items-center justify-center rounded bg-gray-300 px-4 py-3 text-black"
                   >
                     Cenários
                   </Link>
+                  <Button
+                    type="button"
+                    label="Logs"
+                    variant="muted"
+                    onClick={() =>
+                      setLogsDevice({
+                        id: device.id,
+                        name: device.name || device.hardwareId,
+                      })
+                    }
+                  />
                 </div>
               )}
             </li>
           ))}
         </ul>
+      )}
+
+      {logsDevice && (
+        <DeviceLogsModal
+          deviceId={logsDevice.id}
+          deviceName={logsDevice.name}
+          isOpen
+          onClose={() => setLogsDevice(null)}
+        />
       )}
     </Card>
   );
