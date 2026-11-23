@@ -1,12 +1,9 @@
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-import type {
-  ScenarioRegisterForm,
-  ScenarioRegisterRequest,
-} from "~/types/Scenario";
+import type { ScenarioRegisterForm } from "~/types/Scenario";
+import { validateUploadSize, WEB_UPLOAD_LIMIT_MB } from "~/utils/uploadValidation";
 
 import { ModalForm } from "../atoms/modal/ModalForm";
-import { ModalFormButtons } from "../molecules/ModalFormButtons";
 import { Modal } from "../atoms/modal/Modal";
 import { ModalTitle } from "../atoms/modal/ModalTitle";
 
@@ -54,6 +51,7 @@ export function ScenarioAddModal({
     <Modal
       isOpen={isOpen}
       onClose={() => {
+        if (loading) return;
         onClose();
         onReload(pointId);
       }}
@@ -108,12 +106,14 @@ export function ScenarioAddModal({
             <ControlledFileField
               id="scenario-file"
               name="file"
-              label="Arquivo de áudio"
+              label={`Arquivo MP3 (até ${WEB_UPLOAD_LIMIT_MB} MB)`}
               control={control}
-              accept=".mp3,audio/mpeg"
+              accept=".mp3,audio/mpeg,audio/mp3"
+              disabled={loading}
               rules={{
                 required: "O arquivo de áudio é obrigatório.",
                 validate: {
+                  size: validateUploadSize,
                   type: (file) =>
                     !file ||
                     isMp3(file) ||
@@ -124,8 +124,8 @@ export function ScenarioAddModal({
             {error && <Alert message={error} type={"error"} />}
 
             <div className="mt-3 flex gap-3 justify-end">
-              <Button label={"Cancelar"} onClick={onClose} variant={"muted"} />
-              <Button label={"Cadastrar"} variant="primary" />
+              <Button type="button" label="Cancelar" onClick={onClose} variant="muted" disabled={loading} />
+              <Button type="submit" label={loading ? "Enviando..." : "Cadastrar"} disabled={loading} />
             </div>
           </ModalForm>
         </>

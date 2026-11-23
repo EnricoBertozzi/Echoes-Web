@@ -1,12 +1,10 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router";
+import { Navigate, useSearchParams } from "react-router";
 import { Button } from "~/components/atoms/Button";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { ControlledCodeField } from "~/components/molecules/controlled/ControlledCodeField";
-import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
-import { CodeField } from "~/components/molecules/input/CodeField";
 import { useValidMfa } from "~/hooks/auth/useValidMfa";
+import { EMAIL_MAX_LENGTH, VERIFICATION_CODE_LENGTH } from "~/utils/authInputValidation";
 
 interface FormData {
   email: string;
@@ -14,23 +12,18 @@ interface FormData {
 }
 
 export default function MfaPage() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
-
-  useEffect(() => {
-    if (!email) {
-      navigate("/", { replace: true });
-    }
-  }, [email, navigate]);
 
   const { handleMfaSubmit } = useValidMfa();
   const { handleSubmit, control, register, formState: { isSubmitting } } = useForm<FormData>({
     defaultValues: {
-      email: email!,
+      email: email ?? "",
       code: "",
     },
   });
+
+  if (!email || email.length > EMAIL_MAX_LENGTH) return <Navigate to="/" replace />;
 
   return (
     <main className="flex min-h-dvh w-full flex-col items-center bg-zinc-200 px-4 py-6">
@@ -51,15 +44,8 @@ export default function MfaPage() {
             id="code"
             name="code"
             label={"Código"}
-            length={6}
+            length={VERIFICATION_CODE_LENGTH}
             control={control}
-            rules={{
-              required: "Código obrigatório",
-              minLength: {
-                value: 6,
-                message: "Código incompleto",
-              },
-            }}
           />
         </div>
 

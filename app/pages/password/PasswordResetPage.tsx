@@ -5,8 +5,23 @@ import { Modal } from "~/components/atoms/modal/Modal";
 import { ModalTitle } from "~/components/atoms/modal/ModalTitle";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { ControlledPasswordField } from "~/components/molecules/controlled/ControlledPasswordField";
-import { PasswordField } from "~/components/molecules/input/PasswordField";
 import { useResetPassword } from "~/hooks/auth/password/useResetPassword";
+import {
+  EMAIL_MAX_LENGTH,
+  newPasswordRules,
+  validatePasswordConfirmation,
+} from "~/utils/authInputValidation";
+import type { Route } from "./+types/PasswordResetPage";
+
+export function clientLoader() {
+  return { token: sessionStorage.getItem("reset_token") };
+}
+
+clientLoader.hydrate = true as const;
+
+export function HydrateFallback() {
+  return null;
+}
 
 interface FormData {
   email: string;
@@ -15,11 +30,9 @@ interface FormData {
   confirmPassword: string;
 }
 
-export default function PasswordResetPage() {
+export default function PasswordResetPage({ loaderData: { token } }: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
-
-  const token = sessionStorage.getItem("reset_token");
 
   const navigate = useNavigate();
 
@@ -27,8 +40,8 @@ export default function PasswordResetPage() {
 
   const { handleSubmit, control, register, watch } = useForm<FormData>({
     defaultValues: {
-      email: email!,
-      token: token!,
+      email: email ?? "",
+      token: token ?? "",
       newPassword: "",
       confirmPassword: "",
     },
@@ -37,7 +50,7 @@ export default function PasswordResetPage() {
   const newPassword = watch("newPassword");
 
   if (!isSuccess && !isError) {
-    if (email == null || token == null) {
+    if (!email || email.length > EMAIL_MAX_LENGTH || !token) {
       return <Navigate to="/" replace />;
     }
   }
@@ -64,18 +77,7 @@ export default function PasswordResetPage() {
             label="Nova senha"
             placeholder="Digite sua nova senha"
             control={control}
-            rules={{
-              required: "Senha obrigatória",
-              minLength: {
-                value: 8,
-                message: "A senha deve ter no mínimo 8 caracteres",
-              },
-              pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
-                message:
-                  "A senha deve conter maiúscula, minúscula, número e caractere especial",
-              },
-            }}
+            rules={newPasswordRules}
           />
 
           <ControlledPasswordField
@@ -86,8 +88,7 @@ export default function PasswordResetPage() {
             control={control}
             rules={{
               required: "Confirmação de senha obrigatória",
-              validate: (value) =>
-                value === newPassword || "As senhas não são iguais",
+              validate: (value) => validatePasswordConfirmation(value, newPassword),
             }}
           />
         </div>

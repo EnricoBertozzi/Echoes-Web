@@ -6,6 +6,7 @@ import { ModalTitle } from "~/components/atoms/modal/ModalTitle";
 import { ControlledFileField } from "~/components/molecules/controlled/ControlledFileFIeld";
 import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 import type { ClassroomMaterial } from "~/types/ClassroomMaterial";
+import { validateUploadSize, WEB_UPLOAD_LIMIT_MB } from "~/utils/uploadValidation";
 
 type Mode = "create" | "edit" | "replace";
 type Values = { title: string; description: string; file: File | null };
@@ -71,10 +72,9 @@ export function ClassroomMaterialModal({
         )}
         {mode !== "edit" && (
           <ControlledFileField<Values, "file">
-            id="material-file" name="file" label="Arquivo (até 18 MB)" control={control}
+            id="material-file" name="file" label={`Arquivo (até ${WEB_UPLOAD_LIMIT_MB} MB)`} control={control}
             accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.docx,.pptx,.xlsx,.txt,.csv,.md"
-            rules={{ required: "Selecione um arquivo.", validate: (file) =>
-              !file || file.size <= 18 * 1024 * 1024 || "O limite é de 18 MB." }}
+            rules={{ required: "Selecione um arquivo.", validate: validateUploadSize }}
             disabled={busy}
           />
         )}

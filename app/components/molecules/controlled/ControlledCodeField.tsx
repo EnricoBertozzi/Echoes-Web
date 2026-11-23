@@ -5,7 +5,6 @@ import {
   type Path,
   type RegisterOptions,
 } from "react-hook-form";
-import { TextField } from "../input/TextField";
 import { CodeField } from "../input/CodeField";
 
 export interface ControlledCodeFieldProps<T extends FieldValues> {
@@ -30,6 +29,11 @@ export function ControlledCodeField<T extends FieldValues>({
       name={name}
       control={control}
       rules={{
+        required: "Código obrigatório",
+        pattern: {
+          value: new RegExp(`^[0-9]{${length}}$`),
+          message: `Informe um código de ${length} dígitos`,
+        },
         ...rules,
       }}
       render={({ field, fieldState: { error } }) => (

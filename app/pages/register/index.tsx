@@ -1,10 +1,8 @@
 import { Link, useSearchParams } from "react-router";
 import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import { Button } from "~/components/atoms/Button";
-import { TextInput } from "~/components/atoms/input/TextInput";
 import { useRegister } from "~/hooks/useRegister";
 import type { Route } from "./+types/index";
-import { PasswordField } from "~/components/molecules/input/PasswordField";
 import { PageTitle } from "~/components/atoms/PageTitle";
 import { useForm } from "react-hook-form";
 import { useTerms } from "~/hooks/terms/useTerms";
@@ -12,6 +10,12 @@ import type { TermResponseDTO } from "~/types/terms";
 import { useState } from "react";
 import { TermViewModal } from "~/components/organisms/TermViewModal";
 import { ControlledPasswordField } from "~/components/molecules/controlled/ControlledPasswordField";
+import {
+  EMAIL_MAX_LENGTH,
+  VERIFICATION_CODE_PATTERN,
+  newPasswordRules,
+  validatePasswordConfirmation,
+} from "~/utils/authInputValidation";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -41,7 +45,8 @@ export default function Register() {
     setAcceptedTerms,
   } = useRegister(code, urlEmail);
 
-  const hasValidParams = code.trim() !== "" && urlEmail.trim() !== "";
+  const hasValidParams = VERIFICATION_CODE_PATTERN.test(code)
+    && urlEmail.trim() !== "" && urlEmail.length <= EMAIL_MAX_LENGTH;
 
   const { handleSubmit, control, watch, register } = useForm<FormData>({
     defaultValues: {
@@ -129,17 +134,7 @@ export default function Register() {
             label="Senha"
             placeholder="Digite sua senha"
             control={control}
-            rules={{
-              minLength: {
-                value: 8,
-                message: "A senha deve ter no mínimo 8 caracteres",
-              },
-              pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
-                message:
-                  "A senha deve conter maiúscula, minúscula, número e caractere especial",
-              },
-            }}
+            rules={newPasswordRules}
           />
         </div>
 
@@ -151,8 +146,8 @@ export default function Register() {
             placeholder="Confirme sua senha"
             control={control}
             rules={{
-              validate: (value) =>
-                value === password || "As senhas não são iguais",
+              required: "Confirmação de senha obrigatória",
+              validate: (value) => validatePasswordConfirmation(value, password),
             }}
           />
 

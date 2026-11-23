@@ -14,18 +14,14 @@ export function CodeInput({
   onChange,
 }: CodeInputProps) {
   const [code, setCode] = useState<string[]>(
-    value ? value.split("") : new Array(length).fill(""),
+    () => Array.from({ length }, (_, index) => value?.[index] ?? ""),
   );
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (value !== undefined) {
-      setCode(
-        value
-          .split("")
-          .concat(new Array(Math.max(0, length - value.length)).fill("")),
-      );
+      setCode(Array.from({ length }, (_, index) => value[index] ?? ""));
     }
   }, [value, length]);
 

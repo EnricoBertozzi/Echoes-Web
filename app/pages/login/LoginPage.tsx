@@ -1,14 +1,12 @@
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import { PageTitle } from "~/components/atoms/PageTitle";
-import { PasswordField } from "~/components/molecules/input/PasswordField";
-import { TextField } from "~/components/molecules/input/TextField";
 import { useLogin } from "~/hooks/auth/useLogin";
 import type { Route } from "./+types/LoginPage";
 import { Button } from "~/components/atoms/Button";
-import { ControlledTextField } from "~/components/molecules/controlled/ControlledTextField";
 import { ControlledPasswordField } from "~/components/molecules/controlled/ControlledPasswordField";
 import { ControlledEmailField } from "~/components/molecules/controlled/ControlledEmailField";
+import { emailMaxLengthRule, validatePasswordSize } from "~/utils/authInputValidation";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -49,6 +47,7 @@ export default function LoginPage() {
             control={control}
             rules={{
               required: "E-mail obrigatório",
+              maxLength: emailMaxLengthRule,
             }}
           />
 
@@ -61,6 +60,7 @@ export default function LoginPage() {
               control={control}
               rules={{
                 required: "Senha é obrigatória",
+                validate: validatePasswordSize,
               }}
             />
 
