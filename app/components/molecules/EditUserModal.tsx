@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FiEdit2 } from "react-icons/fi";
-import type { User } from "~/types/user";
+import { fullName, type User } from "~/types/user";
 import { useUpdateUser } from "~/hooks/users/useUpdateUser";
 import { TextInput } from "../atoms/input/TextInput";
 import { Modal } from "../atoms/modal/Modal";
@@ -32,7 +32,7 @@ export function EditUserModal({ user, onUpdated }: EditUserModalProps) {
     <>
       <button
         className='cursor-pointer'
-        aria-label={`Editar usuário ${user.name}`}
+        aria-label={`Editar usuário ${fullName(user)}`}
         onClick={handleOpen}
       >
         <FiEdit2

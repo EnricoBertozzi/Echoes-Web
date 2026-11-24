@@ -33,7 +33,12 @@ export function useUpdateUser(user: User, onUpdated?: () => void) {
     setGeneralError(null);
 
     try {
-      await updateUser(roleToUserRole(user.role), user.id, { name, surname });
+      // o back rejeita sobrenome vazio; sem sobrenome, o campo não é enviado
+      const trimmedSurname = surname.trim();
+      await updateUser(roleToUserRole(user.role), user.id, {
+        name: name.trim(),
+        ...(trimmedSurname ? { surname: trimmedSurname } : {}),
+      });
       setSucceeded(true);
       onUpdated?.();
     } catch (error) {

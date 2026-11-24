@@ -7,6 +7,7 @@ import { PageTitle } from "~/components/atoms/PageTitle";
 import { useForm } from "react-hook-form";
 import { useTerms } from "~/hooks/terms/useTerms";
 import type { TermResponseDTO } from "~/types/terms";
+import { fullName } from "~/types/user";
 import { useState } from "react";
 import { TermViewModal } from "~/components/organisms/TermViewModal";
 import { ControlledPasswordField } from "~/components/molecules/controlled/ControlledPasswordField";
@@ -102,7 +103,7 @@ export default function Register() {
             Conta ativada com sucesso!
           </h1>
           <p className="text-sm text-gray-600">
-            Bem-vindo(a), {registeredUser.name}! Sua senha foi criada. Você já
+            Bem-vindo(a), {fullName(registeredUser)}! Sua senha foi criada. Você já
             pode entrar no Echoes.
           </p>
           <Link to="/" className="text-main underline">

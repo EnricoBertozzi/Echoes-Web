@@ -1,5 +1,5 @@
 import { FiTrash2 } from "react-icons/fi";
-import { roleToUserRole, userRoleLabels } from "~/types/user";
+import { fullName, roleToUserRole, userRoleLabels } from "~/types/user";
 import type { User } from "~/types/user";
 import { useDeleteUser } from "~/hooks/users/useDeleteUser";
 import { EditUserModal } from "../molecules/EditUserModal";

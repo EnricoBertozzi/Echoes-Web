@@ -3,8 +3,7 @@ import { FiCheckCircle, FiHome, FiMail } from "react-icons/fi";
 import { Card } from "~/components/atoms/card/Card";
 import { UserAvatar } from "~/components/atoms/users/UserAvatar";
 import { UserRoleBadge } from "~/components/atoms/users/UserRoleBadge";
-import type { User } from "~/types/user";
-import { fullName } from "~/types/user";
+import { fullName, type User } from "~/types/user";
 
 export interface ProfileHeaderProps {
   user: User;

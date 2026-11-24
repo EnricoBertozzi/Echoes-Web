@@ -18,7 +18,7 @@ import { UserCard } from "~/components/molecules/users/UserCard";
 import { ClassroomDevicesTab } from "~/components/organisms/classrooms/ClassroomDevicesTab";
 import { useAuth } from "~/context/AuthContext";
 import type { Classroom, ClassroomMember } from "~/types/Classroom";
-import type { User } from "~/types/user";
+import { fullName, type User } from "~/types/user";
 
 /**
  * Detalhe da turma. O gestor adiciona professor e remove membros;
@@ -140,7 +140,7 @@ export default function ClassroomInfoPage() {
   const teacherOptions = new Map<string, string>(
     teachers
       .filter((teacher) => !memberIds.has(teacher.id))
-      .map((teacher): [string, string] => [teacher.id, teacher.name]),
+      .map((teacher): [string, string] => [teacher.id, fullName(teacher)]),
   );
 
   return (

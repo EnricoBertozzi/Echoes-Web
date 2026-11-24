@@ -21,8 +21,7 @@ import { useAuth } from "~/context/AuthContext";
 import { AddInstitutionalUserModal } from "~/components/molecules/users/AddInstitutionalUserModal";
 import { PendingInvitationsList } from "~/components/molecules/users/PendingInvitationsList";
 import { deleteUser } from "~/api/users";
-import { roleToUserRole, type User } from "~/types/user";
-import { fullName } from "~/types/user";
+import { fullName, roleToUserRole, type User } from "~/types/user";
 
 type RoleFilter = "all" | "manager" | "teacher" | "student";
 
