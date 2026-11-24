@@ -307,7 +307,6 @@ export default function NewInstitution() {
                       required: "O nome do gestor é obrigatório.",
                     }}
                   />
-
                 </div>
 
                 <div className="flex flex-col gap-1">

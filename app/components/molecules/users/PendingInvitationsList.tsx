@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { findPendingInvitations } from "~/api/users";
-import type { ApiRole, PendingInvitation } from "~/types/user";
-import { fullName } from "~/types/user";
+import { fullName, type ApiRole, type PendingInvitation } from "~/types/user";
 import { maskEmail } from "~/utils/privacy";
 
 export interface PendingInvitationsListProps {
