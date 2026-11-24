@@ -13,6 +13,7 @@ export function useCreateUser() {
 
   async function handleCreateAdminUserSubmit({
     name,
+    surname,
     email,
   }: CreateUserRequest) {
     setLoading(true);
@@ -20,7 +21,11 @@ export function useCreateUser() {
     setError(null);
 
     try {
-      const res = await createUser("admin", { name, email });
+      const res = await createUser("admin", {
+        name: name.trim(),
+        surname: surname.trim(),
+        email: email.trim(),
+      });
       setSuccess(true);
     } catch (e) {
       setError("Erro ao cadastrar usuário, tente mais tarde.");
@@ -31,6 +36,7 @@ export function useCreateUser() {
 
   async function handleCreateInstitutionalUserSubmit({
     name,
+    surname,
     email,
     institutionId,
     role,
@@ -40,7 +46,12 @@ export function useCreateUser() {
     setError(null);
 
     try {
-      const res = await createUser(role, { name, email, institutionId});
+      const res = await createUser(role, {
+        name: name.trim(),
+        surname: surname.trim(),
+        email: email.trim(),
+        institutionId,
+      });
       setSuccess(true);
     } catch (e) {
       setError("Erro ao cadastrar usuário, tente mais tarde.");

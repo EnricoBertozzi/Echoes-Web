@@ -6,6 +6,8 @@ export type ApiRole = "ADMIN" | "MANAGER" | "TEACHER" | "STUDENT"; // uppercase 
 export interface User {
   id: string;
   name: string;
+  // usuários criados antes do campo existir vêm com sobrenome nulo
+  surname: string | null;
   email: string;
   institutionId: string | null;
   role: ApiRole;
@@ -13,12 +15,14 @@ export interface User {
 
 export interface CreateUserRequest {
   name: string;
+  surname: string;
   email: string;
   institutionId?: string;
 }
 
 export interface CreateInstitutionalUserRequest {
   name: string;
+  surname: string;
   email: string;
   role: "manager" | "teacher" | "student";
   institutionId?: string;
@@ -26,11 +30,13 @@ export interface CreateInstitutionalUserRequest {
 
 export interface UpdateUserRequest {
   name?: string;
+  surname?: string;
   institutionId?: string | null;
 }
 
 export interface UpdateCurrentUserRequest {
   name?: string;
+  surname?: string;
 }
 
 export interface CompleteRegistrationRequest {
@@ -43,6 +49,7 @@ export interface CompleteRegistrationRequest {
 export interface PendingUser {
   // 202 response
   name: string;
+  surname: string | null;
   email: string;
   role: ApiRole;
   institutionId: string | null;
@@ -82,9 +89,21 @@ export function roleToUserRole(apiRole: ApiRole): UserRole {
 // Convite de cadastro ainda válido (GET /api/v1/users/pending)
 export interface PendingInvitation {
   name: string;
+  surname: string | null;
   email: string;
   role: ApiRole;
   institutionId: string | null;
   invitedAt: string;
   expiresAt: string;
+}
+
+// Nome + sobrenome para exibição; tolera sobrenome ausente (cadastros antigos)
+export function fullName(person: {
+  name: string;
+  surname?: string | null;
+}): string {
+  return [person.name, person.surname]
+    .map((part) => part?.trim())
+    .filter(Boolean)
+    .join(" ");
 }

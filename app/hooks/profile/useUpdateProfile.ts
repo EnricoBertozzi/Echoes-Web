@@ -7,6 +7,7 @@ import { useAuth } from "~/context/AuthContext";
 
 export interface UpdateProfileInput {
   name: string;
+  surname: string;
 }
 
 export type UpdateProfileResult =
@@ -29,6 +30,7 @@ export function useUpdateProfile() {
     try {
       const updatedUser = await updateCurrentUser({
         name: data.name.trim(),
+        surname: data.surname.trim(),
       });
 
       updateUser(updatedUser);

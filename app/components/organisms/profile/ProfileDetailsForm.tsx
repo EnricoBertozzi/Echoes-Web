@@ -11,6 +11,7 @@ import { useUpdateProfile } from "~/hooks/profile/useUpdateProfile";
 
 interface ProfileFormValues {
   name: string;
+  surname: string;
 }
 
 export function ProfileDetailsForm() {
@@ -29,6 +30,7 @@ export function ProfileDetailsForm() {
     mode: "onBlur",
     defaultValues: {
       name: user?.name ?? "",
+      surname: user?.surname ?? "",
     },
   });
 
@@ -36,7 +38,7 @@ export function ProfileDetailsForm() {
   // (por exemplo, depois de salvar ou de restaurar a sessão).
   useEffect(() => {
     if (user) {
-      reset({ name: user.name });
+      reset({ name: user.name, surname: user.surname ?? "" });
     }
   }, [user, reset]);
 
@@ -57,7 +59,7 @@ export function ProfileDetailsForm() {
 
     if (result.fieldErrors) {
       for (const [field, message] of Object.entries(result.fieldErrors)) {
-        if (field === "name") {
+        if (field === "name" || field === "surname") {
           setError(field, { message });
           hasFieldError = true;
         }
@@ -89,6 +91,17 @@ export function ProfileDetailsForm() {
             control={control}
             rules={{
               required: "O nome é obrigatório.",
+            }}
+          />
+
+          <ControlledTextField
+            id="profile-surname"
+            name="surname"
+            label="Sobrenome"
+            placeholder="Digite seu sobrenome"
+            control={control}
+            rules={{
+              required: "O sobrenome é obrigatório.",
             }}
           />
 

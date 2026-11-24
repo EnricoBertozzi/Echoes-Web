@@ -1,5 +1,5 @@
 import { FiTrash2 } from "react-icons/fi";
-import { roleToUserRole, userRoleLabels } from "~/types/user";
+import { fullName, roleToUserRole, userRoleLabels } from "~/types/user";
 import type { User } from "~/types/user";
 import { useDeleteUser } from "~/hooks/users/useDeleteUser";
 import { EditUserModal } from "../molecules/EditUserModal";
@@ -17,7 +17,7 @@ export function UserTableRow({ user, onChanged }: UserTableRowProps) {
   return (
     <tr className='text-black border-t border-b border-gray-800/20'>
       <td className="w-1/4 px-4 py-2">
-        {user.name}
+        {fullName(user)}
       </td>
 
       <td className="w-1/4 px-4 py-2 border-l border-gray-800/20">
@@ -34,7 +34,7 @@ export function UserTableRow({ user, onChanged }: UserTableRowProps) {
             <EditUserModal user={user} onUpdated={onChanged} />
             <button
               className='cursor-pointer disabled:cursor-not-allowed disabled:opacity-40'
-              aria-label={`Excluir usuário ${user.name}`}
+              aria-label={`Excluir usuário ${fullName(user)}`}
               onClick={handleDelete}
               disabled={deleting}
             >

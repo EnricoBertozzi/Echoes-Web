@@ -51,6 +51,7 @@ export default function NewInstitution() {
       email: "",
       phone: "",
       managerName: "",
+      managerSurname: "",
       managerEmail: "",
     },
   });
@@ -300,14 +301,26 @@ export default function NewInstitution() {
                     id="managerName"
                     name="managerName"
                     label="Nome do gestor"
-                    placeholder="Digite o nome completo"
+                    placeholder="Digite o nome"
                     control={control}
                     rules={{
                       required: "O nome do gestor é obrigatório.",
                     }}
                   />
+                </div>
 
-]                </div>
+                <div className="flex flex-col gap-1">
+                  <ControlledTextField
+                    id="managerSurname"
+                    name="managerSurname"
+                    label="Sobrenome do gestor"
+                    placeholder="Digite o sobrenome"
+                    control={control}
+                    rules={{
+                      required: "O sobrenome do gestor é obrigatório.",
+                    }}
+                  />
+                </div>
 
                 <div className="flex flex-col gap-1">
                   <ControlledTextField

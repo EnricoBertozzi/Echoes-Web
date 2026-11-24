@@ -40,6 +40,7 @@ export function AddInstitutionalUserModal({
     defaultValues: {
       email: "",
       name: "",
+      surname: "",
       institutionId: institutionId,
       role: "",
     },
@@ -110,6 +111,17 @@ export function AddInstitutionalUserModal({
               control={control}
               rules={{
                 required: "Nome obrigatório",
+              }}
+            />
+
+            <ControlledTextField
+              id="surname"
+              name="surname"
+              label="Sobrenome"
+              placeholder="Digite o sobrenome"
+              control={control}
+              rules={{
+                required: "Sobrenome obrigatório",
               }}
             />
 

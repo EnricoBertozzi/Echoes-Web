@@ -21,6 +21,7 @@ export interface InstitutionRegisterRequest {
 // dados do primeiro gestor, que recebe o convite por e-mail
 export interface ManagerRegisterRequest {
   name: string;
+  surname: string;
   email: string;
 }
 
@@ -33,6 +34,7 @@ export interface InstitutionCreateRequest {
 // campos do formulário de cadastro (instituição + gestor)
 export interface InstitutionCreateForm extends InstitutionRegisterRequest {
   managerName: string;
+  managerSurname: string;
   managerEmail: string;
 }
 

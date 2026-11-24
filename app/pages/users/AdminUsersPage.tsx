@@ -6,6 +6,7 @@ import { AddAdminModal } from "~/components/molecules/users/AddAdminModal";
 import { PendingInvitationsList } from "~/components/molecules/users/PendingInvitationsList";
 import { useFetchUsers } from "~/hooks/users/useFetchUsers";
 import { UserCard } from "~/components/molecules/users/UserCard";
+import { fullName } from "~/types/user";
 import { Main } from "~/components/atoms/page/Main";
 import { Alert } from "~/components/atoms/page/Alert";
 import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
@@ -90,7 +91,7 @@ export default function AdminPageUsers() {
                 <UserCard
                   key={user.id}
                   id={user.id}
-                  name={user.name}
+                  name={fullName(user)}
                   role={user.role}
                 />
               ))}
