@@ -13,6 +13,10 @@ export interface User {
   role: ApiRole;
 }
 
+export function fullName(u: { name: string; surname?: string | null }): string {
+  return [u.name, u.surname].filter(Boolean).join(" ");
+}
+
 export interface CreateUserRequest {
   name: string;
   surname: string;

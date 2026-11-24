@@ -10,6 +10,7 @@ import { fullName } from "~/types/user";
 import { Main } from "~/components/atoms/page/Main";
 import { Alert } from "~/components/atoms/page/Alert";
 import { PaginationSelector } from "~/components/atoms/page/PaginationSelector";
+import { fullName } from "~/types/user";
 
 export default function AdminPageUsers() {
   const [modal, setModal] = useState(false);
